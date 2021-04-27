@@ -145,15 +145,7 @@ export default {
                 .then(res => res.json())
                 .then(data => data);
     },
-    isAuthenticated : ()=>{
-        return fetch('/user/authenticated')
-                .then(res=>{
-                    if(res.status !== 401)
-                        return res.json().then(data => data);
-                    else
-                        return { isAuthenticated : false, user : {username : "",role : ""}};
-                });
-    },
+    
     solCert : cert =>{
         return fetch('/user/solCert',{
             method : "post",

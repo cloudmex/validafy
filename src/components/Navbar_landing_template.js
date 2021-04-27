@@ -1,6 +1,50 @@
-import React from "react";
+import React,{useState,useEffect,useRef} from "react";
+import lofo from '../assets/img/mm-logo.svg';
+import Web3 from 'web3';
+ 
 
 export default function Navbar(props) {
+  const [initialBc,setInitialBc]=useState({Hash: '',contract: null,buffer:null,web3: null,account: null});
+  const [account,setAccount]=useState("");
+  async function componentWillMount() {
+    await this.loadWeb3()
+    await this.loadBlockchainData()
+  }
+  async function loadWeb3() {
+    if (window.ethereum) {
+      window.web3 = new Web3(window.ethereum)
+      await window.ethereum.enable()
+    }
+    else if (window.web3) {
+      window.web3 = new Web3(window.web3.currentProvider)
+    }
+    else {
+      window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!')
+    }
+  }
+  async function loadBlockchainData() {
+    const web3 = window.web3
+    // Load account
+    const accounts = await web3.eth.getAccounts()
+    
+    setInitialBc({initialBc,account:accounts[0] })
+    setAccount({account:accounts[0]})
+    console.log(account)
+    const networkId = await web3.eth.net.getId()
+    
+    if( networkId) {
+       
+      console.log(initialBc)
+   
+    } else {
+      window.alert('Smart contract not deployed to detected network.')
+    }
+  }
+  async function see() {
+     console.log("here");
+     await loadWeb3()
+     await loadBlockchainData()  
+    }
   const [navbarOpen, setNavbarOpen] = React.useState(false);
   return (
     <nav
@@ -18,10 +62,11 @@ export default function Navbar(props) {
               (props.transparent ? "text-white" : "text-gray-800") +
               " text-sm font-bold leading-relaxed inline-block mr-4 py-2 whitespace-nowrap uppercase"
             }
-            href="https://www.creative-tim.com/learning-lab/tailwind-starter-kit#/presentation"
+            href=" "
           >
-            Tailwind Starter Kit
-          </a>
+            Validafy
+                      </a>
+                     
           <button
             className="cursor-pointer text-xl leading-none px-3 py-1 border border-solid border-transparent rounded bg-transparent block lg:hidden outline-none focus:outline-none"
             type="button"
@@ -74,7 +119,7 @@ export default function Navbar(props) {
                     : "text-gray-800 hover:text-gray-600") +
                   " px-3 py-4 lg:py-2 flex items-center text-xs uppercase font-bold"
                 }
-                href="#pablo"
+                href="https://www.facebook.com/mexanalytics/"
               >
                 <i
                   className={
@@ -96,7 +141,8 @@ export default function Navbar(props) {
                     : "text-gray-800 hover:text-gray-600") +
                   " px-3 py-4 lg:py-2 flex items-center text-xs uppercase font-bold"
                 }
-                href="#pablo"
+                href="https://twitter.com/cloudmex_a?lang=en
+                "
               >
                 <i
                   className={
@@ -118,7 +164,7 @@ export default function Navbar(props) {
                     : "text-gray-800 hover:text-gray-600") +
                   " px-3 py-4 lg:py-2 flex items-center text-xs uppercase font-bold"
                 }
-                href="#pablo"
+                href="https://github.com/cloudmex"
               >
                 <i
                   className={
@@ -128,26 +174,29 @@ export default function Navbar(props) {
                     " fab fa-github text-lg leading-lg "
                   }
                 />
-                <span className="lg:hidden inline-block ml-2">Star</span>
+                <span className="lg:hidden inline-block ml-2">Github</span>
               </a>
             </li>
 
             <li className="flex items-center">
-              <button
+              <button onClick={see}
                 className={
                   (props.transparent
-                    ? "bg-white text-gray-800 active:bg-gray-100"
+                    ? "bg-transparent text-gray-800 active:bg-gray-100"
                     : "bg-pink-500 text-white active:bg-pink-600") +
                   " text-xs font-bold uppercase px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none lg:mr-1 lg:mb-0 ml-3 mb-3"
                 }
                 type="button"
                 style={{ transition: "all .15s ease" }}
               >
-                <i className="fas fa-arrow-alt-circle-down"></i> Download
+                 <img style={{ height:25}}   src="https://metamask.io/images/mm-logo.svg"></img>  
               </button>
             </li>
           </ul>
         </div>
+         
+            
+
       </div>
     </nav>
   );
