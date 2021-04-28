@@ -3,6 +3,7 @@ import Web3 from 'web3';
 
 import Navbar from "../components/Navbar_landing_template";
 import Footer from "../components/Footer_landing_template";
+import DropzoneComponent from 'react-dropzone-component';
 
 
 const ipfsClient = require('ipfs-http-client')
@@ -16,6 +17,30 @@ export default function Landing() {
     const [buffer,setBuffer]=useState("");
     const [ipfss,setIpfs]=useState("");
 
+    const  componentConfig = {
+      iconFiletypes: ['.jpg', '.png', '.gif'],
+      showFiletypeIcon: true,
+      postUrl: '/uploadHandler'
+    };
+    const djsConfig = { autoProcessQueue: false }
+    
+    const eventHandlers = { addedfile: (file) => {
+      console.log(file)
+      console.log("just file "+file)
+      const reader = new window.FileReader()
+      reader.readAsArrayBuffer(file)
+      reader.onloadend = () => {
+        console.log(reader)
+        console.log( reader.result)
+        
+        setInitialBc({buffer:Buffer(reader.result) })
+        setBuffer({buffer:Buffer(reader.result) })
+        console.log('buffer2', buffer)
+        
+    
+      } 
+    
+    }}
 
 
   async function componentWillMount() {
@@ -244,10 +269,16 @@ export default function Landing() {
                                                             type="submit"
                                                             >Registrar
                                                     </button> 
-                                       
+                                                    <DropzoneComponent className="hidden"config={componentConfig}
+                       eventHandlers={eventHandlers}
+                       djsConfig={djsConfig} /> 
 
                                       <textarea className="w-full h-12 border border-gray-800 rounded px-3" readOnly value={ipfss} ></textarea>
+                                 
                                   </form>
+
+                                  
+                                  
                               </div>
                           </div>
                       </div>
@@ -423,7 +454,7 @@ export default function Landing() {
                 <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-gray-300">
                   <div className="flex-auto p-5 lg:p-10">
                     <h4 className="text-2xl font-semibold">
-                      Te interesa trabajaar con nosotros?
+                      ¿Te interesa trabajar con nosotros?
                     </h4>
                     <p className="leading-relaxed mt-1 mb-4 text-gray-600">
                       Completa el formulario para ponernos en contacto.
