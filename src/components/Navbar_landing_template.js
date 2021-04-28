@@ -11,18 +11,28 @@ export default function Navbar(props) {
     await this.loadBlockchainData()
   }
   async function loadWeb3() {
-    if (window.ethereum) {
-      window.web3 = new Web3(window.ethereum)
-      await window.ethereum.enable()
+    try {
+      if (window.ethereum) {
+        window.web3 = new Web3(window.ethereum)
+        await window.ethereum.enable()
+      }
+      else if (window.web3) {
+        window.web3 = new Web3(window.web3.currentProvider)
+      }
+      else {
+        
+        window.alert('No se ha detectado un navegador compatible con ethereum,prueba instalando la extension de MetaMask!')
+        window.location.href ="https://metamask.io/download"
+        
+      }
+    } catch (error) {
+      console.error(error)
     }
-    else if (window.web3) {
-      window.web3 = new Web3(window.web3.currentProvider)
-    }
-    else {
-      window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!')
-    }
+    
   }
   async function loadBlockchainData() {
+    try {
+      
     const web3 = window.web3
     // Load account
     const accounts = await web3.eth.getAccounts()
@@ -37,14 +47,20 @@ export default function Navbar(props) {
       console.log(initialBc)
    
     } else {
-      window.alert('Smart contract not deployed to detected network.')
+      window.alert('Error de red,Selecciona la red de BSC para seguir.')
     }
+
+      
+    } catch (error) {
+      console.error(error)
+    }
+
   }
   async function see() {
-     console.log("here");
      await loadWeb3()
      await loadBlockchainData()  
     }
+    
   const [navbarOpen, setNavbarOpen] = React.useState(false);
   return (
     <nav
@@ -182,9 +198,9 @@ export default function Navbar(props) {
               <button onClick={see}
                 className={
                   (props.transparent
-                    ? "bg-transparent text-gray-800 active:bg-gray-100"
+                    ? " text-gray-800 active:bg-gray-100"
                     : "bg-pink-500 text-white active:bg-pink-600") +
-                  " text-xs font-bold uppercase px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none lg:mr-1 lg:mb-0 ml-3 mb-3"
+                  " text-xs bg-gray-100 font-bold uppercase px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none lg:mr-1 lg:mb-0 ml-3 mb-3"
                 }
                 type="button"
                 style={{ transition: "all .15s ease" }}
