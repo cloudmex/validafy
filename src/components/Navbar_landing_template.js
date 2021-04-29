@@ -45,7 +45,7 @@ export default function Navbar(props) {
     if( networkId) {
        
       console.log(initialBc)
-   
+      window.location.href ="/dash"
     } else {
       window.alert('Error de red,Selecciona la red de BSC para seguir.')
     }

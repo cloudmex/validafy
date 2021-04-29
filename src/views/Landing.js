@@ -93,7 +93,8 @@ export default function Landing() {
   const captureFile = async (event) => {
     
     event.preventDefault()
-    const file = event.target.files[0]
+    try {
+      const file = event.target.files[0]
     const reader = new window.FileReader()
     reader.readAsArrayBuffer(file)
     reader.onloadend = () => {
@@ -103,9 +104,15 @@ export default function Landing() {
       
 
     } 
+      
+    } catch (error) {
+      console.log(error)
+    }
+    
     console.log('buffer v', initialBc.buffer)
     
    }
+   
    const onSubmit = e =>{
     e.preventDefault();
     console.log('buffer1', initialBc.buffer)
@@ -158,7 +165,7 @@ export default function Landing() {
             <div className="items-center flex flex-wrap">
               <div className="w-full lg:w-6/12 px-4 ml-auto mr-auto text-center">
                 <div className="pr-12">
-                  <h1 className="text-white font-semibold text-5xl">
+                  <h1 className="text-white font-semibold text-3xl">
                   Tus documentos descentralizados
 
                   </h1>
