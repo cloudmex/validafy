@@ -163,8 +163,8 @@ export default function Landing() {
           </div>
           <div className="container relative mx-auto">
             <div className="items-center flex flex-wrap">
-              <div className="w-full lg:w-6/12 px-4 ml-auto mr-auto text-center">
-                <div className="pr-12">
+              <div className="w-full lg:w-6/12 px-4 ml-auto  text-center">
+                <div className="pr-6">
                   <h1 className="text-white font-semibold text-3xl">
                   Tus documentos descentralizados
 
