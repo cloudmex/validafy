@@ -163,13 +163,13 @@ export default function Landing() {
           </div>
           <div className="container relative mx-auto">
             <div className="items-center flex flex-wrap">
-              <div className="w-full lg:w-6/12 px-4 ml-auto  text-center">
-                <div className="pr-6">
-                  <h1 className="text-white font-semibold text-3xl">
+              <div className="w-full lg:w-6/12  ml-auto mr-auto text-center">
+                <div className="pr-5">
+                  <h3 className="text-white font-semibold text-4xl ">
                   Tus documentos descentralizados
 
-                  </h1>
-                  <p className="mt-4 text-lg text-gray-300">
+                  </h3>
+                  <p className="mt-4 ml-4 text-base text-gray-300">
                   Validafy es más que un sistema de estampado, queremos que el almacenamiento de información
                    sea libre, descentralizado e interplanetario. Conoce nuestro whitepaper <a className="a-link" href="https://docs.google.com/document/d/1Cm9j-O9LBIVtoBFxtSTB3PraybhxDi5vZwOtYPDXd6Q/edit#">aquí</a>.
 
