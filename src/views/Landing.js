@@ -165,7 +165,7 @@ export default function Landing() {
             <div className="items-center flex flex-wrap">
               <div className="w-full lg:w-6/12  ml-auto mr-auto text-center">
                 <div className="pr-5">
-                  <h3 className="text-white font-semibold text-4xl ">
+                  <h3 className="text-white font-semibold text-3xl ">
                   Tus documentos descentralizados
 
                   </h3>
