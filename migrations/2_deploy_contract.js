@@ -1,5 +1,5 @@
-const Meme = artifacts.require("Meme");
+const token = artifacts.require("erc721");
 
 module.exports = function(deployer) {
-  deployer.deploy(Meme);
+  deployer.deploy(token);
 };

@@ -5,7 +5,7 @@
 /go-ipfs
 /.pnp
 .pnp.js
-
+/SContracts/node_modules
 # testing
 /coverage
 

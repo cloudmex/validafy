@@ -1,7 +1,7 @@
 import React, { Component,useRef } from 'react';
 import Web3 from 'web3';
 import '../App.css';
-import Meme from '../abis/Meme.json'
+import Meme from '../contracts/Valid.json'
 import AuthService from '../Services/AuthService'
 import CertService from '../Services/CertService'
 import Button from 'react-bootstrap/Button'
