@@ -1,9 +1,54 @@
-import React from "react";
-
+import React, { useState, useEffect, useRef } from "react";
+import Web3 from "web3";
 import Navbar from "../components/Navbar_profile_template.js";
 import Footer from "../components/Footer_profile_template.js";
-
+import ValidafySM from "../contracts/Valid.json";
 export default function Profile() {
+  const [Documents, setDocuments] = useState([]);
+  useEffect(() => {
+    (async () => {
+      if (window.ethereum) {
+        window.web3 = new Web3(window.ethereum);
+
+        //get the useraccounts
+        let useraccounts = await window.ethereum.request({
+          method: "eth_requestAccounts",
+        });
+        //get the actual networkid or chainid
+        let ActualnetworkId = await window.ethereum.request({
+          method: "net_version",
+        });
+
+        // sm address
+        let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
+
+        if (!tokenNetworkData) {
+          window.alert("Ese smartcontract no se desplego en esta red");
+          return;
+        }
+        //instantiate the contract object
+        let contract = new window.web3.eth.Contract(
+          ValidafySM.abi,
+          tokenNetworkData.address
+        );
+
+        //obtenemos sus tokens
+        let tokensarr = await contract.methods.tokensOf(useraccounts[0]).call();
+        //sacamos los hashes
+
+        console.log(tokensarr);
+        let documents = [];
+        if (tokensarr.tokens) {
+          for (let tokenid of tokensarr.tokens) {
+            documents.push(await contract.methods.tokenURI(tokenid).call());
+          }
+        }
+
+        console.log(documents);
+        setDocuments(documents);
+      }
+    })();
+  }, []);
   return (
     <>
       <Navbar transparent />
@@ -92,40 +137,16 @@ export default function Profile() {
                 </div>
                 <div className="text-center mt-12">
                   <h3 className="text-4xl font-semibold leading-normal mb-2 text-gray-800 mb-2">
-                    Jenna Stones
+                    Mis Documentos
                   </h3>
-                  <div className="text-sm leading-normal mt-0 mb-2 text-gray-500 font-bold uppercase">
-                    <i className="fas fa-map-marker-alt mr-2 text-lg text-gray-500"></i>{" "}
-                    Los Angeles, California
-                  </div>
-                  <div className="mb-2 text-gray-700 mt-10">
-                    <i className="fas fa-briefcase mr-2 text-lg text-gray-500"></i>
-                    Solution Manager - Creative Tim Officer
-                  </div>
-                  <div className="mb-2 text-gray-700">
-                    <i className="fas fa-university mr-2 text-lg text-gray-500"></i>
-                    University of Computer Science
-                  </div>
-                </div>
-                <div className="mt-10 py-10 border-t border-gray-300 text-center">
-                  <div className="flex flex-wrap justify-center">
-                    <div className="w-full lg:w-9/12 px-4">
-                      <p className="mb-4 text-lg leading-relaxed text-gray-800">
-                        An artist of considerable range, Jenna the name taken by
-                        Melbourne-raised, Brooklyn-based Nick Murphy writes,
-                        performs and records all of his own music, giving it a
-                        warm, intimate feel with a solid groove structure. An
-                        artist of considerable range.
-                      </p>
-                      <a
-                        href="#pablo"
-                        className="font-normal text-pink-500"
-                        onClick={(e) => e.preventDefault()}
-                      >
-                        Show more
-                      </a>
-                    </div>
-                  </div>
+                  {Documents.map((doc, i) => (
+                    <img
+                      src={`https://ipfs.infura.io/ipfs/${doc.substring(
+                        0,
+                        doc.length - 1
+                      )}`}
+                    />
+                  ))}
                 </div>
               </div>
             </div>
