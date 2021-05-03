@@ -3,6 +3,8 @@ import Web3 from "web3";
 import Navbar from "../components/Navbar_profile_template.js";
 import Footer from "../components/Footer_profile_template.js";
 import ValidafySM from "../contracts/Valid.json";
+
+
 export default function Profile() {
   const [Documents, setDocuments] = useState([]);
   useEffect(() => {

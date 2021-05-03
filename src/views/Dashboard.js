@@ -1,15 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import Web3 from "web3";
 import ValidafySM from "../contracts/Valid.json";
-import { FillButton } from 'tailwind-react-ui'
-
+ 
 
 
 import Navbar from "../components/Navbar_landing_template";
 import Sidebar from "../components/Sidebar.js";
 import LineChart from "../components/LineChart.js";
 import BarChart from "../components/BarChart.js";
-import { Document ,Page } from 'react-pdf'
 const ipfsClient = require("ipfs-http-client");
 const ipfs = ipfsClient({
   host: "ipfs.infura.io",
@@ -19,13 +17,7 @@ const ipfs = ipfsClient({
 
 export default function Dashboard() {
 
-  const [numPages, setNumPages] = useState(null);
-  const [pageNumber, setPageNumber] = useState(1);
-
-  function onDocumentLoadSuccess({ numPages }) {
-    setNumPages(numPages);
-  }
-
+  
 
 
 
@@ -211,7 +203,7 @@ export default function Dashboard() {
       <div className="relative md:ml-64 bg-blueGray-100">
         
         {/* Header */}
-        <div className="relative bg-blue-600 md:pt-32 pb-30 pt-12">
+        <div className="relative bg-pink-600 md:pt-32 pb-30 pt-12">
         </div>
         <div className="px-5 md:px-10 mx-auto w-full -m-24">
 
