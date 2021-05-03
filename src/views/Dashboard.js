@@ -219,7 +219,7 @@ export default function Dashboard() {
             <div className="w-full xl:w-10\/12 mb-12 xl:mb-0 px-4">
               <div className="relative flex flex-col min-w-0 break-words bg-white w-10\/12 mb-6 shadow-lg rounded">
                  <div className="h-auto   bg-white flex flex-col space-y-15   justify-top items-center">
-                 <h1 className="text-3xl mt-6 font-medium">Estamapa Documento</h1>
+                 <h1 className="text-3xl mt-6 font-medium">Estampa Documento</h1>
                  <div name="valida" className="flex flex-wrap items-center ">
               <div className="w-full h-full md:w-1 px-4 text-center">
                 <div className="relative flex flex-col min-w-0 break-words bg-white w-full mb-8 shadow-lg rounded-lg">
