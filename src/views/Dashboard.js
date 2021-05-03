@@ -211,7 +211,7 @@ export default function Dashboard() {
       <div className="relative md:ml-64 bg-blueGray-100">
         
         {/* Header */}
-        <div className="relative bg-blue-600 md:pt-32 pb-30 pt-12">
+        <div className="relative bg-pink-600 md:pt-32 pb-30 pt-12">
         </div>
         <div className="px-5 md:px-10 mx-auto w-full -m-24">
 
