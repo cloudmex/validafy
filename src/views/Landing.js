@@ -1,10 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Web3 from "web3";
-<<<<<<< Updated upstream
 import ValidafySM from "../contracts/Valid.json";
-=======
-
->>>>>>> Stashed changes
 import Navbar from "../components/Navbar_landing_template";
 import Footer from "../components/Footer_landing_template";
 import DropzoneComponent from "react-dropzone-component";
@@ -40,6 +36,7 @@ export default function Landing() {
   const [message, setMessage] = useState("");
   const [buffer, setBuffer] = useState("");
   const [ipfss, setIpfs] = useState("");
+  const [sm, setSm] = useState();
   const componentConfig = {
     iconFiletypes: [".jpg", ".png", ".gif"],
     showFiletypeIcon: true,
@@ -378,173 +375,168 @@ export default function Landing() {
             </div>
 
             <div name="valida" className="flex flex-wrap items-center mt-32">
-              <div className="w-full h-auto md:w-1 px-4 text-center pb-32">
-                <div className="flex flex-wrap">
-                  <div className="w-full">
-                    <ul
-                      className="flex mb-0 list-none flex-wrap pt-3 pb-4 flex-row"
-                      role="tablist"
-                    >
-                      <li className="-mb-px mr-2 last:mr-0 flex-auto text-center">
-                        <a
-                          className={
-                            "text-xs font-bold uppercase px-5 py-3 shadow-lg rounded block leading-normal " +
-                            (openTab === 1
-                              ? "text-white bg-pink-600"
-                              : "text-pink-600 bg-white")
-                          }
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setOpenTab(1);
-                            setInitialBc({ ...initialBc, buffer: undefined });
-                          }}
-                          data-toggle="tab"
-                          href="#link1"
-                          role="tablist"
-                        >
-                          <i className="fas fa-clipboard-check text-base mr-1"></i>
-                          Validar
-                        </a>
-                      </li>
-                      <li className="-mb-px mr-2 last:mr-0 flex-auto text-center">
-                        <a
-                          className={
-                            "text-xs font-bold uppercase px-5 py-3 shadow-lg rounded block leading-normal text-pink-600 bg-white"
-                          }
-                          href="#link1"
-                          role="tablist"
-                        >
-                          <i className="fas fa-link text-base mr-1"></i>
-                          Estampar
-                        </a>
-                      </li>
-                    </ul>
+              <div className="w-full h-auto md:w-1 px-4 text-center pb-20">
+                <div className="relative flex flex-col min-w-0 break-words w-full mb-8  rounded-lg">
+                  <ul
+                    className="flex mb-0 list-none flex-wrap pt-3 pb-4 flex-row"
+                    role="tablist"
+                  >
+                    <li className="-mb-px mr-2 last:mr-0 flex-auto text-center">
+                      <a
+                        className={
+                          "text-xs font-bold uppercase px-5 py-3 shadow-lg rounded block leading-normal " +
+                          (openTab === 1
+                            ? "text-white bg-pink-600"
+                            : "text-pink-600 bg-white")
+                        }
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setOpenTab(1);
+                          setInitialBc({ ...initialBc, buffer: undefined });
+                        }}
+                        data-toggle="tab"
+                        href="#link1"
+                        role="tablist"
+                      >
+                        <i className="fas fa-clipboard-check text-base mr-1"></i>
+                        Validar
+                      </a>
+                    </li>
+                    <li className="-mb-px mr-2 last:mr-0 flex-auto text-center">
+                      <a
+                        className={
+                          "text-xs font-bold uppercase px-5 py-3 shadow-lg rounded block leading-normal text-pink-600 bg-white"
+                        }
+                        href="#link1"
+                        role="tablist"
+                      >
+                        <i className="fas fa-link text-base mr-1"></i>
+                        Estampar
+                      </a>
+                    </li>
+                  </ul>
 
-                    <div className="relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded">
-                      <div className="px-4 py-5 flex-auto">
-                        <div>
-                          <div
-                            className={openTab === 1 ? "block" : "hidden"}
-                            id="link1"
-                          >
-                            <label className="w-full flex flex-col items-center px-4 py-6 bg-white rounded-lg  tracking-wide uppercase  cursor-pointer ">
-                              <svg
-                                className="w-8 h-8 text-pink-600"
-                                fill="currentColor"
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 20 20"
-                              >
-                                <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
-                              </svg>
-                              <span className="mt-2 text-base leading-normal">
-                                Selecciona un archivo
-                              </span>
+                  <div className="relative flex flex-col min-w-0 break-words bg-white w-full mb-6  rounded">
+                    <div className="px-4 py-5 flex-auto">
+                      <div>
+                        <div
+                          className={openTab === 1 ? "block" : "hidden"}
+                          id="link1"
+                        >
+                          <label className="w-full flex flex-col items-center px-4 py-6 bg-white rounded-lg  tracking-wide uppercase  cursor-pointer ">
+                            <svg
+                              className="w-8 h-8 text-pink-600"
+                              fill="currentColor"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 20 20"
+                            >
+                              <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
+                            </svg>
+                            <span className="mt-2 text-base leading-normal">
+                              Selecciona un archivo
+                            </span>
 
-                              <input
-                                type="file"
-                                className="hidden"
-                                accept=".pdf"
-                                onChange={Validar}
-                                required
-                              />
-                            </label>
-                            <h2>{initialBc.Validado}</h2>
-                          </div>
+                            <input
+                              type="file"
+                              className="hidden"
+                              accept=".pdf"
+                              onChange={Validar}
+                              required
+                            />
+                          </label>
+                          <h2>{initialBc.Validado}</h2>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
+              </div>
 
-                <div className="w-full md:w-5/12 px-4 mr-auto ml-auto ">
-                  <div className="text-gray-600 p-3 text-center inline-flex items-center justify-center w-16 h-16 mb-6 shadow-lg rounded-full bg-gray-100">
-                    <i className="fas fa-user-friends text-xl"></i>
-                  </div>
-                  <h3 className="text-3xl mb-2 font-semibold leading-normal">
-                    Casos de uso
-                  </h3>
-                  <p className="text-lg font-light leading-relaxed mt-4 mb-4 text-gray-700">
-                    ¿Sabes para qué te sirve tener tus documentos en blockchain?
-                  </p>
-
-                  <ul className="text-lg font-light leading-relaxed mt-4 mb-4 text-gray-700">
-                    <li>
-                      <i className="fa fa-check-square" aria-hidden="true"></i>{" "}
-                      Control y auditoría.
-                    </li>
-                    <li>
-                      <i className="fa fa-check-square" aria-hidden="true"></i>{" "}
-                      Credenciales.
-                    </li>
-                    <li>
-                      <i className="fa fa-check-square" aria-hidden="true"></i>{" "}
-                      Almacenamiento interplanetario de archivos.
-                    </li>
-                    <li>
-                      {" "}
-                      <i
-                        className="fa fa-check-square"
-                        aria-hidden="true"
-                      ></i>{" "}
-                      Registro de sucesos.
-                    </li>
-                    <li>
-                      <i className="fa fa-check-square" aria-hidden="true"></i>{" "}
-                      Propiedad intelectual.
-                    </li>
-                  </ul>
-
-                  <a
-                    href="https://www.creative-tim.com/learning-lab/tailwind-starter-kit#/presentation"
-                    className="font-bold text-gray-800 mt-8"
-                  ></a>
+              <div className="w-full md:w-5/12 px-4 mr-auto ml-auto">
+                <div className="text-gray-600 p-3 text-center inline-flex items-center justify-center w-16 h-16 mb-6  rounded-full bg-gray-100">
+                  <i className="fas fa-user-friends text-xl"></i>
                 </div>
+                <h3 className="text-3xl mb-2 font-semibold leading-normal">
+                  Casos de uso
+                </h3>
+                <p className="text-lg font-light leading-relaxed mt-4 mb-4 text-gray-700">
+                  ¿Sabes para qué te sirve tener tus documentos en blockchain?
+                </p>
 
-                <div className="w-full md:w-4/12 px-4 mr-auto ml-auto">
-                  <div className="relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded-lg bg-pink-600">
-                    <img
-                      alt="..."
-                      src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1051&q=80"
-                      className="w-full align-middle rounded-t-lg"
-                    />
-                    <blockquote className="relative p-8 mb-4">
-                      <svg
-                        preserveAspectRatio="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 583 95"
-                        className="absolute left-0 w-full block"
-                        style={{
-                          height: "95px",
-                          top: "-94px",
-                        }}
-                      >
-                        <polygon
-                          points="-30,95 583,95 583,65"
-                          className="text-pink-600 fill-current"
-                        ></polygon>
-                      </svg>
-                      <h4 className="text-xl font-bold text-white">Ventajas</h4>
+                <ul className="text-lg font-light leading-relaxed mt-4 mb-4 text-gray-700">
+                  <li>
+                    <i className="fa fa-check-square" aria-hidden="true"></i>{" "}
+                    Control y auditoría.
+                  </li>
+                  <li>
+                    <i className="fa fa-check-square" aria-hidden="true"></i>{" "}
+                    Credenciales.
+                  </li>
+                  <li>
+                    <i className="fa fa-check-square" aria-hidden="true"></i>{" "}
+                    Almacenamiento interplanetario de archivos.
+                  </li>
+                  <li>
+                    {" "}
+                    <i
+                      className="fa fa-check-square"
+                      aria-hidden="true"
+                    ></i>{" "}
+                    Registro de sucesos.
+                  </li>
+                  <li>
+                    <i className="fa fa-check-square" aria-hidden="true"></i>{" "}
+                    Propiedad intelectual.
+                  </li>
+                </ul>
 
-                      <ul className="text-md font-light mt-2 text-white">
-                        <li>
-                          <i className="fa fa-desktop" aria-hidden="true"></i>{" "}
-                          Descentralizado.
-                        </li>
-                        <li>
-                          <i className="fa fa-globe" aria-hidden="true"></i>{" "}
-                          Interplanetario.
-                        </li>
-                        <li>
-                          {" "}
-                          <i
-                            className="fa fa-gavel"
-                            aria-hidden="true"
-                          ></i>{" "}
-                          Legalmente válido
-                        </li>
-                      </ul>
-                    </blockquote>
-                  </div>
+                <a
+                  href="https://www.creative-tim.com/learning-lab/tailwind-starter-kit#/presentation"
+                  className="font-bold text-gray-800 mt-8"
+                ></a>
+              </div>
+
+              <div className="w-full md:w-4/12 px-4 mr-auto ml-auto">
+                <div className="relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded-lg bg-pink-600">
+                  <img
+                    alt="..."
+                    src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1051&q=80"
+                    className="w-full align-middle rounded-t-lg"
+                  />
+                  <blockquote className="relative p-8 mb-4">
+                    <svg
+                      preserveAspectRatio="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 583 95"
+                      className="absolute left-0 w-full block"
+                      style={{
+                        height: "95px",
+                        top: "-94px",
+                      }}
+                    >
+                      <polygon
+                        points="-30,95 583,95 583,65"
+                        className="text-pink-600 fill-current"
+                      ></polygon>
+                    </svg>
+                    <h4 className="text-xl font-bold text-white">Ventajas</h4>
+
+                    <ul className="text-md font-light mt-2 text-white">
+                      <li>
+                        <i className="fa fa-desktop" aria-hidden="true"></i>{" "}
+                        Descentralizado.
+                      </li>
+                      <li>
+                        <i className="fa fa-globe" aria-hidden="true"></i>{" "}
+                        Interplanetario.
+                      </li>
+                      <li>
+                        {" "}
+                        <i className="fa fa-gavel" aria-hidden="true"></i>{" "}
+                        Legalmente válido
+                      </li>
+                    </ul>
+                  </blockquote>
                 </div>
               </div>
             </div>
