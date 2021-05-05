@@ -1,15 +1,15 @@
 // contracts/GameItem.sol
 // SPDX-License-Identifier: MIT
 pragma solidity <0.9.0;
-
+pragma experimental ABIEncoderV2;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract Valid is ERC721 {
+contract erc721 is ERC721 {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
-    constructor() public ERC721("Valid", "VLD") {}
+    constructor() public ERC721("VALID", "VLD") {}
 
     function createItem(address owner, string memory tokenURI)
         public
@@ -19,12 +19,47 @@ contract Valid is ERC721 {
 
         uint256 newItemId = _tokenIds.current();
         _mint(owner, newItemId);
-        _setTokenURI(
-            newItemId,
-            string(abi.encodePacked(tokenURI, uint2str(newItemId)))
-        );
+        _setTokenURI(newItemId, tokenURI);
 
         return newItemId;
+    }
+
+    function IsHashed(string memory ipfshash)
+        public
+        view
+        returns (bool hashed)
+    {
+        //obtener cuantos tokens tiene el sm
+        uint256 nTokens = totalSupply();
+        if (nTokens == 0) {
+            return false;
+        }
+        bool exist = false;
+        //buscar si existe ese hash
+        for (uint256 i = 0; i < nTokens; i++) {
+            if (
+                keccak256(abi.encodePacked((ipfshash))) ==
+                keccak256(abi.encodePacked(tokenURI(tokenByIndex(i))))
+            ) {
+                exist = true;
+                break;
+            }
+        }
+        return (exist);
+    }
+
+    function getAllHashes() public view returns (string[] memory tokens) {
+        //obtener cuantos tokens tiene el sm
+        uint256 nTokens = totalSupply();
+        if (nTokens == 0) {
+            return new string[](nTokens);
+        }
+        //arreglo con los documentos
+        string[] memory dochashes = new string[](nTokens);
+        for (uint256 i = 0; i < nTokens; i++) {
+            dochashes[i] = tokenURI(tokenByIndex(i));
+        }
+        return (dochashes);
     }
 
     function tokensOf(address owner)

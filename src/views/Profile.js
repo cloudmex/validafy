@@ -1,13 +1,31 @@
 import React, { useState, useEffect, useRef } from "react";
 import Web3 from "web3";
+<<<<<<< Updated upstream
+<<<<<<< HEAD
+import Navbar from "../components/Navbar_landing_template";
+import Footer from "../components/Footer_landing_template";
+import ValidafySM from "../contracts/Valid.json";
+=======
 import Navbar from "../components/Navbar_profile_template.js";
 import Footer from "../components/Footer_profile_template.js";
 import ValidafySM from "../contracts/Valid.json";
 import Sidebar from "../components/Sidebar.js";
 
+>>>>>>> 2cf7376ab0e05ab4fed5d398c04cd65cffb2566c
+=======
+import Navbar from "../components/Navbar_landing_template";
+import Footer from "../components/Footer_landing_template";
+import ValidafySM from "../contracts/Valid.json";
+>>>>>>> Stashed changes
 
+console.log(window.ethereum);
 export default function Profile() {
   const [Documents, setDocuments] = useState([]);
+<<<<<<< Updated upstream
+<<<<<<< HEAD
+  useEffect(() => {
+    (async () => {
+=======
 
 
 
@@ -21,6 +39,11 @@ export default function Profile() {
 
 
 
+>>>>>>> 2cf7376ab0e05ab4fed5d398c04cd65cffb2566c
+=======
+  useEffect(() => {
+    (async () => {
+>>>>>>> Stashed changes
       if (window.ethereum) {
         window.web3 = new Web3(window.ethereum);
 
@@ -61,6 +84,14 @@ export default function Profile() {
         console.log(documents);
         setDocuments(documents);
       }
+<<<<<<< Updated upstream
+<<<<<<< HEAD
+      console.log(window.ethereum);
+=======
+>>>>>>> 2cf7376ab0e05ab4fed5d398c04cd65cffb2566c
+=======
+      console.log(window.ethereum);
+>>>>>>> Stashed changes
     })();
   }, []);
   return (
