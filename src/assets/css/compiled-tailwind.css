@@ -2875,7 +2875,7 @@ select {
 }
 
 .-mr-px {
-  margin-right: -1px;
+  margin-right: -100px;
 }
 
 .-mb-px {

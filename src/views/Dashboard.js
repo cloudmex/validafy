@@ -1,13 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import Web3 from "web3";
 import ValidafySM from "../contracts/Valid.json";
- 
-
-
-import Navbar from "../components/Navbar_landing_template";
-import Sidebar from "../components/Sidebar.js";
-import LineChart from "../components/LineChart.js";
-import BarChart from "../components/BarChart.js";
+  
+import Sidebar from "../components/Sidebar.js"; 
 const ipfsClient = require("ipfs-http-client");
 const ipfs = ipfsClient({
   host: "ipfs.infura.io",
@@ -31,22 +26,25 @@ export default function Dashboard() {
     showHidebutton: false,
   });
   //  const [Buffe,setBuffer]=useState(null );
-  const [user, setUser] = useState({
-    firstname: "",
-    lastname: "",
-    username: "",
-    password: "",
-    phone: "",
-    institution: "",
-    carrer: "",
-    finish: "",
-    role: "user",
-  });
+  
   const [message, setMessage] = useState("");
   const [buffer, setBuffer] = useState("");
   const [ipfss, setIpfs] = useState("");
   const [sm, setSm] = useState([]);
-   
+  const mycomision = window.localStorage;
+  const myfile = window.localStorage;
+  function useStickyState(defaultValue, key) {
+    const [value, setValue] = React.useState(() => {
+      const stickyValue = window.localStorage.getItem(key);
+      return stickyValue !== null
+        ? JSON.parse(stickyValue)
+        : defaultValue;
+    });
+    React.useEffect(() => {
+      window.localStorage.setItem(key, JSON.stringify(value));
+    }, [key, value]);
+    return [value, setValue];
+  }
 
   async function componentWillMount() {
     await this.loadWeb3();
@@ -84,11 +82,18 @@ export default function Dashboard() {
     
   }
 
-
+  const resetForm = () => {
+    setInitialBc({Hash: "",contract: null,buffer: null,web3: null,account: null,file:null,showHidebutton: false});
+    setBuffer("");
+    setSm([]);
+    mycomision.setItem("payed",false);
+  };
  
   
   useEffect(() => {
     (async () => {
+      console.log("mycomi"+mycomision.getItem("payed"))
+     
       if (window.ethereum) {
         window.web3 = new Web3(window.ethereum);
 
@@ -117,39 +122,43 @@ export default function Dashboard() {
       }
     })();
   }, []);
-  const onChange = (e) => {
-    setUser({ ...user, [e.target.name]: e.target.value });
-  };
-
-  const resetForm = () => {
-    setUser({
-      firstname: "",
-      lastname: "",
-      username: "",
-      password: "",
-      phone: "",
-      institution: "",
-      carrer: "",
-      finish: "",
-      role: "user",
-    });
-  };
+  
+ 
   const captureFile = async (event) => {
     window.alert("Usted esta pagando la comision de la Dapp(metodo de comision)");
-    const value = window.web3.utils.toWei('0.00022', 'ether');    //invest
-    const to = "0x9F4152a30cb683aD284dff6629E809B80Ff555C1";
-    const payload ={to,from:sm.useraccount,value};
-    window.web3.eth.sendTransaction(payload).then(res => {
-      console.log("TX:"+res +"\n Se pago comisión");
-      hideComponent()
-      window.alert("La comision se ha pagado,presione el boton registrar para continuar");
-  }).catch(err => {
-      console.log("err",err)
-  });
+    if(mycomision.getItem("payed")==true){
+      console.log("arder el mundo")
+      }
+    try {
+      
+      const value = window.web3.utils.toWei('0.00022', 'ether');    //invest
+      const to = "0x9F4152a30cb683aD284dff6629E809B80Ff555C1";
+      const payload ={to,from:sm.useraccount,value};
+      window.web3.eth.sendTransaction(payload).then(res => {
+        window.onbeforeunload = function() {
+          return '¡No salir de esta ventana,se perderá la trasaccion!';
+      }
+        console.log("TX:"+res +"\n Se pago comisión");
+        hideComponent();
+        mycomision.setItem("payed",true)
+        console.log("mycomi"+mycomision.getItem("payed"))
+        window.alert("La comision se ha pagado,presione el boton registrar para continuar");
+    }).catch(err => {
+      window.alert("La trasacción ha sido cancelada");
+      window.location.reload();
+        console.log("err",err)
+    });
+    } catch (error) {
+      console.log("err",error)
+    }
+    
+    
       event.preventDefault();
     try {
       setInitialBc({file:event.target.files[0]})
       const file = event.target.files[0];
+      mycomision.setItem("file", event.target.files[0])
+      
       const reader = new window.FileReader();
       reader.readAsArrayBuffer(file);
       reader.onloadend = () => {
@@ -166,28 +175,53 @@ export default function Dashboard() {
 
   const onSubmit = (e) => {
     window.alert("Usted esta pagando el costo de minar un nuevo token(metodo de minado)");
+  
     e.preventDefault();
     console.log("buffer1", initialBc.buffer);
     console.log("buffer2", buffer.buffer);
 
 
 
-
-    ipfs.add(buffer.buffer).then((result) => {
-      sm.contr.methods
-        .createItem(sm.useraccount, result[0].path)
-        .send({ from: sm.useraccount })
-        .once("receipt", (receipt) => {
-          window.alert("Se ha minado,el nuevo token esta en su cartera");
-          console.log(receipt);
-          console.log(result);
-          window.location.href="/perfil"
-          //se hizo correctamente la transaccion
-          if (receipt.status) {
-            setIpfs(result[0].path);
+    try {
+      window.onbeforeunload = function() {
+        return '¡No salir de esta ventana,se perderá la trasaccion!';
+    }
+      ipfs.add(buffer.buffer).then((result) => {
+        sm.contr.methods
+          .createItem(sm.useraccount, result[0].path)
+          .send({ from: sm.useraccount })
+          .once("receipt", (receipt) => {
+            window.alert("Se ha minado,el nuevo token esta en su cartera");
+            console.log(receipt);
+            console.log(result);
+            resetForm();
+             
+            window.location.href = "/perfil";
+            //se hizo correctamente la transaccion
+            if (receipt.status) {
+              setIpfs(result[0].path);
+            }
+          }).catch(error=>{
+            window.alert("La trasacción ha sido cancelada");
+            window.onbeforeunload = function() {
+              return '¡No salir de esta ventana,se perderá la trasaccion!';
           }
-        });
-    });
+            console.log("erere" + error)
+          });
+      }).catch(err => {
+        window.alert("La trasacción ha sido cancelada");
+        window.location.reload();
+          console.log("err",err)
+      });
+      
+    } catch (error) {
+      window.alert("La trasacción ha sido cancelada");
+        window.location.reload();
+      console.log(error);
+    }
+   
+
+
   };
   const alert = (event) => {
     event.preventDefault();
@@ -202,21 +236,53 @@ export default function Dashboard() {
       <Sidebar />
       <div className="relative md:ml-64 bg-blueGray-100">
         
-        {/* Header */}
-        <div className="relative bg-pink-600 md:pt-32 pb-30 pt-12">
-        </div>
-        <div className="px-5 md:px-10 mx-auto w-full -m-24">
 
-          <div className="flex flex-wrap mt-16">
-            <div className="w-full xl:w-10\/12 mb-12 xl:mb-0 px-4">
-              <div className="relative flex flex-col min-w-0 break-words bg-white w-10\/12 mb-6 shadow-lg rounded">
-                 <div className="h-auto   bg-white flex flex-col space-y-15   justify-top items-center">
-                 <h1 className="text-3xl mt-6 font-medium">Estampa Documento</h1>
-                 <div name="valida" className="flex flex-wrap items-center ">
-              <div className="w-full h-full md:w-1 px-4 text-center">
+      <main className="profile-page ">
+        <section className="relative block" style={{ height: "500px" }}>
+          <div
+            className="absolute top-0 w-full h-full bg-center bg-cover"
+            style={{
+              backgroundImage:
+                "url('https://blogcandidatos.springspain.com/wp-content/uploads/2020/01/proyecto-blockchain-1200x600.jpg')",
+            }}
+          >
+            <span
+              id="blackOverlay"
+              className="w-full h-full absolute opacity-50 bg-black"
+            ></span>
+          </div>
+          <div
+            className="top-auto bottom-0 left-0 right-0 w-full absolute pointer-events-none overflow-hidden"
+            style={{ height: "70px" }}
+          >
+            <svg
+              className="absolute bottom-0 overflow-hidden"
+              xmlns="http://www.w3.org/2000/svg"
+              preserveAspectRatio="none"
+              version="1.1"
+              viewBox="0 0 2560 100"
+              x="0"
+              y="0"
+            >
+              <polygon
+                className="text-gray-300 fill-current"
+                points="2560 0 2560 100 0 100"
+              ></polygon>
+            </svg>
+          </div>
+        </section>
+        <section className="right-0 flex flex-wrap  py-16 bg-gray-300">
+          <div className="container mx-auto px-4">
+            <div className="relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-xl rounded-lg -mt-64  -mr-30">
+              <div className="px-6">
+                 
+                <div className="w-full h-full md:w-1 px-4 text-center">
                 <div className="relative flex flex-col min-w-0 break-words bg-white w-full mb-8 shadow-lg rounded-lg">
                   <div className="px-4 py-5 flex-auto">
-                     
+                  <div className="h-auto   bg-white flex flex-col space-y-15   justify-top items-center">
+                 <h1 className="text-3xl mt-6 font-medium">Estampa Documento</h1>
+                 </div>
+
                     <div className="container">
                       <div className="h-full bg-blue flex flex-col space-y-5 justify-top items-center">
                             
@@ -255,42 +321,31 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
-
-             </div>
-
-                 
-                </div>
               </div>
             </div>
           </div>
-          <footer className="block py-4">
+        </section>
+        <footer className="block py-4">
             <div className="container mx-auto px-4">
               <hr className="mb-4 border-b-1 border-blueGray-200" />
               <div className="flex flex-wrap items-center md:justify-between justify-center">
-                <div className="w-full md:w-4/12 px-4">
-                  <div className="text-sm text-blueGray-500 font-semibold py-1">
-                    Copyright © {new Date().getFullYear()}{" "}
-                    <a
-                      href="https://www.creative-tim.com"
-                      className="text-blueGray-500 hover:text-blueGray-700 text-sm font-semibold py-1"
-                    >
-                      Creative Tim
-                    </a>
-                  </div>
+                <div className="w-full text-right md:w-4/12 px-4">
+                <div className="text-sm text-right text-gray-600  py-1">
+              Copyright © {new Date().getFullYear()}{" "}Validafy by  {" "}
+              <a
+                href="https://cloudmex.io/"
+                className="text-gray-600 hover:text-gray-900"
+              >               
+CloudMex Analytics S.A.P.I. de C.V.
+              </a>.
+            </div>
                 </div>
                 <div className="w-full md:w-8/12 px-4">
                   <ul className="flex flex-wrap list-none md:justify-end  justify-center">
+                    
                     <li>
                       <a
-                        href="https://www.creative-tim.com"
-                        className="text-blueGray-600 hover:text-blueGray-800 text-sm font-semibold block py-1 px-3"
-                      >
-                        Creative Tim
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="https://www.creative-tim.com/presentation"
+                        href=" "
                         className="text-blueGray-600 hover:text-blueGray-800 text-sm font-semibold block py-1 px-3"
                       >
                         About Us
@@ -298,7 +353,7 @@ export default function Dashboard() {
                     </li>
                     <li>
                       <a
-                        href="http://blog.creative-tim.com"
+                        href=" "
                         className="text-blueGray-600 hover:text-blueGray-800 text-sm font-semibold block py-1 px-3"
                       >
                         Blog
@@ -306,7 +361,7 @@ export default function Dashboard() {
                     </li>
                     <li>
                       <a
-                        href="https://github.com/creativetimofficial/tailwind-starter-kit/blob/main/LICENSE.md"
+                        href=" "
                         className="text-blueGray-600 hover:text-blueGray-800 text-sm font-semibold block py-1 px-3"
                       >
                         MIT License
@@ -317,8 +372,10 @@ export default function Dashboard() {
               </div>
             </div>
           </footer>
-        </div>
+         
+      </main>
       </div>
-    </>
+
+      </>
   );
 }

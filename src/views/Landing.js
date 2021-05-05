@@ -43,23 +43,7 @@ export default function Landing() {
   };
   const djsConfig = { autoProcessQueue: false };
 
-  const eventHandlers = {
-    addedfile: (file) => {
-      console.log(file);
-      console.log("just file " + file);
-      const reader = new window.FileReader();
-      reader.readAsArrayBuffer(file);
-      reader.onloadend = () => {
-        console.log(reader);
-        console.log(reader.result);
-
-        setInitialBc({ buffer: Buffer(reader.result) });
-        setBuffer({ buffer: Buffer(reader.result) });
-        console.log("buffer2", buffer);
-      };
-    },
-  };
-
+ 
   async function componentWillMount() {
     await this.loadWeb3();
     await this.loadBlockchainData();
@@ -67,6 +51,8 @@ export default function Landing() {
   async function loadWeb3() {
     if (window.ethereum) {
       window.web3 = new Web3(window.ethereum);
+      window.web3.wallet_addEthereumChain();
+
       await window.ethereum.enable();
     } else if (window.web3) {
       window.web3 = new Web3(window.web3.currentProvider);
@@ -158,36 +144,6 @@ export default function Landing() {
     window.alert("haz click en el boton de Metamask");
   };
 
-  useEffect(() => {
-    (async () => {
-      if (window.ethereum) {
-        window.web3 = new Web3(window.ethereum);
-
-        //get the useraccounts
-        let useraccounts = await window.ethereum.request({
-          method: "eth_requestAccounts",
-        });
-        //get the actual networkid or chainid
-        let ActualnetworkId = await window.ethereum.request({
-          method: "net_version",
-        });
-
-        // sm address
-        let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
-
-        if (!tokenNetworkData) {
-          window.alert("Ese smartcontract no se desplego en esta red");
-          return;
-        }
-        //instantiate the contract object
-        let contract = new window.web3.eth.Contract(
-          ValidafySM.abi,
-          tokenNetworkData.address
-        );
-        setSm({ contr: contract, useraccount: useraccounts[0] });
-      }
-    })();
-  }, []);
   return (
     <>
       <Navbar transparent />
@@ -203,7 +159,7 @@ export default function Landing() {
             className="absolute top-0 w-full h-full bg-center bg-cover"
             style={{
               backgroundImage:
-                "url('https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1267&q=80')",
+                "url('https://images.unsplash.com/photo-1566132127697-4524fea60007?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=750&q=80')",
             }}
           >
             <span
@@ -354,13 +310,7 @@ export default function Landing() {
                             >
                               Registrar
                             </button>
-                            <DropzoneComponent
-                              className="hidden"
-                              config={componentConfig}
-                              eventHandlers={eventHandlers}
-                              djsConfig={djsConfig}
-                            />
-
+                            
                             <textarea
                               className="w-full h-12 border border-gray-800 rounded px-3"
                               readOnly
@@ -422,7 +372,7 @@ export default function Landing() {
                 <div className="relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded-lg bg-pink-600">
                   <img
                     alt="..."
-                    src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1051&q=80"
+                    src="https://images.unsplash.com/photo-1559445368-b8a993676d7a?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=889&q=80"
                     className="w-full align-middle rounded-t-lg"
                   />
                   <blockquote className="relative p-8 mb-4">
@@ -540,78 +490,7 @@ export default function Landing() {
             </div>
           </div>
         </section>
-        <section className="relative block py-24 lg:pt-0 bg-gray-900">
-          <div className="container mx-auto px-4">
-            <div className="flex flex-wrap justify-center lg:-mt-64 -mt-48">
-              <div className="w-full lg:w-6/12 px-4">
-                <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-gray-300">
-                  <div className="flex-auto p-5 lg:p-10">
-                    <h4 className="text-2xl font-semibold">
-                      ¿Te interesa trabajar con nosotros?
-                    </h4>
-                    <p className="leading-relaxed mt-1 mb-4 text-gray-600">
-                      Completa el formulario para ponernos en contacto.
-                    </p>
-                    <div className="relative w-full mb-3 mt-8">
-                      <label
-                        className="block uppercase text-gray-700 text-xs font-bold mb-2"
-                        htmlFor="full-name"
-                      >
-                        Nombre completo
-                      </label>
-                      <input
-                        type="text"
-                        className="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
-                        placeholder="Nombre completo"
-                        style={{ transition: "all .15s ease" }}
-                      />
-                    </div>
-
-                    <div className="relative w-full mb-3">
-                      <label
-                        className="block uppercase text-gray-700 text-xs font-bold mb-2"
-                        htmlFor="email"
-                      >
-                        Correo
-                      </label>
-                      <input
-                        type="email"
-                        className="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
-                        placeholder="Correo"
-                        style={{ transition: "all .15s ease" }}
-                      />
-                    </div>
-
-                    <div className="relative w-full mb-3">
-                      <label
-                        className="block uppercase text-gray-700 text-xs font-bold mb-2"
-                        htmlFor="message"
-                      >
-                        Mensaje
-                      </label>
-                      <textarea
-                        rows="4"
-                        cols="80"
-                        className="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
-                        placeholder="Escribe tu mensaje..."
-                      />
-                    </div>
-                    <div className="text-center mt-6">
-                      <button
-                        className="bg-gray-900 text-white active:bg-gray-700 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
-                        type="button"
-                        style={{ transition: "all .15s ease" }}
-                      >
-                        Enviar Mensaje
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      </main>
+     </main>
       <Footer />
     </>
   );
