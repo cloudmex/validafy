@@ -1,9 +1,57 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
+import Web3 from "web3";
+import Navbar from "../components/Navbar_landing_template";
+import Footer from "../components/Footer_landing_template";
+import ValidafySM from "../contracts/Valid.json";
 
-import Navbar from "../components/Navbar_profile_template.js";
-import Footer from "../components/Footer_profile_template.js";
-
+console.log(window.ethereum);
 export default function Profile() {
+  const [Documents, setDocuments] = useState([]);
+  useEffect(() => {
+    (async () => {
+      if (window.ethereum) {
+        window.web3 = new Web3(window.ethereum);
+
+        //get the useraccounts
+        let useraccounts = await window.ethereum.request({
+          method: "eth_requestAccounts",
+        });
+        //get the actual networkid or chainid
+        let ActualnetworkId = await window.ethereum.request({
+          method: "net_version",
+        });
+
+        // sm address
+        let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
+
+        if (!tokenNetworkData) {
+          window.alert("Ese smartcontract no se desplego en esta red");
+          return;
+        }
+        //instantiate the contract object
+        let contract = new window.web3.eth.Contract(
+          ValidafySM.abi,
+          tokenNetworkData.address
+        );
+
+        //obtenemos sus tokens
+        let tokensarr = await contract.methods.tokensOf(useraccounts[0]).call();
+        //sacamos los hashes
+
+        console.log(tokensarr);
+        let documents = [];
+        if (tokensarr.tokens) {
+          for (let tokenid of tokensarr.tokens) {
+            documents.push(await contract.methods.tokenURI(tokenid).call());
+          }
+        }
+
+        console.log(documents);
+        setDocuments(documents);
+      }
+      console.log(window.ethereum);
+    })();
+  }, []);
   return (
     <>
       <Navbar transparent />
