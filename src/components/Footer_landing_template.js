@@ -26,7 +26,7 @@ export default function Footer() {
         <div className="flex flex-wrap">
           <div className="w-full lg:w-6/12 px-4">
             <h4 className="text-3xl mb-2  font-semibold">
-              Mantente en contacto!
+              ¡Mantente en contacto!
             </h4>
             <h5 className="text-lg mt-0 mb-2 text-gray-700">
               Encuentranos en nuestras otras plataformas.
@@ -90,14 +90,14 @@ export default function Footer() {
         </div>
         <hr className="my-6 border-gray-400" />
         <div className="flex flex-wrap items-center md:justify-between justify-center">
-          <div className="w-full md:w-4/12 px-4 mx-auto text-center">
-            <div className="text-sm text-gray-600 font-semibold py-1">
+          <div className="w-full md:w-6/12 px-4 mx-auto text-center">
+            <div className="text-sm text-gray-600  py-1">
               Copyright © {new Date().getFullYear()}{" "}Validafy by  {" "}
               <a
                 href="https://cloudmex.io/"
                 className="text-gray-600 hover:text-gray-900"
-              >
-                cloudmex
+              >               
+CloudMex Analytics S.A.P.I. de C.V.
               </a>.
             </div>
           </div>
