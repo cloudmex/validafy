@@ -20,7 +20,7 @@ export default function Sidebar() {
           </button>
           {/* Brand */}
           <Link
-            className="md:block text-left md:pb-2 text-blueGray-600 mr-0 inline-block whitespace-nowrap text-sm uppercase font-bold p-4 px-0"
+            className="md:block text-left md:pb-2 hover:text-pink-600 text-blueGray-600 mr-0 inline-block whitespace-nowrap text-sm uppercase font-bold p-4 px-0"
             to="/"
           >
 Validafy          </Link>
@@ -45,7 +45,7 @@ Validafy          </Link>
               <div className="flex flex-wrap">
                 <div className="w-6/12">
                   <Link
-                    className="md:block text-left md:pb-2 text-blueGray-600 mr-0 inline-block whitespace-nowrap text-sm uppercase font-bold p-4 px-0"
+                    className="md:block text-left md:pb-2 text-blueGray-600 mr-0 hover:text-pink-600 inline-block whitespace-nowrap text-sm uppercase font-bold p-4 px-0"
                     to="/"
                   >
 Validafy                  </Link>
@@ -73,27 +73,28 @@ Validafy                  </Link>
             </form>
             {/* Navigation */}
             <ul className="md:flex-col md:min-w-full flex flex-col list-none">
-              <li className="items-center">
+            <li className="items-center">
                 <Link
-                  className="text-pink-500 hover:text-pink-600 text-xs uppercase py-3 font-bold block"
-                  to="/dash"
-                >
-                  <i className="fas fa-tv opacity-75 mr-2 text-sm"></i> Dashboard
-                </Link>
-              </li>
-
-              <li className="items-center">
-                <Link
-                  className="text-blueGray-700 hover:text-blueGray-500 text-xs uppercase py-3 font-bold block"
+                  className="text-blueGray-700 hover:text-pink-600 text-xs uppercase py-3 font-bold block"
                   to="/"
                 >
-                  <i className="fas fa-newspaper text-blueGray-400 mr-2 text-sm"></i> Landing Page
+                  <i className="fa fa-home text-blueGray-400 mr-2 text-sm"></i> INICIO
+                </Link>
+              </li>
+              <li className="items-center">
+                <Link
+                  className=" text-blueGray-700 hover:text-pink-600 text-xs uppercase py-3 font-bold block"
+                  to="/dash"
+                >
+                  <i className="fa fa-link opacity-75 mr-2 text-sm"></i> Estampar
                 </Link>
               </li>
 
+              
+
               <li className="items-center">
                 <Link
-                  className="text-blueGray-700 hover:text-blueGray-500 text-xs uppercase py-3 font-bold block"
+                  className="text-blueGray-700 hover:text-pink-600 text-xs uppercase py-3 font-bold block"
                   to="/perfil"
                 >
                   <i className="fas fa-user-circle text-blueGray-400 mr-2 text-sm"></i> Profile Page
