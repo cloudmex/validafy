@@ -6,7 +6,7 @@ pragma experimental ABIEncoderV2;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract erc721 is ERC721 {
+contract Valid is ERC721 {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
