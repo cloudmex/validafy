@@ -4,7 +4,7 @@ import ValidafySM from "../contracts/Valid.json";
 import Navbar from "../components/Navbar_landing_template";
 import Footer from "../components/Footer_landing_template";
 import DropzoneComponent from "react-dropzone-component";
-
+import { useHistory } from "react-router-dom";
 const ipfsClient = require("ipfs-http-client");
 const ipfs = ipfsClient({
   host: "ipfs.infura.io",
@@ -13,12 +13,14 @@ const ipfs = ipfsClient({
 });
 
 export default function Landing() {
+  const history = useHistory();
   const [initialBc, setInitialBc] = useState({
     Hash: "",
     contract: null,
     buffer: null,
     web3: null,
     account: null,
+    Validado: "",
   });
   const [openTab, setOpenTab] = React.useState(1);
   //  const [Buffe,setBuffer]=useState(null );
@@ -139,53 +141,99 @@ export default function Landing() {
     console.log("buffer v", initialBc.buffer);
   };
 
-  const Validar = (event) => {
+  const Validar = async (event) => {
     event.preventDefault();
-    try {
-      const file = event.target.files[0];
-      const reader = new window.FileReader();
-      reader.readAsArrayBuffer(file);
-      console.log(sm.contr.methods);
-      reader.onloadend = () => {
-        ipfs
-          .add(Buffer(reader.result), { onlyHash: true })
-          .then(async (result) => {
-            //comprobar si el hash se encuetra dentro de algun tokenuri
-            let ishashed = await sm.contr.methods
-              .IsHashed(result[0].hash)
-              .call();
-            console.log(result[0].hash);
-            let estado = "El documento es invalido";
-            if (ishashed) estado = "El documento es valido";
+    ///browser detection
+    if (window.ethereum) {
+      window.web3 = new Web3(window.ethereum);
 
-            setInitialBc({
-              ...initialBc,
-              Validado: estado,
+      try {
+        const file = event.target.files[0];
+
+        if (!event.target.files) {
+          throw "no agrego ningun archivo";
+        }
+        //cambiar red
+        await window.ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: "0x61",
+              chainName: "BSCTESTNET",
+              rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
+              nativeCurrency: {
+                name: "BINANCE COIN",
+                symbol: "BNB",
+                decimals: 18,
+              },
+              blockExplorerUrls: ["https://testnet.bscscan.com/"],
+            },
+          ],
+        });
+        //get the actual networkid or chainid
+        let ActualnetworkId = await window.ethereum.request({
+          method: "net_version",
+        });
+        // sm address
+        let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
+        //instantiate the contract object
+        let contract = new window.web3.eth.Contract(
+          ValidafySM.abi,
+          tokenNetworkData.address
+        );
+        const reader = new window.FileReader();
+        reader.readAsArrayBuffer(file);
+        reader.onloadend = () => {
+          ipfs
+            .add(Buffer(reader.result), { onlyHash: true })
+            .then(async (result) => {
+              //comprobar si el hash se encuetra dentro de algun tokenuri
+              let ishashed = await contract.methods
+                .IsHashed(result[0].hash)
+                .call();
+              console.log(result[0].hash);
+              let estado = "El documento es invalido";
+              if (ishashed) estado = "El documento es valido";
+
+              setInitialBc({
+                ...initialBc,
+                Validado: estado,
+              });
             });
-          });
-      };
-    } catch (error) {
-      console.log(error);
+        };
+      } catch (err) {
+        window.alert(err.message || err);
+        return;
+      }
+    } else {
+      //no tiene metamask lo mandamos a la pagina oficial de descarga
+
+      window.open("https://metamask.io/download", "_blank");
     }
   };
-  function addNetwork(e) {
+  async function addNetwork(e) {
     e.preventDefault();
-    window.ethereum.request({
-      method: "wallet_addEthereumChain",
-      params: [
-        {
-          chainId: "0x61",
-          chainName: "BSCTESTNET",
-          rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
-          nativeCurrency: {
-            name: "BINANCE COIN",
-            symbol: "BNB",
-            decimals: 18,
+    try {
+      await window.ethereum.request({
+        method: "wallet_addEthereumChain",
+        params: [
+          {
+            chainId: "0x61",
+            chainName: "BSCTESTNET",
+            rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
+            nativeCurrency: {
+              name: "BINANCE COIN",
+              symbol: "BNB",
+              decimals: 18,
+            },
+            blockExplorerUrls: ["https://testnet.bscscan.com/"],
           },
-          blockExplorerUrls: ["https://testnet.bscscan.com/"],
-        },
-      ],
-    });
+        ],
+      });
+    } catch (err) {
+      window.alert(err.message);
+      return;
+    }
   }
   const onSubmit = (e) => {
     e.preventDefault();
@@ -217,44 +265,6 @@ export default function Landing() {
     window.location.href = "#";
     window.alert("haz click en el boton de Metamask");
   };
-
-  useEffect(() => {
-    (async () => {
-      if (window.ethereum) {
-        window.web3 = new Web3(window.ethereum);
-
-        //get the useraccounts
-        let useraccounts = await window.ethereum.request({
-          method: "eth_requestAccounts",
-        });
-        //get the actual networkid or chainid
-        let ActualnetworkId = await window.ethereum.request({
-          method: "net_version",
-        });
-
-        // sm address
-        let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
-
-        if (!tokenNetworkData) {
-          window.alert("Ese smartcontract no se desplego en esta red");
-          return;
-        }
-
-        //instantiate the contract object
-        let contract = new window.web3.eth.Contract(
-          ValidafySM.abi,
-          tokenNetworkData.address
-        );
-
-        console.log(contract.methods);
-
-        setSm({
-          contr: contract,
-          useraccount: useraccounts[0],
-        });
-      }
-    })();
-  }, []);
 
   return (
     <>
@@ -373,10 +383,12 @@ export default function Landing() {
                 </div>
               </div>
             </div>
-
-            <div name="valida" className="flex flex-wrap items-center mt-32">
-              <div className="w-full h-auto md:w-1 px-4 text-center pb-20">
-                <div className="relative flex flex-col min-w-0 break-words w-full mb-8  rounded-lg">
+            <div name="valida" className="flex flex-wrap items-center pt-16">
+              <h1 className="self-center w-full text-center	 text-6xl text-gray-100 mb-6 ">
+                Validame
+              </h1>
+              <div className=" w-full md:w-1  text-center pb-20 ">
+                <div className="px-12 sm:px-0   min-w-0 break-words  mb-8  rounded-lg mt-4">
                   <ul
                     className="flex mb-0 list-none flex-wrap pt-3 pb-4 flex-row"
                     role="tablist"
@@ -442,6 +454,9 @@ export default function Landing() {
                               accept=".pdf"
                               onChange={Validar}
                               required
+                              onClick={() => {
+                                setInitialBc({ ...initialBc, Validado: "" });
+                              }}
                             />
                           </label>
                           <h2>{initialBc.Validado}</h2>
@@ -500,7 +515,7 @@ export default function Landing() {
                 <div className="relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded-lg bg-pink-600">
                   <img
                     alt="..."
-                    src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1051&q=80"
+                    src={require("../assets/img/nasdaq.jpg")}
                     className="w-full align-middle rounded-t-lg"
                   />
                   <blockquote className="relative p-8 mb-4">
@@ -575,44 +590,6 @@ export default function Landing() {
                   necesitan de procesos de validación, Validafy es una
                   plataforma descentralizada que permite el control de
                   documentos basada en blockchain.
-                </p>
-              </div>
-            </div>
-            <div className="flex flex-wrap mt-12 justify-center">
-              <div className="w-full lg:w-3/12 px-4 text-center">
-                <div className="text-gray-900 p-3 w-12 h-12 shadow-lg rounded-full bg-white inline-flex items-center justify-center">
-                  <i className="fas fa-medal text-xl"></i>
-                </div>
-                <h6 className="text-xl mt-5 font-semibold text-white">
-                  Excelent Services
-                </h6>
-                <p className="mt-2 mb-4 text-gray-500">
-                  Some quick example text to build on the card title and make up
-                  the bulk of the card's content.
-                </p>
-              </div>
-              <div className="w-full lg:w-3/12 px-4 text-center">
-                <div className="text-gray-900 p-3 w-12 h-12 shadow-lg rounded-full bg-white inline-flex items-center justify-center">
-                  <i className="fas fa-poll text-xl"></i>
-                </div>
-                <h5 className="text-xl mt-5 font-semibold text-white">
-                  Grow your market
-                </h5>
-                <p className="mt-2 mb-4 text-gray-500">
-                  Some quick example text to build on the card title and make up
-                  the bulk of the card's content.
-                </p>
-              </div>
-              <div className="w-full lg:w-3/12 px-4 text-center">
-                <div className="text-gray-900 p-3 w-12 h-12 shadow-lg rounded-full bg-white inline-flex items-center justify-center">
-                  <i className="fas fa-lightbulb text-xl"></i>
-                </div>
-                <h5 className="text-xl mt-5 font-semibold text-white">
-                  Launch time
-                </h5>
-                <p className="mt-2 mb-4 text-gray-500">
-                  Some quick example text to build on the card title and make up
-                  the bulk of the card's content.
                 </p>
               </div>
             </div>
