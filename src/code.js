@@ -38,8 +38,6 @@ export default function Landing() {
   const [message, setMessage] = useState("");
   const [buffer, setBuffer] = useState("");
   const [ipfss, setIpfs] = useState("");
-  const [buttontxt,setbuttontxt] = useState("Ingresa");
-
   const [sm, setSm] = useState();
   const componentConfig = {
     iconFiletypes: [".jpg", ".png", ".gif"],
@@ -70,25 +68,16 @@ export default function Landing() {
     await this.loadBlockchainData();
   }
   async function loadWeb3() {
-    try {
-      if (window.ethereum) {
-        window.web3 = new Web3(window.ethereum)
-        await window.ethereum.enable()
-      }
-      else if (window.web3) {
-        window.web3 = new Web3(window.web3.currentProvider)
-      }
-      else {
-        
-        window.alert('No se ha detectado un navegador compatible con ethereum,prueba instalando la extension de MetaMask!')
-        window.location.href ="https://metamask.io/download"
-        
-      }
-    } catch (error) {
-      console.error(error);
-      window.location.reload()
+    if (window.ethereum) {
+      window.web3 = new Web3(window.ethereum);
+      await window.ethereum.enable();
+    } else if (window.web3) {
+      window.web3 = new Web3(window.web3.currentProvider);
+    } else {
+      window.alert(
+        "Non-Ethereum browser detected. You should consider trying MetaMask!"
+      );
     }
-    
   }
   async function loadBlockchainData() {
     const web3 = window.web3;
@@ -105,8 +94,30 @@ export default function Landing() {
     }
   }
 
-  
-  
+  let timerID = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(timerID);
+    };
+  }, []);
+  const onChange = (e) => {
+    setUser({ ...user, [e.target.name]: e.target.value });
+  };
+
+  const resetForm = () => {
+    setUser({
+      firstname: "",
+      lastname: "",
+      username: "",
+      password: "",
+      phone: "",
+      institution: "",
+      carrer: "",
+      finish: "",
+      role: "user",
+    });
+  };
   const captureFile = async (event) => {
     event.preventDefault();
     try {
@@ -255,42 +266,6 @@ export default function Landing() {
     window.alert("haz click en el boton de Metamask");
   };
 
-  useEffect(() => {
-    loadWeb3();
-     try {
-         window.ethereum._metamask.isUnlocked().then(function(value){
-        if(value){        console.log("en landing Abierto")
-        setbuttontxt("Mi cuenta");
-        console.log("=> "+buttontxt)
-        setbuttontxt("Mi cuenta");
-        console.log(buttontxt)
-      }
-      else{ console.log("Cerrado");
-       
-    }
-      }).catch(err => console.log("h0ola"));
- 
-     } catch (error) {
-       console.log("e")
-     }
-       
-    
-       
-  });
-  async function see() {
-    const var4 =buttontxt;
-    if(var4=="Mi cuenta"){
-      console.log("=> al dash")
-      window.location.href="/dash"
-    
-    }
-    else{ 
-    window.alert("Primero debes ingresar");
-    window.location.href="/login";
-   }
-    
-    }
-
   return (
     <>
       <Navbar transparent />
@@ -357,7 +332,8 @@ export default function Landing() {
             </svg>
           </div>
         </div>
-         <section className="pb-20 bg-gray-300 -mt-24">
+
+        <section className="pb-20 bg-gray-300 -mt-24">
           <div className="container mx-auto px-4">
             <div className="flex flex-wrap">
               <div className="lg:pt-12 pt-6 w-full md:w-4/12 px-4 text-center">
@@ -408,8 +384,8 @@ export default function Landing() {
               </div>
             </div>
             <div name="valida" className="flex flex-wrap items-center pt-16">
-              <h1 className="self-center w-full text-center	 shadow text-6xl text-gray-600 mb-6 ">
-                Valida tu documento
+              <h1 className="self-center w-full text-center	 text-6xl text-gray-100 mb-6 ">
+                Validame
               </h1>
               <div className=" w-full md:w-1  text-center pb-20 ">
                 <div className="px-12 sm:px-0   min-w-0 break-words  mb-8  rounded-lg mt-4">
@@ -438,12 +414,12 @@ export default function Landing() {
                         Validar
                       </a>
                     </li>
-                    <li onClick={see} className="-mb-px mr-2 last:mr-0 flex-auto text-center">
+                    <li className="-mb-px mr-2 last:mr-0 flex-auto text-center">
                       <a
                         className={
                           "text-xs font-bold uppercase px-5 py-3 shadow-lg rounded block leading-normal text-pink-600 bg-white"
                         }
-                       
+                        href="#link1"
                         role="tablist"
                       >
                         <i className="fas fa-link text-base mr-1"></i>
@@ -574,11 +550,6 @@ export default function Landing() {
                         <i className="fa fa-gavel" aria-hidden="true"></i>{" "}
                         Legalmente válido
                       </li>
-                      <li>
-                        {" "}
-                        <i className="fa fa-link" aria-hidden="true"></i>{" "}
-                        Respaldado en la Binance Smart Chain
-                      </li>
                     </ul>
                   </blockquote>
                 </div>
@@ -586,6 +557,7 @@ export default function Landing() {
             </div>
           </div>
         </section>
+
         <section className="pb-20 relative block bg-gray-900">
           <div
             className="bottom-auto top-0 left-0 right-0 w-full absolute pointer-events-none overflow-hidden -mt-20"
@@ -632,7 +604,6 @@ export default function Landing() {
             </div>
           </div>
         </section>
-       
       </main>
       <Footer />
     </>

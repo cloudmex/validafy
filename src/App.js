@@ -32,7 +32,7 @@ function App() {
   return (
     <Router>
       <Route path="/perfil" component={Profile} />
-      <Route path="/log" component={Login} />
+      <Route path="/login" component={Login} />
       <Route path="/lan" component={Landing} />
       <Route path="/dash" component={Dashboard} />
 

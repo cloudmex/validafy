@@ -97,7 +97,7 @@ export default function Footer() {
                 href="https://cloudmex.io/"
                 className="text-gray-600 hover:text-gray-900"
               >               
-CloudMex Analytics S.A.P.I. de C.V.
+CloudMex Analytics  
               </a>.
             </div>
           </div>

@@ -73,20 +73,13 @@ Validafy                  </Link>
             </form>
             {/* Navigation */}
             <ul className="md:flex-col md:min-w-full flex flex-col list-none">
-            <li className="items-center">
-                <Link
-                  className="text-blueGray-700 hover:text-pink-600 text-xs uppercase py-3 font-bold block"
-                  to="/"
-                >
-                  <i className="fa fa-home text-blueGray-400 mr-2 text-sm"></i> INICIO
-                </Link>
-              </li>
+           
               <li className="items-center">
                 <Link
                   className=" text-blueGray-700 hover:text-pink-600 text-xs uppercase py-3 font-bold block"
                   to="/dash"
                 >
-                  <i className="fa fa-link opacity-75 mr-2 text-sm"></i> Estampar
+                  <i className="fa fa-link opacity-75 uppercase mr-2 text-sm"></i> Estampar
                 </Link>
               </li>
 
@@ -97,7 +90,7 @@ Validafy                  </Link>
                   className="text-blueGray-700 hover:text-pink-600 text-xs uppercase py-3 font-bold block"
                   to="/perfil"
                 >
-                  <i className="fas fa-user-circle text-blueGray-400 mr-2 text-sm"></i> Profile Page
+                  <i className="fas fa-user-circle text-blueGray-400 mr-2 uppercase text-sm"></i> mis documentos
                 </Link>
               </li>
 
@@ -110,7 +103,7 @@ Validafy                  </Link>
                   href="#pablo"
                   onClick={e => e.preventDefault()}
                 >
-                  <i className="fas fa-tools text-blueGray-300 mr-2 text-sm"></i> Settings (soon)
+                  <i className="fas fa-tools text-blueGray-300 mr-2 text-sm"></i> congifuraciones (pronto)
                 </a>
               </li>
             </ul>

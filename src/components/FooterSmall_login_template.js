@@ -14,26 +14,20 @@ export default function FooterSmall(props) {
           <hr className="mb-6 border-b-1 border-gray-700" />
           <div className="flex flex-wrap items-center md:justify-between justify-center">
             <div className="w-full md:w-4/12 px-4">
-              <div className="text-sm text-white font-semibold py-1">
-                Copyright © {new Date().getFullYear()}{" "}
-                <a
-                  href="https://www.creative-tim.com"
-                  className="text-white hover:text-gray-400 text-sm font-semibold py-1"
-                >
-                  Creative Tim
-                </a>
-              </div>
+            <div className="text-sm text-right text-gray-100  py-1">
+                    Copyright © {new Date().getFullYear()} Validafy by{" "}
+                    <a
+                      href="https://cloudmex.io/"
+                      className="text-gray-600 hover:text-red-300"
+                    >
+                      CloudMex Analytics 
+                    </a>
+                    .
+                  </div>
             </div>
             <div className="w-full md:w-8/12 px-4">
               <ul className="flex flex-wrap list-none md:justify-end  justify-center">
-                <li>
-                  <a
-                    href="https://www.creative-tim.com"
-                    className="text-white hover:text-gray-400 text-sm font-semibold block py-1 px-3"
-                  >
-                    Creative Tim
-                  </a>
-                </li>
+               
                 <li>
                   <a
                     href="https://www.creative-tim.com/presentation"
