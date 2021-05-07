@@ -1,11 +1,13 @@
 import React,{useState,useEffect,useRef} from "react";
-import lofo from '../assets/img/mm-logo.svg';
+import logo from '../assets/img/metamask.png';
 import Web3 from 'web3';
  
 
 export default function Navbar(props) {
   const [initialBc,setInitialBc]=useState({Hash: '',contract: null,buffer:null,web3: null,account: null});
   const [account,setAccount]=useState("");
+  const [buttontxt,setbuttontxt] = useState("Ingresar");
+
   async function componentWillMount() {
     await this.loadWeb3()
     await this.loadBlockchainData()
@@ -57,10 +59,30 @@ export default function Navbar(props) {
 
   }
   async function see() {
-     await loadWeb3()
-     await loadBlockchainData()  
+    if(buttontxt.toString=="Mi cuenta"){
+      window.location.href="/dash"
+    
+    }
+    else{ window.location.href="/login"; }
+    
     }
     
+
+    useEffect(() => {
+     
+      
+      window.ethereum._metamask.isUnlocked().then(function(value){
+        if(value){        console.log("Abierto")
+        setbuttontxt("Mi cuenta")
+         
+      }
+      else{ console.log("Cerrado");
+       
+    }
+      });
+ 
+      console.log(window.ethereum);
+  });
   const [navbarOpen, setNavbarOpen] = React.useState(false);
   return (
     <nav
@@ -122,7 +144,7 @@ export default function Navbar(props) {
                     " far fa-file-alt text-lg leading-lg mr-2"
                   }
                 />{" "}
-                Docs
+                whitepaper
               </a>
             </li>
           </ul>
@@ -194,19 +216,10 @@ export default function Navbar(props) {
               </a>
             </li>
 
-            <li className="flex items-center">
-              <button onClick={see}
-                className={
-                  (props.transparent
-                    ? " text-gray-800 active:bg-gray-100"
-                    : "bg-pink-500 text-white active:bg-pink-600") +
-                  " text-xs bg-gray-100 font-bold uppercase px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none lg:mr-1 lg:mb-0 ml-3 mb-3"
-                }
-                type="button"
-                style={{ transition: "all .15s ease" }}
-              >
-                 <img style={{ height:25}}   src="https://metamask.io/images/mm-logo.svg"></img>  
-              </button>
+            <li onClick={see} className="flex inline-block text-xs bg-gray-100   px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none lg:mr-1 lg:mb-0 ml-3 mb-3">
+            <img style={{ height:25}}   src={logo}/>  
+            <a className=" text-sm bg-gray-100 pt-1 pl-4 font-bold uppercase">{buttontxt}</a>
+           
             </li>
           </ul>
         </div>
