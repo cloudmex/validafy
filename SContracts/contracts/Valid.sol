@@ -10,6 +10,11 @@ contract Valid is ERC721 {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
+    struct documentData {
+        string hash;
+        uint256 tokenid;
+    }
+
     constructor() public ERC721("VALID", "VLD") {}
 
     function createItem(address owner, string memory tokenURI)
@@ -47,6 +52,27 @@ contract Valid is ERC721 {
             }
         }
         return (exist);
+    }
+
+    function documentsOF(address owner)
+        public
+        view
+        returns (documentData[] memory documents)
+    {
+        //revisar que no sea el address para quemar tokens
+        require(owner != address(0), "Address incorrecto");
+        //numero de tokens
+        uint256 nTokens = balanceOf(owner);
+        if (nTokens == 0) {
+            return (new documentData[](nTokens));
+        }
+        //arreglo con los documentos
+        documentData[] memory dochashes = new documentData[](nTokens);
+        for (uint256 i = 0; i < nTokens; i++) {
+            dochashes[i].hash = tokenURI(tokenOfOwnerByIndex(owner, i));
+            dochashes[i].tokenid = tokenOfOwnerByIndex(owner, i);
+        }
+        return (dochashes);
     }
 
     function getAllHashes() public view returns (string[] memory tokens) {
