@@ -1,12 +1,14 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Web3 from "web3";
 import ValidafySM from "../contracts/Valid.json";
 import Navbar from "../components/Navbar_landing_template";
 import Footer from "../components/Footer_landing_template";
-import DropzoneComponent from "react-dropzone-component";
 import { useHistory } from "react-router-dom";
-
 const ipfsClient = require("ipfs-http-client");
+
+/**
+ * @type con este hook o objeto obtendremos una via para añadir datos a ipfs
+ */
 const ipfs = ipfsClient({
   host: "ipfs.infura.io",
   port: 5001,
@@ -15,6 +17,10 @@ const ipfs = ipfsClient({
 
 export default function Landing() {
   const history = useHistory();
+
+  /**
+   * @type estado que guarda los datos mas relevantes de el componente
+   */
   const [initialBc, setInitialBc] = useState({
     Hash: "",
     contract: null,
@@ -22,10 +28,13 @@ export default function Landing() {
     web3: null,
     account: null,
     Validado: "",
-    
   });
   const [openTab, setOpenTab] = React.useState(1);
   //  const [Buffe,setBuffer]=useState(null );
+
+  /**
+   * @type estado que guarda los datos del usuario
+   */
   const [user, setUser] = useState({
     firstname: "",
     lastname: "",
@@ -40,8 +49,10 @@ export default function Landing() {
   const [message, setMessage] = useState("");
   const [buffer, setBuffer] = useState("");
   const [ipfss, setIpfs] = useState("");
-  const [buttontxt,setbuttontxt] = useState("Ingresa");
-
+  const [buttontxt, setbuttontxt] = useState("Ingresa");
+  /**
+   * @type representa a la instancia del smart contract
+   */
   const [sm, setSm] = useState();
   const componentConfig = {
     iconFiletypes: [".jpg", ".png", ".gif"],
@@ -49,7 +60,10 @@ export default function Landing() {
     postUrl: "/uploadHandler",
   };
   const djsConfig = { autoProcessQueue: false };
-
+  /**
+   * capturaba el archivo y lo asignaba a los estados
+   * @deprecated
+   */
   const eventHandlers = {
     addedfile: (file) => {
       console.log(file);
@@ -66,32 +80,37 @@ export default function Landing() {
       };
     },
   };
-  
+  /**
+   * @deprecated cargaba web3 y el sm  en un componente clase
+   */
   async function componentWillMount() {
     await this.loadWeb3();
     await this.loadBlockchainData();
   }
+  /**
+   * @deprecated nos servia cuando teniamos un componente clase
+   */
   async function loadWeb3() {
     try {
       if (window.ethereum) {
-        window.web3 = new Web3(window.ethereum)
-        await window.ethereum.enable()
-      }
-      else if (window.web3) {
-        window.web3 = new Web3(window.web3.currentProvider)
-      }
-      else {
-        
-        window.alert('No se ha detectado un navegador compatible con ethereum,prueba instalando la extension de MetaMask!')
-        window.location.href ="https://metamask.io/download"
-        
+        window.web3 = new Web3(window.ethereum);
+        await window.ethereum.enable();
+      } else if (window.web3) {
+        window.web3 = new Web3(window.web3.currentProvider);
+      } else {
+        window.alert(
+          "No se ha detectado un navegador compatible con ethereum,prueba instalando la extension de MetaMask!"
+        );
+        window.location.href = "https://metamask.io/download";
       }
     } catch (error) {
       console.error(error);
-      window.location.reload()
+      window.location.reload();
     }
-    
   }
+  /**
+   * @deprecated nos servia cuando teniamos un componente clase
+   */
   async function loadBlockchainData() {
     const web3 = window.web3;
     // Load account
@@ -106,9 +125,9 @@ export default function Landing() {
       window.alert("Smart contract not deployed to detected network.");
     }
   }
-
-  
-  
+  /**
+   * @deprecated estaba asociado al onchange del input file del componente anterior
+   */
   const captureFile = async (event) => {
     event.preventDefault();
     try {
@@ -131,17 +150,21 @@ export default function Landing() {
 
     console.log("buffer v", initialBc.buffer);
   };
-
+  /**
+   * podemos validar la existencia de un archivo con este metodo
+   * @param {*} event tiene toda la informacion del input asociado
+   * @returns  no regresa nada
+   */
   const Validar = async (event) => {
     event.preventDefault();
-
     ///browser detection
     if (window.ethereum) {
       window.web3 = new Web3(window.ethereum);
 
       try {
+        //tratamos de cargar el documento que el usuario eligio
         const file = event.target.files[0];
-        
+
         if (!event.target.files) {
           throw "no agrego ningun archivo";
         }
@@ -173,11 +196,12 @@ export default function Landing() {
           ValidafySM.abi,
           tokenNetworkData.address
         );
+
+        //nos permite cargar el archivo
         const reader = new window.FileReader();
         reader.readAsArrayBuffer(file);
         reader.onloadend = () => {
-        
-          
+          //obtener el hash de ipfs ,una vez que cargo el archivo
           ipfs
             .add(Buffer(reader.result), { onlyHash: true })
             .then(async (result) => {
@@ -188,18 +212,14 @@ export default function Landing() {
               console.log(result[0].hash);
               let estado = "El documento es invalido";
               if (ishashed) estado = "El documento es valido";
-
-              //let pdfff = {filename};
-              
+              //guardar el mensaje
               setInitialBc({
                 ...initialBc,
                 Validado: estado,
                 namepdf: file.name,
-                
               });
             });
-            
-          };
+        };
       } catch (err) {
         window.alert(err.message || err);
         return;
@@ -210,6 +230,12 @@ export default function Landing() {
       window.open("https://metamask.io/download", "_blank");
     }
   };
+
+  /**
+   * nos permite agragar una red
+   * @param {*} e  este parametro se refiere al input al cual esta asociado
+   * @returns
+   */
   async function addNetwork(e) {
     e.preventDefault();
     try {
@@ -234,6 +260,11 @@ export default function Landing() {
       return;
     }
   }
+  /**
+   * nos permite estampar documentos
+   * @deprecated no se utiliza en el landing
+   * @param {*} e representa al input al que esta asociado
+   */
   const onSubmit = (e) => {
     e.preventDefault();
     try {
@@ -267,39 +298,35 @@ export default function Landing() {
 
   useEffect(() => {
     loadWeb3();
-     try {
-         window.ethereum._metamask.isUnlocked().then(function(value){
-        if(value){        console.log("en landing Abierto")
-        setbuttontxt("Mi cuenta");
-        console.log("=> "+buttontxt)
-        setbuttontxt("Mi cuenta");
-        console.log(buttontxt)
-      }
-      else{ console.log("Cerrado");
-       
+    try {
+      window.ethereum._metamask
+        .isUnlocked()
+        .then(function(value) {
+          if (value) {
+            console.log("en landing Abierto");
+            setbuttontxt("Mi cuenta");
+            console.log("=> " + buttontxt);
+            setbuttontxt("Mi cuenta");
+            console.log(buttontxt);
+          } else {
+            console.log("Cerrado");
+          }
+        })
+        .catch((err) => console.log("h0ola"));
+    } catch (error) {
+      console.log("e");
     }
-      }).catch(err => console.log("h0ola"));
- 
-     } catch (error) {
-       console.log("e")
-     }
-       
-    
-       
   });
   async function see() {
-    const var4 =buttontxt;
-    if(var4=="Mi cuenta"){
-      console.log("=> al dash")
-      window.location.href="/dash"
-    
+    const var4 = buttontxt;
+    if (var4 == "Mi cuenta") {
+      console.log("=> al dash");
+      window.location.href = "/dash";
+    } else {
+      window.alert("Primero debes ingresar");
+      window.location.href = "/login";
     }
-    else{ 
-    window.alert("Primero debes ingresar");
-    window.location.href="/login";
-   }
-    
-    }
+  }
 
   return (
     <>
@@ -367,7 +394,7 @@ export default function Landing() {
             </svg>
           </div>
         </div>
-         <section className="pb-20 bg-gray-300 -mt-24">
+        <section className="pb-20 bg-gray-300 -mt-24">
           <div className="container mx-auto px-4">
             <div className="flex flex-wrap">
               <div className="lg:pt-12 pt-6 w-full md:w-4/12 px-4 text-center">
@@ -448,12 +475,14 @@ export default function Landing() {
                         Validar
                       </a>
                     </li>
-                    <li onClick={see} className="-mb-px mr-2 last:mr-0 flex-auto text-center">
+                    <li
+                      onClick={see}
+                      className="-mb-px mr-2 last:mr-0 flex-auto text-center"
+                    >
                       <a
                         className={
                           "text-xs font-bold uppercase px-5 py-3 shadow-lg rounded block leading-normal text-pink-600 bg-white"
                         }
-                       
                         role="tablist"
                       >
                         <i className="fas fa-link text-base mr-1"></i>
@@ -481,22 +510,20 @@ export default function Landing() {
                             <span className="mt-2 text-base leading-normal">
                               Selecciona un archivo
                             </span>
-                            
-                            <input id="pdf"
+
+                            <input
                               type="file"
                               className="hidden"
                               accept=".pdf"
                               onChange={Validar}
                               required
                               onClick={() => {
-                                setInitialBc({ ...initialBc, Validado: "",  });
+                                setInitialBc({ ...initialBc, Validado: "" });
                               }}
                             />
                           </label>
-                          <div>
-                          </div>
-                          <h2>{initialBc.namepdf}</h2>
-                          <h2>{initialBc.Validado}</h2>
+                            <h2>{initialBc.namepdf}</h2>
+                            <h2>{initialBc.Validado}</h2>
                         </div>
                       </div>
                     </div>
@@ -645,7 +672,6 @@ export default function Landing() {
             </div>
           </div>
         </section>
-       
       </main>
       <Footer />
     </>
