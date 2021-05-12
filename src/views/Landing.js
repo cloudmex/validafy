@@ -5,6 +5,7 @@ import Navbar from "../components/Navbar_landing_template";
 import Footer from "../components/Footer_landing_template";
 import DropzoneComponent from "react-dropzone-component";
 import { useHistory } from "react-router-dom";
+
 const ipfsClient = require("ipfs-http-client");
 const ipfs = ipfsClient({
   host: "ipfs.infura.io",
@@ -21,6 +22,7 @@ export default function Landing() {
     web3: null,
     account: null,
     Validado: "",
+    
   });
   const [openTab, setOpenTab] = React.useState(1);
   //  const [Buffe,setBuffer]=useState(null );
@@ -64,7 +66,7 @@ export default function Landing() {
       };
     },
   };
-
+  
   async function componentWillMount() {
     await this.loadWeb3();
     await this.loadBlockchainData();
@@ -132,13 +134,14 @@ export default function Landing() {
 
   const Validar = async (event) => {
     event.preventDefault();
+
     ///browser detection
     if (window.ethereum) {
       window.web3 = new Web3(window.ethereum);
 
       try {
         const file = event.target.files[0];
-
+        
         if (!event.target.files) {
           throw "no agrego ningun archivo";
         }
@@ -173,6 +176,8 @@ export default function Landing() {
         const reader = new window.FileReader();
         reader.readAsArrayBuffer(file);
         reader.onloadend = () => {
+        
+          
           ipfs
             .add(Buffer(reader.result), { onlyHash: true })
             .then(async (result) => {
@@ -184,12 +189,17 @@ export default function Landing() {
               let estado = "El documento es invalido";
               if (ishashed) estado = "El documento es valido";
 
+              //let pdfff = {filename};
+              
               setInitialBc({
                 ...initialBc,
                 Validado: estado,
+                namepdf: file.name,
+                
               });
             });
-        };
+            
+          };
       } catch (err) {
         window.alert(err.message || err);
         return;
@@ -471,18 +481,21 @@ export default function Landing() {
                             <span className="mt-2 text-base leading-normal">
                               Selecciona un archivo
                             </span>
-
-                            <input
+                            
+                            <input id="pdf"
                               type="file"
                               className="hidden"
                               accept=".pdf"
                               onChange={Validar}
                               required
                               onClick={() => {
-                                setInitialBc({ ...initialBc, Validado: "" });
+                                setInitialBc({ ...initialBc, Validado: "",  });
                               }}
                             />
                           </label>
+                          <div>
+                          </div>
+                          <h2>{initialBc.namepdf}</h2>
                           <h2>{initialBc.Validado}</h2>
                         </div>
                       </div>
