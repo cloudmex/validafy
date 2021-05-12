@@ -216,6 +216,7 @@ export default function Landing() {
               setInitialBc({
                 ...initialBc,
                 Validado: estado,
+                namepdf: file.name,
               });
             });
         };
@@ -521,7 +522,8 @@ export default function Landing() {
                               }}
                             />
                           </label>
-                          <h2>{initialBc.Validado}</h2>
+                            <h2>{initialBc.namepdf}</h2>
+                            <h2>{initialBc.Validado}</h2>
                         </div>
                       </div>
                     </div>
