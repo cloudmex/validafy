@@ -28,6 +28,7 @@ export default function Dashboard() {
     account: null,
     file:null,
     showHidebutton: false,
+    showHideCharge:false
   });
   //  const [Buffe,setBuffer]=useState(null );
   const [openTab, setOpenTab] = React.useState(2);
@@ -74,11 +75,11 @@ export default function Dashboard() {
     // Load account
     const accounts = await web3.eth.getAccounts();
     setInitialBc({ account: accounts[0] });
-    console.log(initialBc.account);
+  //console.log(initialBc.account);
     const networkId = await web3.eth.net.getId();
 
     if (networkId) {
-      console.log(initialBc.contract);
+    //console.log(initialBc.contract);
     } else {
       window.alert("Smart contract not deployed to detected network.");
     }
@@ -86,6 +87,10 @@ export default function Dashboard() {
   
   const hideComponent= ()=> {
     return setInitialBc({showHidebutton:true});
+    
+  }
+  const unhideCharge= (e)=> {
+    return setInitialBc({showHideCharge:e});
     
   }
 
@@ -99,7 +104,7 @@ export default function Dashboard() {
   
   useEffect(() => {
     (async () => {
-      console.log("mycomi"+mycomision.getItem("payed"))
+    //console.log("mycomi"+mycomision.getItem("payed"))
      
       if (window.ethereum) {
         window.web3 = new Web3(window.ethereum);
@@ -131,10 +136,10 @@ export default function Dashboard() {
   }, []);
   
  
-  const captureFile = async (event) => {
+ /* const captureFile = async (event) => {
     window.alert("Usted esta pagando la comision de la Dapp(metodo de comision)");
     if(mycomision.getItem("payed")==true){
-      console.log("arder el mundo")
+    //console.log("arder el mundo")
       }
     try {
       
@@ -145,10 +150,10 @@ export default function Dashboard() {
         window.onbeforeunload = function() {
           return '¡No salir de esta ventana,se perderá la trasaccion!';
       }
-        console.log("TX:"+res +"\n Se pago comisión");
+      //console.log("TX:"+res +"\n Se pago comisión");
         hideComponent();
         mycomision.setItem("payed",true)
-        console.log("mycomi"+mycomision.getItem("payed"))
+      //console.log("mycomi"+mycomision.getItem("payed"))
         window.alert("La comision se ha pagado,presione el boton registrar para continuar");
     }).catch(err => {
       window.alert("La trasacción ha sido cancelada");
@@ -171,15 +176,15 @@ export default function Dashboard() {
       reader.onloadend = () => {
         setInitialBc({ buffer: Buffer(reader.result) });
         setBuffer({ buffer: Buffer(reader.result) });
-        console.log("buffer2", buffer);
+      //console.log("buffer2", buffer);
       };
     } catch (error) {
       console.log(error);
     }
 
-    console.log("buffer v", initialBc.buffer);
+  //console.log("buffer v", initialBc.buffer);
   };
-
+*/
   const Validar = async (event) => {
     event.preventDefault();
     ///browser detection
@@ -259,6 +264,7 @@ export default function Dashboard() {
 
   const ValidarCaptura=async(event)=>{
     event.preventDefault();
+    unhideCharge(true);
     ///browser detection
     if (window.ethereum) {
       window.web3 = new Web3(window.ethereum);
@@ -311,11 +317,12 @@ export default function Dashboard() {
               let ishashed = await contract.methods
                 .IsHashed(result[0].hash)
                 .call();
-              console.log(result[0].hash);
+            //console.log(result[0].hash);
               let estado = "El documento es invalido";
               if (ishashed){ 
                 window.alert("El documento ya ha sido estampado"); 
                 estado = "El documento es valido";
+                unhideCharge(false);
                 return;
               }
               
@@ -327,13 +334,13 @@ export default function Dashboard() {
               setInitialBc({ buffer: Buffer(reader.result) });
               setBuffer({ buffer: Buffer(reader.result) });
               
-              console.log(initialBc.buffer)
-              console.log(Buffer.buffer)
+            //console.log(initialBc.buffer)
+            //console.log(Buffer.buffer)
 
-              console.log("vamos bien");
-
+            //console.log("vamos bien");
+              unhideCharge(true);
               try {
-      
+                window.alert("Usted esta pagando la comision de la Dapp(metodo de comision)");
                 const value = window.web3.utils.toWei('0.00022', 'ether');    //invest
                 const to = "0x9F4152a30cb683aD284dff6629E809B80Ff555C1";
                 const payload ={to,from:sm.useraccount,value};
@@ -341,13 +348,14 @@ export default function Dashboard() {
                   window.onbeforeunload = function() {
                     return '¡No salir de esta ventana,se perderá la trasaccion!';
                 }
-                  console.log("TX:"+res +"\n Se pago comisión");
+                //console.log("TX:"+res +"\n Se pago comisión");
                   hideComponent();
+                  
                   mycomision.setItem("payed",true)
-                  console.log("mycomi"+mycomision.getItem("payed"));
+                //console.log("mycomi"+mycomision.getItem("payed"));
                   //Se avanza el estado del estampado
                   setprogress(30);
-                  window.alert("La comision se ha pagado,presione el boton registrar para continuar");
+                window.alert("La comision se ha pagado,presione el boton registrar para continuar");
               }).catch(err => {
                 window.alert("La trasacción ha sido cancelada");
                 window.location.reload();
@@ -372,12 +380,12 @@ export default function Dashboard() {
   }
 
   const onSubmit = (e) => {
-    window.alert("Usted esta pagando el costo de minar un nuevo token(metodo de minado)");
+  window.alert("Usted esta pagando el costo de minar un nuevo token(metodo de minado)");
   
     e.preventDefault();
-    console.log("buffer1", initialBc.buffer);
-    console.log("buffer2", buffer.buffer);
-
+  //console.log("buffer1", initialBc.buffer);
+  //console.log("buffer2", buffer.buffer);
+    unhideCharge(true);
 
 
     try {
@@ -386,10 +394,14 @@ export default function Dashboard() {
     }
     //Se avanza el estado del estampado
     setprogress(50);
+    unhideCharge(true);
+
       ipfs.add(buffer.buffer).then((result) => {
 
         //Se avanza el estado del estampado
         setprogress(80);
+        unhideCharge(true);
+
         sm.contr.methods
           .createItem(sm.useraccount, result[0].path)
           .send({ from: sm.useraccount })
@@ -397,8 +409,8 @@ export default function Dashboard() {
             //Se avanza el estado del estampado
              setprogress(100);
             
-            console.log(receipt);
-            console.log(result);
+          //console.log(receipt);
+          //console.log(result);
             resetForm();
             window.alert("Se ha minado,el nuevo token esta en su cartera"); 
             window.location.href = "/perfil";
@@ -434,6 +446,7 @@ export default function Dashboard() {
     window.alert("haz click en el boton de Metamask");
   };
   const { showHidebutton} = initialBc;
+  const { showHideCharge} = initialBc;
   
   
   return (
@@ -671,6 +684,11 @@ export default function Dashboard() {
      
 
     </div>
+
+    <div>
+      {showHideCharge && <img src={"https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"} style={{width:"30%"}} alt="loading..." />
+      }</div>
+   
     <div></div>
     <div className="text-right">
       <span className="text-sm font-semibold inline-block text-pink-600">
