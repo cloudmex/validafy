@@ -58,33 +58,35 @@ export default function Profile() {
 
         //arreglo con todos los documentos
         let documents = [];
+
         //si no esta vacio agregamos todos los documentos al arreglo documents
-        if (tokensarr) {
+        if (tokensarr.length) {
           for (let doc of tokensarr) {
             //hash se refiere al ipfshash
             documents.push({ hash: doc.hash, tokenid: doc.tokenid });
           }
-        }
-        //obtenemos todas las transacciones de esos tokens
-        let eventos = await contract.getPastEvents("Transfer", {
-          filter: { tokenId: documents.map((x) => x.tokenid) },
-          fromBlock: 0,
-          toBlock: "latest",
-        });
 
-        //le agregamos a documents el time y el txhash
-        for (let i = 0; i < eventos.length; i++) {
-          let txhash = await window.ethereum.request({
-            method: "eth_getBlockByHash",
-            params: [eventos[i].blockHash, false],
+          //obtenemos todas las transacciones de esos tokens
+          let eventos = await contract.getPastEvents("Transfer", {
+            filter: { tokenId: documents.map((x) => x.tokenid) },
+            fromBlock: 0,
+            toBlock: "latest",
           });
-          documents[i] = {
-            ...documents[i],
-            time: new Date(
-              parseInt(txhash.timestamp, 16) * 1000
-            ).toLocaleString(),
-            txhash: eventos[i].transactionHash,
-          };
+
+          //le agregamos a documents el time y el txhash
+          for (let i = 0; i < eventos.length; i++) {
+            let txhash = await window.ethereum.request({
+              method: "eth_getBlockByHash",
+              params: [eventos[i].blockHash, false],
+            });
+            documents[i] = {
+              ...documents[i],
+              time: new Date(
+                parseInt(txhash.timestamp, 16) * 1000
+              ).toLocaleString(),
+              txhash: eventos[i].transactionHash,
+            };
+          }
         }
 
         //le agregamos a documents el time y el txhash
@@ -189,61 +191,111 @@ export default function Profile() {
                       </div>
                     </div>
                   </div>
-                  <div className="  text-center   mt-12">
-                    <h3 className="text-4xl font-semibold leading-normal mb-2 text-gray-800 mb-2">
-                      Mis Documentos
-                    </h3>
+                  {Documents.length ? (
+                    <div className="  text-center   mt-12">
+                      <h3 className="text-4xl font-semibold leading-normal mb-2 text-gray-800 mb-2">
+                        Mis Documentos
+                      </h3>
 
-                    <table className="table-fixed text-center overflow-y-auto w-full  mr-4 mb-6  bg-gray-200 shadow-lg bg-pink">
-                      <thead>
-                        <tr>
-                          <th className="bg-blue-300 border text-right px-8 py-4">
-                            TokenID
-                          </th>
-                          <th className="bg-blue-100 border text-right px-8 py-4">
-                            TxHash
-                          </th>
-                          <th className="bg-blue-100 border text-right px-8 py-4">
-                            {" "}
-                            IpfsHash
-                          </th>
-                          <th className="bg-blue-100 border text-right px-8 py-4">
-                            TimeStamp
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {Documents.map((doc, i) => (
-                          <tr key={i}>
-                            <td className="border text-xs px-8 py-4">
-                              <a>{doc.tokenid}</a>
-                            </td>
-                            <td className="border text-xs px-8 py-4">
-                              <a
-                                href={
-                                  "https://testnet.bscscan.com/tx/" + doc.txhash
-                                }
-                              >
-                                {doc.txhash}
-                              </a>
-                            </td>
-                            <td className="border text-xs px-8 py-4">
+                      <table className=" table-fixed  text-center  w-full  mr-4 mb-6  bg-gray-200 shadow-lg">
+                        <thead>
+                          <tr>
+                            <th className="bg-blue-300 border text-right px-8 py-4">
+                              TokenID
+                            </th>
+                            <th className="bg-blue-100 border text-right px-8 py-4">
+                              TxHash
+                            </th>
+                            <th className="bg-blue-100 border text-right px-8 py-4">
                               {" "}
-                              <a
-                                className="a-link"
-                                href={`https://ipfs.infura.io/ipfs/${doc.hash}`}
-                              >
-                                {`${doc.hash}`}{" "}
-                              </a>
-                            </td>
-                            <td className="border text-xs px-8 py-4">
-                              <p>{doc.time}</p>
-                            </td>
+                              IpfsHash
+                            </th>
+                            <th className="bg-blue-100 border text-right px-8 py-4">
+                              TimeStamp
+                            </th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                        </thead>
+                        <tbody>
+                          {Documents.map((doc, i) => (
+                            <tr key={i}>
+                              <td className="border text-xs px-8 py-4">
+                                <a>{doc.tokenid}</a>
+                              </td>
+                              <td className="border text-xs px-8 py-4">
+                                <a
+                                  href={
+                                    "https://testnet.bscscan.com/tx/" +
+                                    doc.txhash
+                                  }
+                                  target="_blank"
+                                >
+                                  {doc.txhash}
+                                </a>
+                              </td>
+                              <td className="border text-xs px-8 py-4">
+                                {" "}
+                                <a
+                                  className="a-link"
+                                  href={`https://ipfs.infura.io/ipfs/${doc.hash}`}
+                                  target="_blank"
+                                >
+                                  {`${doc.hash}`}{" "}
+                                </a>
+                              </td>
+                              <td className="border text-xs px-8 py-4">
+                                <p>{doc.time}</p>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+
+                      <table class="table-fixed w-full bg-gray-200 ">
+                        <thead>
+                          <tr>
+                            <th className="  py-4">TokenID</th>
+                            <th className=" py-4">TxHash</th>
+                            <th className="  py-4"> IpfsHash</th>
+                            <th className="  py-4">TimeStamp</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {Documents.map((doc, i) => (
+                            <tr key={i} className="space-x-4">
+                              <td className=" ">{doc.tokenid}</td>
+                              <td className="">
+                                <a
+                                  href={
+                                    "https://testnet.bscscan.com/tx/" +
+                                    doc.txhash
+                                  }
+                                  target="_blank"
+                                >
+                                  {doc.txhash}
+                                </a>
+                              </td>
+                              <td className=" ">
+                                <a
+                                  className="a-link"
+                                  href={`https://ipfs.infura.io/ipfs/${doc.hash}`}
+                                  target="_blank"
+                                >
+                                  {doc.hash}
+                                </a>
+                              </td>
+                              <td className=" ">{doc.time}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <div className="  text-center   mt-12">
+                      <h3 className="text-4xl font-semibold leading-normal mb-2 text-gray-800 mb-2">
+                        Sin Documentos
+                      </h3>{" "}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -263,34 +315,6 @@ export default function Profile() {
                     </a>
                     .
                   </div>
-                </div>
-                <div className="w-full md:w-8/12 px-4">
-                  <ul className="flex flex-wrap list-none md:justify-end  justify-center">
-                    <li>
-                      <a
-                        href=" "
-                        className="text-blueGray-600 hover:text-blueGray-800 text-sm font-semibold block py-1 px-3"
-                      >
-                        About Us
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href=" "
-                        className="text-blueGray-600 hover:text-blueGray-800 text-sm font-semibold block py-1 px-3"
-                      >
-                        Blog
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href=" "
-                        className="text-blueGray-600 hover:text-blueGray-800 text-sm font-semibold block py-1 px-3"
-                      >
-                        MIT License
-                      </a>
-                    </li>
-                  </ul>
                 </div>
               </div>
             </div>
