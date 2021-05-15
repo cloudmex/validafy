@@ -96,16 +96,7 @@ Validafy                  </Link>
 
               
                
-
-              <li className="items-center">
-                <a
-                  className="text-blueGray-300 text-xs uppercase py-3 font-bold block"
-                  href="#pablo"
-                  onClick={e => e.preventDefault()}
-                >
-                  <i className="fas fa-tools text-blueGray-300 mr-2 text-sm"></i> congifuraciones (pronto)
-                </a>
-              </li>
+ 
             </ul>
             {/* Divider */}
             <hr className="my-4 md:min-w-full" />
