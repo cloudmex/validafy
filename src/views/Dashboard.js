@@ -28,17 +28,23 @@ export default function Dashboard() {
     account: null,
     file:null,
     showHidebutton: false,
-    showHideCharge:false
+    showHideCharge:false,
+    showHideProgress:false,
+    showHideFile:true,
+
   });
   //  const [Buffe,setBuffer]=useState(null );
   const [openTab, setOpenTab] = React.useState(2);
 
   const [message, setMessage] = useState("");
+  const [estadoProgress, setestadoProgress] = useState("");
+
   const [buffer, setBuffer] = useState("");
   const [ipfss, setIpfs] = useState("");
   const [sm, setSm] = useState([]);
   const [progress, setprogress] = useState(0);
-  
+  const [Modal, setShowModal] = React.useState({ show: false });
+
   const mycomision = window.localStorage;
   const myfile = window.localStorage;
   function useStickyState(defaultValue, key) {
@@ -85,12 +91,23 @@ export default function Dashboard() {
     }
   }
   
-  const hideComponent= ()=> {
-    return setInitialBc({showHidebutton:true});
+  const hideComponent= (e)=> {
+    return setInitialBc({showHidebutton:e});
     
   }
   const unhideCharge= (e)=> {
+    var neg="";
+    if(e){neg=false}
+    else{neg=true}
     return setInitialBc({showHideCharge:e});
+    
+  }
+  const hideFile= (e)=> {
+    return setInitialBc({showHideFile:e});
+    
+  }
+  const hideProgresss= (e)=> {
+    return setInitialBc({showHideProgress:e});
     
   }
 
@@ -185,86 +202,90 @@ export default function Dashboard() {
   //console.log("buffer v", initialBc.buffer);
   };
 */
-  const Validar = async (event) => {
-    event.preventDefault();
-    ///browser detection
-    if (window.ethereum) {
-      window.web3 = new Web3(window.ethereum);
+const Validar = async (event) => {
+  event.preventDefault();
+  ///browser detection
+  if (window.ethereum) {
+    window.web3 = new Web3(window.ethereum);
 
-      try {
-        //tratamos de cargar el documento que el usuario eligio
-        const file = event.target.files[0];
+    try {
+      //tratamos de cargar el documento que el usuario eligio
+      const file = event.target.files[0];
 
-        if (!event.target.files) {
-          throw "no agrego ningun archivo";
-        }
-        //cambiar red
-        await window.ethereum.request({
-          method: "wallet_addEthereumChain",
-          params: [
-            {
-              chainId: "0x61",
-              chainName: "BSCTESTNET",
-              rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
-              nativeCurrency: {
-                name: "BINANCE COIN",
-                symbol: "BNB",
-                decimals: 18,
-              },
-              blockExplorerUrls: ["https://testnet.bscscan.com/"],
-            },
-          ],
-        });
-        //get the actual networkid or chainid
-        let ActualnetworkId = await window.ethereum.request({
-          method: "net_version",
-        });
-        // sm address
-        let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
-        //instantiate the contract object
-        let contract = new window.web3.eth.Contract(
-          ValidafySM.abi,
-          tokenNetworkData.address
-        );
-
-        //nos permite cargar el archivo
-        const reader = new window.FileReader();
-        reader.readAsArrayBuffer(file);
-        reader.onloadend = () => {
-          //obtener el hash de ipfs ,una vez que cargo el archivo
-          ipfs
-            .add(Buffer(reader.result), { onlyHash: true })
-            .then(async (result) => {
-              //comprobar si el hash se encuetra dentro de algun tokenuri
-              let ishashed = await contract.methods
-                .IsHashed(result[0].hash)
-                .call();
-              console.log(result[0].hash);
-              let estado = "El documento es invalido";
-              if (ishashed) estado = "El documento es valido";
-              //guardar el mensaje
-              setInitialBc({
-                ...initialBc,
-                Validado: estado,
-              });
-              setInitialBc({ buffer: Buffer(reader.result) });
-              setBuffer({ buffer: Buffer(reader.result) });
-            });
-        };
-      } catch (err) {
-        window.alert(err.message || err);
-        return;
+      if (!event.target.files) {
+        throw "no agrego ningun archivo";
       }
-    } else {
-      //no tiene metamask lo mandamos a la pagina oficial de descarga
+      //cambiar red
+      await window.ethereum.request({
+        method: "wallet_addEthereumChain",
+        params: [
+          {
+            chainId: "0x61",
+            chainName: "BSCTESTNET",
+            rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
+            nativeCurrency: {
+              name: "BINANCE COIN",
+              symbol: "BNB",
+              decimals: 18,
+            },
+            blockExplorerUrls: ["https://testnet.bscscan.com/"],
+          },
+        ],
+      });
+      //get the actual networkid or chainid
+      let ActualnetworkId = await window.ethereum.request({
+        method: "net_version",
+      });
+      // sm address
+      let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
+      //instantiate the contract object
+      let contract = new window.web3.eth.Contract(
+        ValidafySM.abi,
+        tokenNetworkData.address
+      );
 
-      window.open("https://metamask.io/download", "_blank");
+      //nos permite cargar el archivo
+      const reader = new window.FileReader();
+      reader.readAsArrayBuffer(file);
+      reader.onloadend = () => {
+        //obtener el hash de ipfs ,una vez que cargo el archivo
+        ipfs
+          .add(Buffer(reader.result), { onlyHash: true })
+          .then(async (result) => {
+            //comprobar si el hash se encuetra dentro de algun tokenuri
+            let ishashed = await contract.methods
+              .IsHashed(result[0].hash)
+              .call();
+            console.log(result[0].hash);
+            let estado = "Documento no estampado";
+            if (ishashed) estado = "Documento Valido";
+            setShowModal({
+              ...initialBc,
+              show: true,
+              success: ishashed,
+              message: estado,
+            });
+
+            setInitialBc({ ...initialBc, namepdf: file.name });
+          });
+      };
+    } catch (err) {
+      window.alert(err.message || err);
+      return;
     }
-  };
+  } else {
+    //no tiene metamask lo mandamos a la pagina oficial de descarga
+
+    window.open("https://metamask.io/download", "_blank");
+  }
+};
 
   const ValidarCaptura=async(event)=>{
     event.preventDefault();
     unhideCharge(true);
+
+    setestadoProgress("Paso 1 de 6: Validando documento : ");
+    setprogress(10);
     ///browser detection
     if (window.ethereum) {
       window.web3 = new Web3(window.ethereum);
@@ -320,9 +341,22 @@ export default function Dashboard() {
             //console.log(result[0].hash);
               let estado = "El documento es invalido";
               if (ishashed){ 
-                window.alert("El documento ya ha sido estampado"); 
+               
+                setShowModal({
+                  ...initialBc,
+                  show: true,
+                  success: false,
+                  message: "!Error!.\nEl documento ya ha sido estampado",
+                });
+               // window.alert("El documento ya ha sido estampado"); 
                 estado = "El documento es valido";
                 unhideCharge(false);
+                hideFile(true)
+                
+               //window.location.reload();
+               setTimeout(function(){
+                window.location.reload(1);
+             }, 5000); 
                 return;
               }
               
@@ -333,14 +367,17 @@ export default function Dashboard() {
               });
               setInitialBc({ buffer: Buffer(reader.result) });
               setBuffer({ buffer: Buffer(reader.result) });
-              
+              hideFile(false);
+              setprogress(20);
+              setestadoProgress("Paso 2 de 6: pagando comisión : ");
+
             //console.log(initialBc.buffer)
             //console.log(Buffer.buffer)
 
             //console.log("vamos bien");
               unhideCharge(true);
               try {
-                window.alert("Usted esta pagando la comision de la Dapp(metodo de comision)");
+             //   window.alert("Usted esta pagando la comision de la Dapp(metodo de comision)");
                 const value = window.web3.utils.toWei('0.00022', 'ether');    //invest
                 const to = "0x9F4152a30cb683aD284dff6629E809B80Ff555C1";
                 const payload ={to,from:sm.useraccount,value};
@@ -349,16 +386,37 @@ export default function Dashboard() {
                     return '¡No salir de esta ventana,se perderá la trasaccion!';
                 }
                 //console.log("TX:"+res +"\n Se pago comisión");
-                  hideComponent();
+                  hideComponent(true);
                   
-                  mycomision.setItem("payed",true)
+                  mycomision.setItem("payed",true);
+                  setestadoProgress("Paso 3 de 6: Comisión pagada");
                 //console.log("mycomi"+mycomision.getItem("payed"));
                   //Se avanza el estado del estampado
                   setprogress(30);
-                window.alert("La comision se ha pagado,presione el boton registrar para continuar");
+
+                  setShowModal({
+                    ...initialBc,
+                    show: true,
+                    success: true,
+                    message: "!Exito!.La comision se ha pagado    \npresione el boton Espampar  para continuar",
+                  });
+    
+              //  window.alert("La comision se ha pagado,presione el boton registrar para continuar");
               }).catch(err => {
-                window.alert("La trasacción ha sido cancelada");
-                window.location.reload();
+                if(err){
+                  setShowModal({
+                    ...initialBc,
+                    show: true,
+                    success: false,
+                    message: "!Error!.La transaccion ha sido cancelada",
+                  });
+                  
+                hideComponent(false);
+              }
+                
+              setTimeout(function(){
+                window.location.reload(1);
+             }, 5000); 
                   console.log("err",err)
               });
               } catch (error) {
@@ -380,7 +438,7 @@ export default function Dashboard() {
   }
 
   const onSubmit = (e) => {
-  window.alert("Usted esta pagando el costo de minar un nuevo token(metodo de minado)");
+  //window.alert("Usted esta pagando el costo de minar un nuevo token(metodo de minado)");
   
     e.preventDefault();
   //console.log("buffer1", initialBc.buffer);
@@ -394,12 +452,16 @@ export default function Dashboard() {
     }
     //Se avanza el estado del estampado
     setprogress(50);
+    setestadoProgress("Paso 4 de 6: pagando Estamapado");
+    
     unhideCharge(true);
 
       ipfs.add(buffer.buffer).then((result) => {
 
         //Se avanza el estado del estampado
         setprogress(80);
+        setestadoProgress("Paso 5 de 6: Estampando documento");
+        
         unhideCharge(true);
 
         sm.contr.methods
@@ -408,24 +470,46 @@ export default function Dashboard() {
           .once("receipt", (receipt) => {
             //Se avanza el estado del estampado
              setprogress(100);
-            
+             setestadoProgress("Paso 6 de 6: Documento Estampado");
           //console.log(receipt);
           //console.log(result);
             resetForm();
-            window.alert("Se ha minado,el nuevo token esta en su cartera"); 
-            window.location.href = "/perfil";
+           // window.alert("Se ha minado,el nuevo token esta en su cartera"); 
+
+           setTimeout(function(){
+            window.location.href = "/perfil";         }, 8000); 
+            //window.location.href = "/perfil";
+            setShowModal({
+              ...initialBc,
+              show: true,
+              success: true,
+              message: "!Exito!. Se ha minado,el nuevo token esta en su cartera",
+            });
             //se hizo correctamente la transaccion
             if (receipt.status) {
               setIpfs(result[0].path);
             }
           }).catch(error=>{
-            window.alert("La trasacción ha sido cancelada");
+           // window.alert("La trasacción ha sido cancelada");
+            setShowModal({
+              ...initialBc,
+              show: true,
+              success: false,
+              message: "!Error!. El estampado ha sido cancelado \n \n \npresione Estampar para continuar",
+            });
+            hideComponent(true);
             window.onbeforeunload = function() {
               return '¡No salir de esta ventana,se perderá la trasaccion!';
           }
-            console.log("erere" + error)
+            console.log("Se cancelo transanccion paso 5:" + error)
           });
       }).catch(err => {
+        setShowModal({
+          ...initialBc,
+          show: true,
+          success: false,
+          message: "!Error!. El estampado ha sido cancelado",
+        });
         window.alert("La trasacción ha sido cancelada");
         window.location.reload();
           console.log("err",err)
@@ -447,7 +531,10 @@ export default function Dashboard() {
   };
   const { showHidebutton} = initialBc;
   const { showHideCharge} = initialBc;
-  
+  const { showHideFile} = initialBc;
+  const { showHideProgress} = initialBc;
+//TIMEOUT
+ 
   
   return (
     <>
@@ -456,82 +543,7 @@ export default function Dashboard() {
       <div className="min-h-screen bg-white p-4 flex items-center">
 
 
-      <Transition.Root show={open} as={Fragment}>
-      <Dialog
-        as="div"
-        static
-        className="fixed z-10 inset-0 overflow-y-auto"
-        initialFocus={cancelButtonRef}
-        open={open}
-        onClose={setOpen}
-      >
-        <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-          <Transition.Child
-            as={Fragment}
-            enter="ease-out duration-300"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
-            <Dialog.Overlay className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-          </Transition.Child>
-
-          {/* This element is to trick the browser into centering the modal contents. */}
-          <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
-            &#8203;
-          </span>
-          <Transition.Child
-            as={Fragment}
-            enter="ease-out duration-300"
-            enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-            enterTo="opacity-100 translate-y-0 sm:scale-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100 translate-y-0 sm:scale-100"
-            leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-          >
-            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                <div className="sm:flex sm:items-start">
-                  <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                  </div>
-                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                    <Dialog.Title as="h3" className="text-lg leading-6 font-medium text-gray-900">
-                      Deactivate account
-                    </Dialog.Title>
-                    <div className="mt-2">
-                      <p className="text-sm text-gray-500">
-                        Are you sure you want to deactivate your account? All of your data will be permanently removed.
-                        This action cannot be undone.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                <button
-                  type="button"
-                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
-                  onClick={() => setOpen(false)}
-                >
-                  Deactivate
-                </button>
-                <button
-                  type="button"
-                  className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                  onClick={() => setOpen(false)}
-                  ref={cancelButtonRef}
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </Transition.Child>
-        </div>
-      </Dialog>
-    </Transition.Root>
-    
+     
 
  </div>
 
@@ -634,7 +646,7 @@ export default function Dashboard() {
                           id="link1"
                         >
                        <form onSubmit={onSubmit} className="space-y-5 mt-10"  >
-                        <label className="w-full flex flex-col items-center px-4 py-6 bg-white rounded-lg  tracking-wide uppercase  cursor-pointer ">
+                       {showHideFile &&   <label className="w-full flex flex-col items-center px-4 py-6 bg-white rounded-lg  tracking-wide uppercase  cursor-pointer ">
                             <svg
                               className="w-8 h-8 text-pink-600"
                               fill="currentColor"
@@ -657,7 +669,9 @@ export default function Dashboard() {
                                 setInitialBc({ ...initialBc, Validado: "" });
                               }}
                             />
-                          </label>
+
+                            
+                          </label>}
                           {showHidebutton && 
                             <button className="bg-green-400 hover:bg-green-500 text-white font-bold py-2 px-4 rounded"
                               style={{
@@ -669,7 +683,7 @@ export default function Dashboard() {
                               
                               type="submit"
                             >
-                              Registrar
+                              Estamapar
                             </button>
 
                             
@@ -686,15 +700,24 @@ export default function Dashboard() {
     </div>
 
     <div>
+        
       {showHideCharge && <img src={"https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"} style={{width:"30%"}} alt="loading..." />
-      }</div>
+       }
+      
+      </div>
    
-    <div></div>
+    <div><div className="text-right">
+      <span className="text-sm font-semibold inline-block text-pink-600">
+        {estadoProgress}{initialBc.namepdf}
+      </span>
+    </div></div>
     <div className="text-right">
       <span className="text-sm font-semibold inline-block text-pink-600">
         {progress}%
       </span>
     </div>
+
+    
   </div>
   <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-pink-200">
     <div style={{ width: progress+"%" }} className={ "shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-pink-500"   } ></div>
@@ -710,7 +733,7 @@ export default function Dashboard() {
                           className={openTab === 1 ? "visible" : "invisible"}
                           id="link1"
                         >
-                          <label className="w-full flex flex-col items-center px-4 py-6 bg-white rounded-lg  tracking-wide uppercase  cursor-pointer ">
+                         <label className="w-full flex flex-col items-center px-4 py-6 bg-white rounded-lg  tracking-wide uppercase  cursor-pointer ">
                             <svg
                               className="w-8 h-8 text-pink-600"
                               fill="currentColor"
@@ -720,7 +743,7 @@ export default function Dashboard() {
                               <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
                             </svg>
                             <span className="mt-2 text-base leading-normal">
-                              Valida un archivo
+                              Selecciona un archivo
                             </span>
 
                             <input
@@ -735,6 +758,7 @@ export default function Dashboard() {
                             />
                           </label>
                           <h2>{initialBc.Validado}</h2>
+                          <h2>{initialBc.namepdf}</h2>
                         </div>
                       
                       </div>
@@ -799,7 +823,67 @@ CloudMex Analytics
               </div>
             </div>
           </footer>
-         
+          {Modal.show ? (
+          <>
+            <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+              <div className="relative w-1/2 my-6 ">
+                {/*content*/}
+                <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                  {/*header*/}
+
+                  <div
+                    className={`${
+                      Modal.success ? "bg-emerald-500" : "bg-red-500"
+                    }  flex items-start justify-center p-5 border-b border-solid border-blueGray-200 rounded-t`}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-16 h-16 text-white my-10"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      {Modal.success ? (
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      ) : (
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      )}
+                    </svg>
+                  </div>
+                  <div className="relative p-6 flex flex-col space-y-4 justify-center ">
+                    <p className="flex-initial my-4 text-center text-2xl leading-relaxed">
+                      {Modal.message}
+                    </p>
+                    <button
+                      className={`${
+                        Modal.success ? "bg-emerald-500" : "bg-red-500"
+                      } w-min  text-white active:${
+                        Modal.success ? "bg-emerald-600" : "bg-red-600"
+                      } font-bold uppercase text-sm px-6 py-3 rounded-full shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
+                      type="button"
+                      onClick={() => {
+                        setShowModal({ ...Modal, show: false });
+                      }}
+                    >
+                      continuar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+          </>
+        ) : null}
       </main>
       </div>
 
