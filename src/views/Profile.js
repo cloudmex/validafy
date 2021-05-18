@@ -160,8 +160,8 @@ export default function Profile() {
                   <div className="flex flex-wrap justify-end">
                     <div className="w-full lg:w-3/12 px-4 lg:order-2 flex-1 ml-4">
                       <div className="flex justify-center py-4 lg:pt-4 pt-8">
-                        <div className="mr-4 p-3 text-center">
-                          <span className="text-xl font-bold block uppercase tracking-wide text-gray-700">
+                        <div className=" p-3 text-center">
+                          <span className="text-sm lg:text-xl  block uppercase  text-gray-700">
                             {Profile.address}
                           </span>
                           <span className="text-sm text-gray-500">Address</span>
@@ -171,7 +171,7 @@ export default function Profile() {
                     <div className="w-full lg:w-3/12 px-4 lg:order-2">
                       <div className="flex justify-center py-4 lg:pt-4 pt-8">
                         <div className="mr-4 p-3 text-center">
-                          <span className="text-xl font-bold block uppercase tracking-wide text-gray-700">
+                          <span className=" font-bold block uppercase tracking-wide text-gray-700">
                             {Documents.length}
                           </span>
                           <span className="text-sm text-gray-500">
@@ -180,14 +180,16 @@ export default function Profile() {
                         </div>
                       </div>
                     </div>
-                    <div className="w-full lg:w-3/12 px-4 lg:order-3 flex justify-center">
-                      <div className="relative">
-                        <img
-                          alt="..."
-                          src={require("../assets/img/metamask.png")}
-                          className=" rounded-full h-auto align-middle border-none absolute -m-16 -ml-20 lg:-ml-16"
-                          style={{ maxWidth: "150px" }}
-                        />
+                    <div className="w-full lg:w-3/12 px-4 lg:order-2">
+                      <div className="flex justify-center py-4 lg:pt-4 pt-8">
+                        <div className="mr-4 p-3 text-center">
+                          <img
+                            alt="..."
+                            src={require("../assets/img/metamask.png")}
+                            className=" rounded-full h-auto align-middle border-none absolute -m-16 -ml-20 lg:-ml-16"
+                            style={{ maxWidth: "150px" }}
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -197,97 +199,46 @@ export default function Profile() {
                         Mis Documentos
                       </h3>
 
-                      <table className=" table-fixed  text-center  w-full  mr-4 mb-6  bg-gray-200 shadow-lg">
-                        <thead>
-                          <tr>
-                            <th className="bg-blue-300 border text-right px-8 py-4">
-                              TokenID
-                            </th>
-                            <th className="bg-blue-100 border text-right px-8 py-4">
-                              TxHash
-                            </th>
-                            <th className="bg-blue-100 border text-right px-8 py-4">
-                              {" "}
-                              IpfsHash
-                            </th>
-                            <th className="bg-blue-100 border text-right px-8 py-4">
-                              TimeStamp
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {Documents.map((doc, i) => (
-                            <tr key={i}>
-                              <td className="border text-xs px-8 py-4">
-                                <a>{doc.tokenid}</a>
-                              </td>
-                              <td className="border text-xs px-8 py-4">
-                                <a
-                                  href={
-                                    "https://testnet.bscscan.com/tx/" +
-                                    doc.txhash
-                                  }
-                                  target="_blank"
-                                >
-                                  {doc.txhash}
-                                </a>
-                              </td>
-                              <td className="border text-xs px-8 py-4">
-                                {" "}
-                                <a
-                                  className="a-link"
-                                  href={`https://ipfs.infura.io/ipfs/${doc.hash}`}
-                                  target="_blank"
-                                >
-                                  {`${doc.hash}`}{" "}
-                                </a>
-                              </td>
-                              <td className="border text-xs px-8 py-4">
-                                <p>{doc.time}</p>
-                              </td>
+                      <div className="overflow-x-auto  mb-6 ">
+                        <table className=" w-full bg-gray-200 ">
+                          <thead>
+                            <tr>
+                              <th className="  py-4">TokenID</th>
+                              <th className=" py-4">TxHash</th>
+                              <th className="  py-4"> IpfsHash</th>
+                              <th className="  py-4">TimeStamp</th>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
-
-                      <table class="table-fixed w-full bg-gray-200 ">
-                        <thead>
-                          <tr>
-                            <th className="  py-4">TokenID</th>
-                            <th className=" py-4">TxHash</th>
-                            <th className="  py-4"> IpfsHash</th>
-                            <th className="  py-4">TimeStamp</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {Documents.map((doc, i) => (
-                            <tr key={i} className="space-x-4">
-                              <td className=" ">{doc.tokenid}</td>
-                              <td className="">
-                                <a
-                                  href={
-                                    "https://testnet.bscscan.com/tx/" +
-                                    doc.txhash
-                                  }
-                                  target="_blank"
-                                >
-                                  {doc.txhash}
-                                </a>
-                              </td>
-                              <td className=" ">
-                                <a
-                                  className="a-link"
-                                  href={`https://ipfs.infura.io/ipfs/${doc.hash}`}
-                                  target="_blank"
-                                >
-                                  {doc.hash}
-                                </a>
-                              </td>
-                              <td className=" ">{doc.time}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                          </thead>
+                          <tbody className="text-base">
+                            {Documents.map((doc, i) => (
+                              <tr key={i} className="px-6">
+                                <td className=" ">{doc.tokenid}</td>
+                                <td className="">
+                                  <a
+                                    href={
+                                      "https://testnet.bscscan.com/tx/" +
+                                      doc.txhash
+                                    }
+                                    target="_blank"
+                                  >
+                                    {doc.txhash}
+                                  </a>
+                                </td>
+                                <td className=" ">
+                                  <a
+                                    className="a-link"
+                                    href={`https://ipfs.infura.io/ipfs/${doc.hash}`}
+                                    target="_blank"
+                                  >
+                                    {doc.hash}
+                                  </a>
+                                </td>
+                                <td className=" ">{doc.time}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                   ) : (
                     <div className="  text-center   mt-12">
