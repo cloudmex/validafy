@@ -118,42 +118,7 @@ export default function Dashboard() {
     mycomision.setItem("payed",false);
   };
  
-  async function addNetwork() {
-    
-    try {
-      
-   await  window.ethereum.request({
-        method: "wallet_addEthereumChain",
-        params: [
-          {
-            chainId: "0x61",
-            chainName: "BSCTESTNET",
-            rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
-            nativeCurrency: {
-              name: "BINANCE COIN",
-              symbol: "BNB",
-              decimals: 18,
-            },
-            blockExplorerUrls: ["https://testnet.bscscan.com/"],
-          },
-        ],
-      });
-       
-     
-    } catch (error) {
-      setShowModal({
-        ...initialBc,
-        show: true,
-        success: false,
-        message: "!Error!.\nCambia de red",
-      });
-      addNetwork();
-      window.location.reload();
-     // window.alert("Cambia de red porfavor")
-    }
-   
-  } 
-
+  
   useEffect(() => {
     (async () => {
     //console.log("mycomi"+mycomision.getItem("payed"))
@@ -174,15 +139,8 @@ export default function Dashboard() {
         let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
 
         if (!tokenNetworkData) {
-         // window.alert("Ese smartcontract no se desplego en esta red");
-          setShowModal({
-            ...initialBc,
-            show: true,
-            success: false,
-            message: "!Advertencia!  cambia de red",
-          });
-          addNetwork()
-           return;
+          window.alert("Ese smartcontract no se desplego en esta red");
+          return;
         }
         //instantiate the contract object
         let contract = new window.web3.eth.Contract(
@@ -190,23 +148,6 @@ export default function Dashboard() {
           tokenNetworkData.address
         );
         setSm({ contr: contract, useraccount: useraccounts[0] });
-      }
-
-      try {
-        window.ethereum._metamask
-          .isUnlocked()
-          .then(function(value) {
-            if (value) {
-               console.log("en  dash Abierto");
-              
-              
-              
-            } else {
-              console.log("Cerrado");
-            }
-          });
-      } catch (error) {
-        console.log("e"+error);
       }
     })();
   }, []);
@@ -275,8 +216,22 @@ const Validar = async (event) => {
         throw "no agrego ningun archivo";
       }
       //cambiar red
-      addNetwork();
-      
+      await window.ethereum.request({
+        method: "wallet_addEthereumChain",
+        params: [
+          {
+            chainId: "0x61",
+            chainName: "BSCTESTNET",
+            rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
+            nativeCurrency: {
+              name: "BINANCE COIN",
+              symbol: "BNB",
+              decimals: 18,
+            },
+            blockExplorerUrls: ["https://testnet.bscscan.com/"],
+          },
+        ],
+      });
       //get the actual networkid or chainid
       let ActualnetworkId = await window.ethereum.request({
         method: "net_version",
@@ -343,8 +298,22 @@ const Validar = async (event) => {
           throw "no agrego ningun archivo";
         }
         //cambiar red
-        addNetwork()
-        
+        await window.ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: "0x61",
+              chainName: "BSCTESTNET",
+              rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
+              nativeCurrency: {
+                name: "BINANCE COIN",
+                symbol: "BNB",
+                decimals: 18,
+              },
+              blockExplorerUrls: ["https://testnet.bscscan.com/"],
+            },
+          ],
+        });
         //get the actual networkid or chainid
         let ActualnetworkId = await window.ethereum.request({
           method: "net_version",
