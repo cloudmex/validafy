@@ -99,18 +99,10 @@ export default function Landing() {
       } else if (window.web3) {
         window.web3 = new Web3(window.web3.currentProvider);
       } else {
-        
-        setShowModal({
-          ...initialBc,
-          show: true,
-          success: false,
-          message: "No se ha detectado un navegador compatible con ethereum,prueba instalando la extension de MetaMask!",
-        });
-
-        setTimeout(function(){
-          window.location.href ="https://metamask.io/download"
-       }, 5000); 
-     
+        window.alert(
+          "No se ha detectado un navegador compatible con ethereum,prueba instalando la extension de MetaMask!"
+        );
+        window.location.href = "https://metamask.io/download";
       }
     } catch (error) {
       console.error(error);
@@ -131,13 +123,7 @@ export default function Landing() {
     if (networkId) {
       console.log(initialBc.contract);
     } else {
-      //window.alert("Smart contract not deployed to detected network.");
-      setShowModal({
-        ...initialBc,
-        show: true,
-        success: false,
-        message: " !Smart contract not deployed to detected network.¡",
-      });
+      window.alert("Smart contract not deployed to detected network.");
     }
   }
   /**
@@ -238,7 +224,7 @@ export default function Landing() {
             });
         };
       } catch (err) {
-       // window.alert(err.message || err);
+        window.alert(err.message || err);
         return;
       }
     } else {
@@ -273,7 +259,7 @@ export default function Landing() {
         ],
       });
     } catch (err) {
-     // window.alert(err.message);
+      window.alert(err.message);
       return;
     }
   }
@@ -313,7 +299,7 @@ export default function Landing() {
     window.alert("haz click en el boton de Metamask");
   };
 
- /* useEffect(() => {
+  useEffect(() => {
     loadWeb3();
     try {
       window.ethereum._metamask
@@ -333,56 +319,16 @@ export default function Landing() {
     } catch (error) {
       console.log("e");
     }
-  });*/
+  });
   async function see() {
-    try {
-      window.ethereum._metamask
-        .isUnlocked()
-        .then(function(value) {
-          if (value) {
-            setShowModal({
-              ...initialBc,
-              show: true,
-              success: true,
-              message: "!Vamos a Estampar¡",
-            });
-        
-            setTimeout(function(){
-              window.location.href="/dash";
-           }, 5000); 
-          } else {
-             setShowModal({
-              ...initialBc,
-              show: true,
-              success: false,
-              message: "!Advertencia !.\nPrimero logeate",
-            });
-            window.location.href = "/login";
-          }
-          
-        });
-        
-    } catch (error) {
-      console.log("e");
-    }
-
-   
-  
-
-  /*  const var4 = buttontxt;
+    const var4 = buttontxt;
     if (var4 == "Mi cuenta") {
       console.log("=> al dash");
-     // window.location.href = "/dash";
+      window.location.href = "/dash";
     } else {
-      //window.alert("Primero debes ingresar");
-      setShowModal({
-        ...initialBc,
-        show: true,
-        success: false,
-        message: "!Advertencia !.\nPrimero logeate",
-      });
+      window.alert("Primero debes ingresar");
       window.location.href = "/login";
-    }*/
+    }
   }
 
   return (

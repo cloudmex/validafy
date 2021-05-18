@@ -10,57 +10,6 @@ console.log(window.ethereum);
 export default function Profile() {
   const [Documents, setDocuments] = useState([]);
   const [Profile, setProfile] = useState([]);
-  const [initialBc, setInitialBc] = useState({
-    Hash: "",
-    contract: null,
-    buffer: null,
-    web3: null,
-    account: null,
-    file:null,
-    showHidebutton: false,
-    showHideCharge:false,
-    showHideProgress:false,
-    showHideFile:true,
-
-  });
-  const [Modal, setShowModal] = React.useState({ show: false });
-
-
-  async function addNetwork() {
-    
-    try {
-      
-   await  window.ethereum.request({
-        method: "wallet_addEthereumChain",
-        params: [
-          {
-            chainId: "0x61",
-            chainName: "BSCTESTNET",
-            rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
-            nativeCurrency: {
-              name: "BINANCE COIN",
-              symbol: "BNB",
-              decimals: 18,
-            },
-            blockExplorerUrls: ["https://testnet.bscscan.com/"],
-          },
-        ],
-      });
-       
-     
-    } catch (error) {
-      setShowModal({
-        ...initialBc,
-        show: true,
-        success: false,
-        message: "!Error!.\nCambia de red",
-      });
-      addNetwork();
-      window.location.reload();
-     // window.alert("Cambia de red porfavor")
-    }
-   
-  } 
   useEffect(() => {
     (async () => {
       window.history.pushState(null, document.title, window.location.href);
@@ -93,15 +42,8 @@ export default function Profile() {
         let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
 
         if (!tokenNetworkData) {
-          // window.alert("Ese smartcontract no se desplego en esta red");
-          setShowModal({
-            ...initialBc,
-            show: true,
-            success: false,
-            message: "!Advertencia!  cambia de red",
-          });
-          addNetwork()
-           return;
+          window.alert("Ese smartcontract no se desplego en esta red");
+          return;
         }
         //instantiate the contract object
         setProfile({ address: useraccounts });
@@ -377,67 +319,6 @@ export default function Profile() {
               </div>
             </div>
           </footer>
-          {Modal.show ? (
-          <>
-            <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
-              <div className="relative w-1/2 my-6 ">
-                {/*content*/}
-                <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
-                  {/*header*/}
-
-                  <div
-                    className={`${
-                      Modal.success ? "bg-emerald-500" : "bg-red-500"
-                    }  flex items-start justify-center p-5 border-b border-solid border-blueGray-200 rounded-t`}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="w-16 h-16 text-white my-10"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      {Modal.success ? (
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      ) : (
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      )}
-                    </svg>
-                  </div>
-                  <div className="relative p-6 flex flex-col space-y-4 justify-center ">
-                    <p className="flex-initial my-4 text-center text-2xl leading-relaxed">
-                      {Modal.message}
-                    </p>
-                    <button
-                      className={`${
-                        Modal.success ? "bg-emerald-500" : "bg-red-500"
-                      } w-min  text-white active:${
-                        Modal.success ? "bg-emerald-600" : "bg-red-600"
-                      } font-bold uppercase text-sm px-6 py-3 rounded-full shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
-                      type="button"
-                      onClick={() => {
-                        setShowModal({ ...Modal, show: false });
-                      }}
-                    >
-                      continuar
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
-          </>
-        ) : null}
         </main>
       </div>
     </>
