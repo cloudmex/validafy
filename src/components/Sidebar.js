@@ -23,16 +23,10 @@ export default function Sidebar() {
             className="md:block text-left md:pb-2 hover:text-pink-600 text-blueGray-600 mr-0 inline-block whitespace-nowrap text-sm uppercase font-bold p-4 px-0"
             to="/"
           >
-Validafy          </Link>
+            Validafy{" "}
+          </Link>
           {/* User */}
-          <ul className="md:hidden items-center flex flex-wrap list-none">
-            <li className="inline-block relative">
-              <NotificationDropdown />
-            </li>
-            <li className="inline-block relative">
-              <UserDropdown />
-            </li>
-          </ul>
+          <ul className="md:hidden items-center flex flex-wrap list-none"></ul>
           {/* Collapse */}
           <div
             className={
@@ -48,7 +42,8 @@ Validafy          </Link>
                     className="md:block text-left md:pb-2 text-blueGray-600 mr-0 hover:text-pink-600 inline-block whitespace-nowrap text-sm uppercase font-bold p-4 px-0"
                     to="/"
                   >
-Validafy                  </Link>
+                    Validafy{" "}
+                  </Link>
                 </div>
                 <div className="w-6/12 flex justify-end">
                   <button
@@ -61,42 +56,27 @@ Validafy                  </Link>
                 </div>
               </div>
             </div>
-            {/* Form */}
-            <form className="mt-6 mb-4 md:hidden">
-              <div className="mb-3 pt-0">
-                <input
-                  type="text"
-                  placeholder="Search"
-                  className="border-0 px-3 py-2 h-12 border border-solid  border-blueGray-500 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-base leading-snug shadow-none outline-none focus:outline-none w-full font-normal"
-                />
-              </div>
-            </form>
             {/* Navigation */}
             <ul className="md:flex-col md:min-w-full flex flex-col list-none">
-           
               <li className="items-center">
                 <Link
                   className=" text-blueGray-700 hover:text-pink-600 text-xs uppercase py-3 font-bold block"
                   to="/dash"
                 >
-                  <i className="fa fa-link opacity-75 uppercase mr-2 text-sm"></i> Estampar
+                  <i className="fa fa-link opacity-75 uppercase mr-2 text-sm"></i>{" "}
+                  Estampar
                 </Link>
               </li>
-
-              
 
               <li className="items-center">
                 <Link
                   className="text-blueGray-700 hover:text-pink-600 text-xs uppercase py-3 font-bold block"
                   to="/perfil"
                 >
-                  <i className="fas fa-user-circle text-blueGray-400 mr-2 uppercase text-sm"></i> mis documentos
+                  <i className="fas fa-user-circle text-blueGray-400 mr-2 uppercase text-sm"></i>{" "}
+                  mis documentos
                 </Link>
               </li>
-
-              
-               
- 
             </ul>
             {/* Divider */}
             <hr className="my-4 md:min-w-full" />

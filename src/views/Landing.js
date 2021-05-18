@@ -334,6 +334,7 @@ export default function Landing() {
   return (
     <>
       <Navbar transparent />
+
       {message}
       <main>
         <div
@@ -397,8 +398,9 @@ export default function Landing() {
             </svg>
           </div>
         </div>
+
         <section className="pb-20 bg-gray-300 -mt-24">
-          <div className="container mx-auto px-4">
+          <div className=" ">
             <div className="flex flex-wrap">
               <div className="lg:pt-12 pt-6 w-full md:w-4/12 px-4 text-center">
                 <div className="relative flex flex-col min-w-0 break-words bg-white w-full mb-8 shadow-lg rounded-lg">
@@ -447,12 +449,15 @@ export default function Landing() {
                 </div>
               </div>
             </div>
-            <div name="valida" className="flex flex-wrap items-center pt-16">
+            <div
+              name="valida"
+              className=" w-full flex flex-wrap items-center pt-16 justify-center "
+            >
               <h1 className="self-center w-full text-center	 shadow text-6xl text-gray-600 mb-6 ">
                 Valida tu documento
               </h1>
-              <div className=" w-full md:w-1  text-center pb-20 ">
-                <div className="px-12 sm:px-0   min-w-0 break-words  mb-8  rounded-lg mt-4">
+              <div className=" w-full lg:w-11/12 px-4  text-center pb-20 ">
+                <div className=" md:px-2 break-words  mb-8  rounded-lg mt-4 shadow-md">
                   <ul
                     className="flex mb-0 list-none flex-wrap pt-3 pb-4 flex-row"
                     role="tablist"
@@ -494,8 +499,8 @@ export default function Landing() {
                     </li>
                   </ul>
 
-                  <div className="relative flex flex-col min-w-0 break-words bg-white w-full mb-6  rounded">
-                    <div className="px-4 py-5 flex-auto">
+                  <div className="relative flex flex-col min-w-0 break-words bg-white  mb-6  rounded">
+                    <div className=" py-5 ">
                       <div>
                         <div
                           className={openTab === 1 ? "block" : "hidden"}
@@ -628,13 +633,13 @@ export default function Landing() {
             </div>
           </div>
         </section>
-        <section className="pb-20 relative block bg-gray-900">
+        <section className="relative  bg-gray-900">
           <div
             className="bottom-auto top-0 left-0 right-0 w-full absolute pointer-events-none overflow-hidden -mt-20"
             style={{ height: "80px" }}
           >
             <svg
-              className="absolute bottom-0 overflow-hidden"
+              className="absolute bottom-0 overflow-hidden bord"
               xmlns="http://www.w3.org/2000/svg"
               preserveAspectRatio="none"
               version="1.1"
@@ -649,9 +654,9 @@ export default function Landing() {
             </svg>
           </div>
 
-          <div className="container mx-auto px-4 lg:pt-24 lg:pb-64">
+          <div className=" mx-auto px-4 ">
             <div className="flex flex-wrap text-center justify-center">
-              <div className="w-full lg:w-6/12 px-4">
+              <div className="lg:w-6/12 py-24">
                 <h2 className="text-4xl font-semibold text-white">
                   Construye con nosotros
                 </h2>
@@ -665,22 +670,13 @@ export default function Landing() {
             </div>
           </div>
         </section>
-        <section className="relative block py-24 lg:pt-0 bg-gray-900">
-          <div className="container mx-auto px-4">
-            <div className="flex flex-wrap justify-center lg:-mt-64 -mt-48">
-              <div className="w-full lg:w-6/12 px-4">
-                <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-gray-300"></div>
-              </div>
-            </div>
-          </div>
-        </section>
 
         {Modal.show ? (
           <>
-            <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
-              <div className="relative w-1/2 my-6 ">
+            <div className="  justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none ">
+              <div className="w-full md:w-6/12 my-6 ">
                 {/*content*/}
-                <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                <div className=" rounded-lg shadow-lg  flex flex-col  bg-white outline-none focus:outline-none">
                   {/*header*/}
 
                   <div
