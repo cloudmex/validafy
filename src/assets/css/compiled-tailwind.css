@@ -2139,6 +2139,12 @@ select {
 .table-cell {
   display: table-cell;
 }
+.lg\:table-cell {
+  display: table-cell;
+}
+.lg\:table-row {
+  display: table-row;
+}
 
 .table-column {
   display: table-column;
@@ -3532,6 +3538,8 @@ select {
   position: relative;
 }
 
+
+
 .sticky {
   position: sticky;
 }
@@ -4732,7 +4740,12 @@ select {
 
   .lg\:hidden {
     display: none;
+  } 
+  
+   .lg\:flex-nowrap {
+    flex-wrap: nowrap;
   }
+
 
   .lg\:flex-row {
     flex-direction: row;
