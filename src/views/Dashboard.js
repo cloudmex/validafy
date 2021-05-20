@@ -118,11 +118,53 @@ export default function Dashboard() {
     setSm([]);
     mycomision.setItem("payed", false);
   };
+ 
+  async function addNetwork() {
+    
+    try {
+      
+   await  window.ethereum.request({
+        method: "wallet_addEthereumChain",
+        params: [
+          {
+            chainId: "0x61",
+            chainName: "BSCTESTNET",
+            rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
+            nativeCurrency: {
+              name: "BINANCE COIN",
+              symbol: "BNB",
+              decimals: 18,
+            },
+            blockExplorerUrls: ["https://testnet.bscscan.com/"],
+          },
+        ],
+      });
+       
+     
+    } catch (error) {
+     
+      addNetwork();
+      window.location.reload();
+     // window.alert("Cambia de red porfavor")
+    }
+   
+  } 
 
   useEffect(() => {
     (async () => {
-      //console.log("mycomi"+mycomision.getItem("payed"))
-
+    //console.log("mycomi"+mycomision.getItem("payed"))
+    try {
+      window.ethereum._metamask.isUnlocked().then(function(value) {
+        if (value) {
+          console.log("Abierto");
+        } else {
+          console.log("Cerrado");
+          window.location.href = "/";
+        }
+      });
+    } catch (error) {
+      console.log("e"+error);
+    }
       if (window.ethereum) {
         window.web3 = new Web3(window.ethereum);
 
@@ -139,8 +181,15 @@ export default function Dashboard() {
         let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
 
         if (!tokenNetworkData) {
-          window.alert("Ese smartcontract no se desplego en esta red");
-          return;
+         // window.alert("Ese smartcontract no se desplego en esta red");
+          setShowModal({
+            ...initialBc,
+            show: true,
+            success: false,
+            message: "!Advertencia!  cambia de red",
+          });
+          
+           return;
         }
         //instantiate the contract object
         let contract = new window.web3.eth.Contract(
@@ -149,6 +198,8 @@ export default function Dashboard() {
         );
         setSm({ contr: contract, useraccount: useraccounts[0] });
       }
+
+      
     })();
   }, []);
 
@@ -201,95 +252,103 @@ export default function Dashboard() {
   //console.log("buffer v", initialBc.buffer);
   };
 */
-  const Validar = async (event) => {
-    event.preventDefault();
-    ///browser detection
-    if (window.ethereum) {
-      window.web3 = new Web3(window.ethereum);
+const Validar = async (event) => {
 
-      try {
-        //tratamos de cargar el documento que el usuario eligio
-        const file = event.target.files[0];
+  
+  
+  
+  event.preventDefault();
+  ///browser detection
+  if (window.ethereum) {
+    window.web3 = new Web3(window.ethereum);
 
-        if (!event.target.files) {
-          throw "no agrego ningun archivo";
-        }
-        //cambiar red
-        await window.ethereum.request({
-          method: "wallet_addEthereumChain",
-          params: [
-            {
-              chainId: "0x61",
-              chainName: "BSCTESTNET",
-              rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
-              nativeCurrency: {
-                name: "BINANCE COIN",
-                symbol: "BNB",
-                decimals: 18,
-              },
-              blockExplorerUrls: ["https://testnet.bscscan.com/"],
-            },
-          ],
-        });
-        //get the actual networkid or chainid
-        let ActualnetworkId = await window.ethereum.request({
-          method: "net_version",
-        });
-        // sm address
-        let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
-        //instantiate the contract object
-        let contract = new window.web3.eth.Contract(
-          ValidafySM.abi,
-          tokenNetworkData.address
-        );
+    try {
+          if( networkId != 97) {
+        
+            // window.alert('Error de red,Selecciona la red de BSC para seguir.')
+          
+            
+              window.location.reload(1);
+            
+          
+          }
+          //tratamos de cargar el documento que el usuario eligio
+          const file = event.target.files[0];
 
-        //nos permite cargar el archivo
-        const reader = new window.FileReader();
-        reader.readAsArrayBuffer(file);
-        reader.onloadend = () => {
-          //obtener el hash de ipfs ,una vez que cargo el archivo
-          ipfs
-            .add(Buffer(reader.result), { onlyHash: true })
-            .then(async (result) => {
-              //comprobar si el hash se encuetra dentro de algun tokenuri
-              let ishashed = await contract.methods
-                .IsHashed(result[0].hash)
-                .call();
-              console.log(result[0].hash);
-              let estado = "Documento no estampado";
-              if (ishashed) estado = "Documento Valido";
-              setShowModal({
-                ...initialBc,
-                show: true,
-                success: ishashed,
-                message: estado,
-              });
-
-              setInitialBc({ ...initialBc, namepdf: file.name });
+          if (!event.target.files) {
+            throw "no agrego ningun archivo";
+          }
+          //cambiar red
+          
+          
+          //get the actual networkid or chainid
+          let ActualnetworkId = await window.ethereum.request({
+            method: "net_version",
+          });
+          // sm address
+          let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
+          //instantiate the contract object
+          let contract = new window.web3.eth.Contract(
+            ValidafySM.abi,
+            tokenNetworkData.address
+          );
+          const web3 = window.web3
+          const networkId =  await web3.eth.net.getId();
+          
+          
+          //nos permite cargar el archivo
+          const reader = new window.FileReader();
+          reader.readAsArrayBuffer(file);
+          reader.onloadend = () => {
+            //obtener el hash de ipfs ,una vez que cargo el archivo
+            ipfs
+              .add(Buffer(reader.result), { onlyHash: true })
+              .then(async (result) => {
+                //comprobar si el hash se encuetra dentro de algun tokenuri
+                let ishashed = await contract.methods
+                  .IsHashed(result[0].hash)
+                  .call();
+                console.log(result[0].hash);
+                let estado = "Documento no estampado";
+                if (ishashed) estado = "Documento Valido";
+                setShowModal({
+                  ...initialBc,
+                  show: true,
+                  success: ishashed,
+                  message: estado,
+                });
             });
-        };
-      } catch (err) {
-        window.alert(err.message || err);
-        return;
-      }
-    } else {
-      //no tiene metamask lo mandamos a la pagina oficial de descarga
-
-      window.open("https://metamask.io/download", "_blank");
+      } 
+    }catch (err) {
+     // window.alert(err.message || err);
+      return;
     }
-  };
+  }
+}
 
   const ValidarCaptura = async (event) => {
     event.preventDefault();
     unhideCharge(true);
-
+    
     setestadoProgress("Paso 1 de 6: Validando documento : ");
     setprogress(10);
     ///browser detection
     if (window.ethereum) {
+
+      
       window.web3 = new Web3(window.ethereum);
 
       try {
+
+        if( window.web3.eth.net.getId()!= 97) {
+       
+          // window.alert('Error de red,Selecciona la red de BSC para seguir.')
+        
+           setTimeout(function(){
+            window.location.reload(1);
+         }, 2000); 
+        
+         }
         //tratamos de cargar el documento que el usuario eligio
         const file = event.target.files[0];
 
@@ -427,7 +486,7 @@ export default function Dashboard() {
             });
         };
       } catch (err) {
-        window.alert(err.message || err);
+      //  window.alert(err.message || err);
         return;
       }
     } else {

@@ -7,6 +7,8 @@ export default function Navbar(props) {
   const [initialBc,setInitialBc]=useState({Hash: '',contract: null,buffer:null,web3: null,account: null});
   const [account,setAccount]=useState("");
   const [buttontxt,setbuttontxt] = useState("Ingresar");
+  const [Modal, setShowModal] = React.useState({ show: false });
+  
 
   async function componentWillMount() {
     await this.loadWeb3()
@@ -43,13 +45,23 @@ export default function Navbar(props) {
     setAccount({account:accounts[0]})
     console.log(account)
     const networkId = await web3.eth.net.getId()
-    
-    if( networkId) {
+   // window.alert(networkId)
+    if( networkId ==97) {
        
-      console.log(initialBc)
-      window.location.href ="/dash"
+     
+     
     } else {
-      window.alert('Error de red,Selecciona la red de BSC para seguir.')
+     // window.alert('Error de red,Selecciona la red de BSC para seguir.')
+      setShowModal({
+        ...initialBc,
+        show: true,
+        success: false,
+        message: " !Error de red¡,Selecciona la red de BSC para seguir.",
+      });
+      setTimeout(function(){
+        addNetwork();
+     }, 3000); 
+      
     }
 
       
@@ -58,31 +70,111 @@ export default function Navbar(props) {
     }
 
   }
-  async function see() {
-    if(buttontxt.toString=="Mi cuenta"){
-      window.location.href="/dash"
+  async function addNetwork() {
     
+    try {
+      
+   await  window.ethereum.request({
+        method: "wallet_addEthereumChain",
+        params: [
+          {
+            chainId: "0x61",
+            chainName: "BSCTESTNET",
+            rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
+            nativeCurrency: {
+              name: "BINANCE COIN",
+              symbol: "BNB",
+              decimals: 18,
+            },
+            blockExplorerUrls: ["https://testnet.bscscan.com/"],
+          },
+        ],
+      });
+       
+   
+    } catch (error) {
+     
+     // window.alert("Cambia de red porfavor")
     }
-    else{ window.location.href="/login"; }
+   
+  }
+  async function see() {
+    const web3 = window.web3
+    const networkId =  await web3.eth.net.getId();
+    try {
+       window.ethereum._metamask
+        .isUnlocked()
+        .then(function(value) {
+          if (value) {
+            
+            console.log(networkId)
+
+            if( networkId == 97) {
+       
+              
+                window.location.href="/dash";
+            
+            }else {
+              // window.alert('Error de red,Selecciona la red de BSC para seguir.')
+               setShowModal({
+                 ...initialBc,
+                 show: true,
+                 success: false,
+                 message: " !Error de red¡,Selecciona la red de BSC para seguir.",
+               });
+              
+               
+             }
+             
+           
+          } else {
+             setShowModal({
+              ...initialBc,
+              show: true,
+              success: false,
+              message: "Para ingresar al panel de tu cuenta primero tienes que estar logeado",
+            });
+            setTimeout(function(){
+              window.location.href = "/login";
+           }, 3000); 
+            
+          }
+          
+        });
+        
+    } catch (error) {
+      // window.alertt(error)
+      console.log("e" );
+    }
+   
     
     }
     
 
-    useEffect(() => {
+    useEffect(async () => {
      
-      
-      window.ethereum._metamask.isUnlocked().then(function(value){
-        if(value){        console.log("Abierto")
-        setbuttontxt("Mi cuenta")
-         
+     await loadWeb3();
+      try {
+        window.ethereum._metamask
+          .isUnlocked()
+          .then(function(value) {
+            if (value) {
+               console.log("en loginlanding Abierto");
+              
+              setbuttontxt("Mi cuenta");
+              console.log(buttontxt);
+             
+              
+            } else {
+              console.log("Cerrado");
+            }
+          });
+      } catch (error) {
+        console.log("e"+error);
       }
-      else{ console.log("Cerrado");
-       
-    }
-      });
- 
-      console.log(window.ethereum);
-  });
+    },[]);
+
+
   const [navbarOpen, setNavbarOpen] = React.useState(false);
   return (
     <nav
@@ -227,6 +319,69 @@ export default function Navbar(props) {
             
 
       </div>
+      {Modal.show ? (
+          <>
+            <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+              <div className="relative w-1/2 my-6 ">
+                {/*content*/}
+                <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                  {/*header*/}
+
+                  <div
+                    className={`${
+                      Modal.success ? "bg-emerald-500" : "bg-red-500"
+                    }  flex items-start justify-center p-5 border-b border-solid border-blueGray-200 rounded-t`}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-16 h-16 text-white my-10"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      {Modal.success ? (
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      ) : (
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      )}
+                    </svg>
+                  </div>
+                  <div className="relative p-6 flex flex-col space-y-4 justify-center ">
+                    <p className="flex-initial my-4 text-center text-2xl leading-relaxed">
+                      {Modal.message}
+                    </p>
+                    <button
+                      className={`${
+                        Modal.success ? "bg-emerald-500" : "bg-red-500"
+                      } w-min  text-white active:${
+                        Modal.success ? "bg-emerald-600" : "bg-red-600"
+                      } font-bold uppercase text-sm px-6 py-3 rounded-full shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
+                      type="button"
+                      onClick={() => {
+                        setShowModal({ ...Modal, show: false });
+                      }}
+                    >
+                      continuar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+          </>
+        ) : null}
+
+ 
     </nav>
   );
 }
