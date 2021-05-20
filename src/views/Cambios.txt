@@ -1,0 +1,15 @@
+fixed landing charge automatically the networks
+landing /Navbar_landing
+        --fixed the network charge automatically (VAL-50)
+        --add modal at estampar button(Val-51)
+        --fixed button "ingresar" dont show login if is logged in (VAL-53)
+        -erased all window.alert's
+        --show modal to redirect to the dashboard(Val-49)
+Dashboard
+        --if matamask isnt open,dashboard returns to landing
+        --fixed the network charge automatically now u cant continue (VAL-50)
+        -erased all window.alert's
+profile
+        --if matamask isnt open,profile returns to landing
+        --fixed the network charge automatically now u cant continue (VAL-50)
+        -erased all window.alert's

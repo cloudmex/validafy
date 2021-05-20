@@ -67,17 +67,17 @@ export default function Landing() {
    */
   const eventHandlers = {
     addedfile: (file) => {
-      console.log(file);
-      console.log("just file " + file);
+      //console.log(file);
+      //console.log("just file " + file);
       const reader = new window.FileReader();
       reader.readAsArrayBuffer(file);
       reader.onloadend = () => {
-        console.log(reader);
-        console.log(reader.result);
+        //console.log(reader);
+        //console.log(reader.result);
 
         setInitialBc({ buffer: Buffer(reader.result) });
         setBuffer({ buffer: Buffer(reader.result) });
-        console.log("buffer2", buffer);
+        //console.log("buffer2", buffer);
       };
     },
   };
@@ -105,7 +105,7 @@ export default function Landing() {
         window.location.href = "https://metamask.io/download";
       }
     } catch (error) {
-      console.error(error);
+      //console.error(error);
       window.location.reload();
     }
   }
@@ -117,11 +117,11 @@ export default function Landing() {
     // Load account
     const accounts = await web3.eth.getAccounts();
     setInitialBc({ account: accounts[0] });
-    console.log(initialBc.account);
+    ////console.log(initialBc.account);
     const networkId = await web3.eth.net.getId();
 
     if (networkId) {
-      console.log(initialBc.contract);
+      //console.log(initialBc.contract);
     } else {
       window.alert("Smart contract not deployed to detected network.");
     }
@@ -143,19 +143,22 @@ export default function Landing() {
             file.name.length > 13 ? file.name.slice(0, 12) + "..." : file.name,
         });
         setBuffer({ buffer: Buffer(reader.result) });
-        console.log("buffer2", buffer);
+        //console.log("buffer2", buffer);
       };
     } catch (error) {
-      console.log(error);
+      //console.log(error);
     }
 
-    console.log("buffer v", initialBc.buffer);
+    //console.log("buffer v", initialBc.buffer);
   };
   /**
    * podemos validar la existencia de un archivo con este metodo
    * @param {*} event tiene toda la informacion del input asociado
    * @returns  no regresa nada
    */
+  const resetInput = () =>{
+
+  }
   const Validar = async (event) => {
     event.preventDefault();
     ///browser detection
@@ -170,6 +173,25 @@ export default function Landing() {
           throw "no agrego ningun archivo";
         }
         //cambiar red
+
+        const web3 = window.web3
+        const networkId =  await web3.eth.net.getId();
+        
+        if( networkId != 97) {
+       
+          // window.alert('Error de red,Selecciona la red de BSC para seguir.')
+        
+          setShowModal({
+            ...initialBc,
+            show: true,
+            success: false,
+            message: " !Error de red,Selecciona la red de BSC para seguir.¡",
+          });
+           setTimeout(function(){
+            window.location.reload(1);
+         }, 2000); 
+        
+         }
         await window.ethereum.request({
           method: "wallet_addEthereumChain",
           params: [
@@ -210,7 +232,7 @@ export default function Landing() {
               let ishashed = await contract.methods
                 .IsHashed(result[0].hash)
                 .call();
-              console.log(result[0].hash);
+              //console.log(result[0].hash);
               let estado = "Documento no estampado";
               if (ishashed) estado = "Documento Valido";
               setShowModal({
@@ -280,8 +302,8 @@ export default function Landing() {
             .createItem(sm.useraccount, result[0].path)
             .send({ from: sm.useraccount })
             .once("receipt", (receipt) => {
-              console.log(receipt);
-              console.log(result);
+              //console.log(receipt);
+              //console.log(result);
               //se hizo correctamente la transaccion
               if (receipt.status) {
                 setIpfs(result[0].path);
@@ -290,7 +312,7 @@ export default function Landing() {
         });
       };
     } catch (error) {
-      console.log(error);
+      //console.log(error);
     }
   };
   const alert = (event) => {
@@ -306,31 +328,76 @@ export default function Landing() {
         .isUnlocked()
         .then(function(value) {
           if (value) {
-            console.log("en landing Abierto");
+            //console.log("en landing Abierto");
             setbuttontxt("Mi cuenta");
-            console.log("=> " + buttontxt);
+            //console.log("=> " + buttontxt);
             setbuttontxt("Mi cuenta");
-            console.log(buttontxt);
+            //console.log(buttontxt);
           } else {
-            console.log("Cerrado");
+            //console.log("Cerrado");
           }
         })
-        .catch((err) => console.log("h0ola"));
+         
     } catch (error) {
-      console.log("e");
+      //console.log("e");
     }
   });
   async function see() {
-    const var4 = buttontxt;
-    if (var4 == "Mi cuenta") {
-      console.log("=> al dash");
-      window.location.href = "/dash";
-    } else {
-      window.alert("Primero debes ingresar");
-      window.location.href = "/login";
-    }
-  }
+    const web3 = window.web3
+    const networkId =  await web3.eth.net.getId();
+    try {
+       window.ethereum._metamask
+        .isUnlocked()
+        .then(function(value) {
+          if (value) {
+            
+            console.log(networkId)
 
+            if( networkId == 97) {
+       
+              setShowModal({
+                ...initialBc,
+                show: true,
+                success: true,
+                message: "!Vamos a Estampar¡",
+              });
+          
+              setTimeout(function(){
+                window.location.href="/dash";
+             }, 5000); 
+             
+            }else {
+              // window.alert('Error de red,Selecciona la red de BSC para seguir.')
+               setShowModal({
+                 ...initialBc,
+                 show: true,
+                 success: false,
+                 message: " !Error de red¡,Selecciona la red de BSC para seguir.",
+               });
+              
+               
+             }
+             
+           
+          } else {
+             setShowModal({
+              ...initialBc,
+              show: true,
+              success: false,
+              message: "!Advertencia !.\nPrimero logeate",
+            });
+            window.location.href = "/login";
+          }
+          
+        });
+        
+    } catch (error) {
+      // window.alertt(error)
+      console.log("e" );
+    }
+   
+    
+    }
   return (
     <>
       <Navbar transparent />
