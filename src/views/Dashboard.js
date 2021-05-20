@@ -253,248 +253,256 @@ export default function Dashboard() {
   };
 */
 const Validar = async (event) => {
-
-  
-  
-  
   event.preventDefault();
   ///browser detection
   if (window.ethereum) {
     window.web3 = new Web3(window.ethereum);
 
     try {
-          if( networkId != 97) {
-        
-            // window.alert('Error de red,Selecciona la red de BSC para seguir.')
-          
-            
-              window.location.reload(1);
-            
-          
-          }
-          //tratamos de cargar el documento que el usuario eligio
-          const file = event.target.files[0];
+      //tratamos de cargar el documento que el usuario eligio
+      const file = event.target.files[0];
 
-          if (!event.target.files) {
-            throw "no agrego ningun archivo";
-          }
-          //cambiar red
-          
-          
-          //get the actual networkid or chainid
-          let ActualnetworkId = await window.ethereum.request({
-            method: "net_version",
-          });
-          // sm address
-          let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
-          //instantiate the contract object
-          let contract = new window.web3.eth.Contract(
-            ValidafySM.abi,
-            tokenNetworkData.address
-          );
-          const web3 = window.web3
-          const networkId =  await web3.eth.net.getId();
-          
-          
-          //nos permite cargar el archivo
-          const reader = new window.FileReader();
-          reader.readAsArrayBuffer(file);
-          reader.onloadend = () => {
-            //obtener el hash de ipfs ,una vez que cargo el archivo
-            ipfs
-              .add(Buffer(reader.result), { onlyHash: true })
-              .then(async (result) => {
-                //comprobar si el hash se encuetra dentro de algun tokenuri
-                let ishashed = await contract.methods
-                  .IsHashed(result[0].hash)
-                  .call();
-                console.log(result[0].hash);
-                let estado = "Documento no estampado";
-                if (ishashed) estado = "Documento Valido";
-                setShowModal({
-                  ...initialBc,
-                  show: true,
-                  success: ishashed,
-                  message: estado,
-                });
+      if (!event.target.files) {
+        throw "no agrego ningun archivo";
+      }
+      //cambiar red
+
+      const web3 = window.web3
+      const networkId =  await web3.eth.net.getId();
+      
+      if( networkId != 97) {
+     
+        // window.alert('Error de red,Selecciona la red de BSC para seguir.')
+      
+        setShowModal({
+          ...initialBc,
+          show: true,
+          success: false,
+          message: " !Error de red,Selecciona la red de BSC para seguir.¡",
+        });
+         setTimeout(function(){
+          window.location.reload(1);
+       }, 2000); 
+      
+       }
+      await window.ethereum.request({
+        method: "wallet_addEthereumChain",
+        params: [
+          {
+            chainId: "0x61",
+            chainName: "BSCTESTNET",
+            rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
+            nativeCurrency: {
+              name: "BINANCE COIN",
+              symbol: "BNB",
+              decimals: 18,
+            },
+            blockExplorerUrls: ["https://testnet.bscscan.com/"],
+          },
+        ],
+      });
+      //get the actual networkid or chainid
+      let ActualnetworkId = await window.ethereum.request({
+        method: "net_version",
+      });
+      // sm address
+      let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
+      //instantiate the contract object
+      let contract = new window.web3.eth.Contract(
+        ValidafySM.abi,
+        tokenNetworkData.address
+      );
+
+      //nos permite cargar el archivo
+      const reader = new window.FileReader();
+      reader.readAsArrayBuffer(file);
+      reader.onloadend = () => {
+        //obtener el hash de ipfs ,una vez que cargo el archivo
+        ipfs
+          .add(Buffer(reader.result), { onlyHash: true })
+          .then(async (result) => {
+            //comprobar si el hash se encuetra dentro de algun tokenuri
+            let ishashed = await contract.methods
+              .IsHashed(result[0].hash)
+              .call();
+            //console.log(result[0].hash);
+            let estado = "Documento no estampado";
+            if (ishashed) estado = "Documento Valido";
+            setShowModal({
+              ...initialBc,
+              show: true,
+              success: ishashed,
+              message: estado,
             });
-      } 
-    }catch (err) {
-     // window.alert(err.message || err);
+
+            setInitialBc({ ...initialBc, namepdf: file.name });
+          });
+      };
+    } catch (err) {
+   //   window.alert(err.message || err);
       return;
     }
+  } else {
+    //no tiene metamask lo mandamos a la pagina oficial de descarga
+
+    window.open("https://metamask.io/download", "_blank");
   }
-}
+};
 
-  const ValidarCaptura = async (event) => {
-    event.preventDefault();
-    unhideCharge(true);
-    
-    setestadoProgress("Paso 1 de 6: Validando documento : ");
-    setprogress(10);
-    ///browser detection
-    if (window.ethereum) {
+const ValidarCaptura = async (event) => {
+  event.preventDefault();
+  unhideCharge(true);
 
+  setestadoProgress("Paso 1 de 6: Validando documento : ");
+  setprogress(10);
+  ///browser detection
+  if (window.ethereum) {
+    window.web3 = new Web3(window.ethereum);
+
+    try {
+      //tratamos de cargar el documento que el usuario eligio
+      const file = event.target.files[0];
+
+      if (!event.target.files) {
+        throw "no agrego ningun archivo";
+      }
+      //cambiar red
+      const web3 = window.web3
+      const networkId =  await web3.eth.net.getId();
       
-      window.web3 = new Web3(window.ethereum);
-
-      try {
-
-        if( window.web3.eth.net.getId()!= 97) {
+      if( networkId != 97) {
+     
+        // window.alert('Error de red,Selecciona la red de BSC para seguir.')
+      
        
-          // window.alert('Error de red,Selecciona la red de BSC para seguir.')
-        
-           setTimeout(function(){
-            window.location.reload(1);
-         }, 2000); 
-        
-         }
-        //tratamos de cargar el documento que el usuario eligio
-        const file = event.target.files[0];
+         setTimeout(function(){
+          window.location.reload(1);
+       }, 2000); 
+      
+       }
+      //get the actual networkid or chainid
+      let ActualnetworkId = await window.ethereum.request({
+        method: "net_version",
+      });
+      // sm address
+      let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
+      //instantiate the contract object
+      let contract = new window.web3.eth.Contract(
+        ValidafySM.abi,
+        tokenNetworkData.address
+      );
 
-        if (!event.target.files) {
-          throw "no agrego ningun archivo";
-        }
-        //cambiar red
-        await window.ethereum.request({
-          method: "wallet_addEthereumChain",
-          params: [
-            {
-              chainId: "0x61",
-              chainName: "BSCTESTNET",
-              rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
-              nativeCurrency: {
-                name: "BINANCE COIN",
-                symbol: "BNB",
-                decimals: 18,
-              },
-              blockExplorerUrls: ["https://testnet.bscscan.com/"],
-            },
-          ],
-        });
-        //get the actual networkid or chainid
-        let ActualnetworkId = await window.ethereum.request({
-          method: "net_version",
-        });
-        // sm address
-        let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
-        //instantiate the contract object
-        let contract = new window.web3.eth.Contract(
-          ValidafySM.abi,
-          tokenNetworkData.address
-        );
-
-        //nos permite cargar el archivo
-        const reader = new window.FileReader();
-        reader.readAsArrayBuffer(file);
-        reader.onloadend = () => {
-          //obtener el hash de ipfs ,una vez que cargo el archivo
-          ipfs
-            .add(Buffer(reader.result), { onlyHash: true })
-            .then(async (result) => {
-              //comprobar si el hash se encuetra dentro de algun tokenuri
-              let ishashed = await contract.methods
-                .IsHashed(result[0].hash)
-                .call();
-              //console.log(result[0].hash);
-              let estado = "El documento es invalido";
-              if (ishashed) {
-                setShowModal({
-                  ...initialBc,
-                  show: true,
-                  success: false,
-                  message: "!Error!.\nEl documento ya ha sido estampado",
-                });
-                // window.alert("El documento ya ha sido estampado");
-                estado = "El documento es valido";
-                unhideCharge(false);
-                hideFile(true);
-
-                //window.location.reload();
-                setTimeout(function() {
-                  window.location.reload(1);
-                }, 5000);
-                return;
-              }
-
-              //guardar el mensaje
-              setInitialBc({
+      //nos permite cargar el archivo
+      const reader = new window.FileReader();
+      reader.readAsArrayBuffer(file);
+      reader.onloadend = () => {
+        //obtener el hash de ipfs ,una vez que cargo el archivo
+        ipfs
+          .add(Buffer(reader.result), { onlyHash: true })
+          .then(async (result) => {
+            //comprobar si el hash se encuetra dentro de algun tokenuri
+            let ishashed = await contract.methods
+              .IsHashed(result[0].hash)
+              .call();
+            //console.log(result[0].hash);
+            let estado = "El documento es invalido";
+            if (ishashed) {
+              setShowModal({
                 ...initialBc,
-                Validado: estado,
+                show: true,
+                success: false,
+                message: "!Error!.\nEl documento ya ha sido estampado",
               });
-              setInitialBc({ buffer: Buffer(reader.result) });
-              setBuffer({ buffer: Buffer(reader.result) });
-              hideFile(false);
-              setprogress(20);
-              setestadoProgress("Paso 2 de 6: pagando comisión : ");
+              // window.alert("El documento ya ha sido estampado");
+              estado = "El documento es valido";
+              unhideCharge(false);
+              hideFile(true);
 
-              //console.log(initialBc.buffer)
-              //console.log(Buffer.buffer)
+              //window.location.reload();
+              setTimeout(function() {
+                window.location.reload(1);
+              }, 5000);
+              return;
+            }
 
-              //console.log("vamos bien");
-              unhideCharge(true);
-              try {
-                //   window.alert("Usted esta pagando la comision de la Dapp(metodo de comision)");
-                const value = window.web3.utils.toWei("0.00022", "ether"); //invest
-                const to = "0x9F4152a30cb683aD284dff6629E809B80Ff555C1";
-                const payload = { to, from: sm.useraccount, value };
-                window.web3.eth
-                  .sendTransaction(payload)
-                  .then((res) => {
-                    window.onbeforeunload = function() {
-                      return "¡No salir de esta ventana,se perderá la trasaccion!";
-                    };
-                    //console.log("TX:"+res +"\n Se pago comisión");
-                    hideComponent(true);
+            //guardar el mensaje
+            setInitialBc({
+              ...initialBc,
+              Validado: estado,
+            });
+            setInitialBc({ buffer: Buffer(reader.result) });
+            setBuffer({ buffer: Buffer(reader.result) });
+            hideFile(false);
+            setprogress(20);
+            setestadoProgress("Paso 2 de 6: pagando comisión : ");
 
-                    mycomision.setItem("payed", true);
-                    setestadoProgress("Paso 3 de 6: Comisión pagada");
-                    //console.log("mycomi"+mycomision.getItem("payed"));
-                    //Se avanza el estado del estampado
-                    setprogress(30);
+            //console.log(initialBc.buffer)
+            //console.log(Buffer.buffer)
 
+            //console.log("vamos bien");
+            unhideCharge(true);
+            try {
+              //   window.alert("Usted esta pagando la comision de la Dapp(metodo de comision)");
+              const value = window.web3.utils.toWei("0.00022", "ether"); //invest
+              const to = "0x9F4152a30cb683aD284dff6629E809B80Ff555C1";
+              const payload = { to, from: sm.useraccount, value };
+              window.web3.eth
+                .sendTransaction(payload)
+                .then((res) => {
+                  window.onbeforeunload = function() {
+                    return "¡No salir de esta ventana,se perderá la trasaccion!";
+                  };
+                  //console.log("TX:"+res +"\n Se pago comisión");
+                  hideComponent(true);
+
+                  mycomision.setItem("payed", true);
+                  setestadoProgress("Paso 3 de 6: Comisión pagada");
+                  //console.log("mycomi"+mycomision.getItem("payed"));
+                  //Se avanza el estado del estampado
+                  setprogress(30);
+
+                  setShowModal({
+                    ...initialBc,
+                    show: true,
+                    success: true,
+                    message:
+                      "!Exito!.La comision se ha pagado    \npresione el boton Espampar  para continuar",
+                  });
+
+                  //  window.alert("La comision se ha pagado,presione el boton registrar para continuar");
+                })
+                .catch((err) => {
+                  if (err) {
                     setShowModal({
                       ...initialBc,
                       show: true,
-                      success: true,
-                      message:
-                        "!Exito!.La comision se ha pagado    \npresione el boton Espampar  para continuar",
+                      success: false,
+                      message: "!Error!.La transaccion ha sido cancelada",
                     });
 
-                    //  window.alert("La comision se ha pagado,presione el boton registrar para continuar");
-                  })
-                  .catch((err) => {
-                    if (err) {
-                      setShowModal({
-                        ...initialBc,
-                        show: true,
-                        success: false,
-                        message: "!Error!.La transaccion ha sido cancelada",
-                      });
+                    hideComponent(false);
+                  }
 
-                      hideComponent(false);
-                    }
-
-                    setTimeout(function() {
-                      window.location.reload(1);
-                    }, 5000);
-                    console.log("err", err);
-                  });
-              } catch (error) {
-                console.log("err", error);
-              }
-            });
-        };
-      } catch (err) {
-      //  window.alert(err.message || err);
-        return;
-      }
-    } else {
-      //no tiene metamask lo mandamos a la pagina oficial de descarga
-
-      window.open("https://metamask.io/download", "_blank");
+                  setTimeout(function() {
+                    window.location.reload(1);
+                  }, 5000);
+                  console.log("err", err);
+                });
+            } catch (error) {
+              console.log("err", error);
+            }
+          });
+      };
+    } catch (err) {
+     // window.alert(err.message || err);
+      return;
     }
-  };
+  } else {
+    //no tiene metamask lo mandamos a la pagina oficial de descarga
+
+    window.open("https://metamask.io/download", "_blank");
+  }
+};
 
   const onSubmit = (e) => {
     //window.alert("Usted esta pagando el costo de minar un nuevo token(metodo de minado)");
