@@ -155,6 +155,7 @@ export default function Navbar(props) {
      
      await loadWeb3();
       try {
+        window.onbeforeunload = null;
         window.ethereum._metamask
           .isUnlocked()
           .then(function(value) {

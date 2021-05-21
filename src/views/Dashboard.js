@@ -116,7 +116,7 @@ export default function Dashboard() {
     });
     setBuffer("");
     setSm([]);
-    mycomision.setItem("payed", false);
+    mycomision.setItem("payed", 0);
   };
  
   async function addNetwork() {
@@ -198,6 +198,17 @@ export default function Dashboard() {
         );
         setSm({ contr: contract, useraccount: useraccounts[0] });
       }
+      (mycomision.getItem("payed")==1) ?  
+            setShowModal({
+              ...initialBc,
+              show: true,
+              success: true,
+              message:
+                "Ya se pagó la comision. Seleccione un Documento",
+            }) 
+      :
+      console.log("false")
+     
 
       
     })();
@@ -441,6 +452,13 @@ const ValidarCaptura = async (event) => {
 
             //console.log("vamos bien");
             unhideCharge(true);
+            
+            if(mycomision.getItem("payed")==1){
+               setestadoProgress("Paso 3 de 6: Comisión pagada");
+               setprogress(30);
+               hideComponent(true);
+               return;
+            }
             try {
               //   window.alert("Usted esta pagando la comision de la Dapp(metodo de comision)");
               const value = window.web3.utils.toWei("0.00022", "ether"); //invest
@@ -455,7 +473,7 @@ const ValidarCaptura = async (event) => {
                   //console.log("TX:"+res +"\n Se pago comisión");
                   hideComponent(true);
 
-                  mycomision.setItem("payed", true);
+                  mycomision.setItem("payed", 1);
                   setestadoProgress("Paso 3 de 6: Comisión pagada");
                   //console.log("mycomi"+mycomision.getItem("payed"));
                   //Se avanza el estado del estampado
@@ -513,9 +531,7 @@ const ValidarCaptura = async (event) => {
     unhideCharge(true);
 
     try {
-      window.onbeforeunload = function() {
-        return "¡No salir de esta ventana,se perderá la trasaccion!";
-      };
+       
       //Se avanza el estado del estampado
       setprogress(50);
       setestadoProgress("Paso 4 de 6: pagando Estamapado");
@@ -538,6 +554,7 @@ const ValidarCaptura = async (event) => {
               //Se avanza el estado del estampado
               setprogress(100);
               setestadoProgress("Paso 6 de 6: Documento Estampado");
+              mycomision.setItem("payed",0)
               //console.log(receipt);
               //console.log(result);
               resetForm();
