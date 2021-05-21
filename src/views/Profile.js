@@ -64,9 +64,7 @@ export default function Profile() {
             message: "!Advertencia!  cambia de red",
           });
 
-          
-        
-           return;
+          return;
         }
         //instantiate the contract object
         setProfile({ address: useraccounts });
@@ -184,21 +182,21 @@ export default function Profile() {
                     <div className="w-full lg:w-3/12 px-4 lg:order-2 flex-1 ml-4">
                       <div className="flex justify-center py-4 lg:pt-4 pt-8">
                         <div className=" p-3 text-center">
+                          <span className="text-sm text-gray-500">Address</span>
                           <span className="text-sm lg:text-xl  block uppercase  text-gray-700">
                             {Profile.address}
                           </span>
-                          <span className="text-sm text-gray-500">Address</span>
                         </div>
                       </div>
                     </div>
                     <div className="w-full lg:w-3/12 px-4 lg:order-2">
                       <div className="flex justify-center py-4 lg:pt-4 pt-8">
                         <div className="mr-4 p-3 text-center">
-                          <span className=" font-bold block uppercase tracking-wide text-gray-700">
-                            {Documents.length}
-                          </span>
                           <span className="text-sm text-gray-500">
                             Documentos
+                          </span>
+                          <span className=" font-bold block uppercase tracking-wide text-gray-700">
+                            {Documents.length}
                           </span>
                         </div>
                       </div>
@@ -236,6 +234,15 @@ export default function Profile() {
                             {Documents.map((doc, i) => (
                               <tr key={i} className="px-6">
                                 <td className=" ">{doc.tokenid}</td>
+                                <td className=" ">
+                                  <a
+                                    className="a-link"
+                                    href={`https://ipfs.infura.io/ipfs/${doc.hash}`}
+                                    target="_blank"
+                                  >
+                                    {doc.hash}
+                                  </a>
+                                </td>
                                 <td className="">
                                   <a
                                     href={
@@ -245,15 +252,6 @@ export default function Profile() {
                                     target="_blank"
                                   >
                                     {doc.txhash}
-                                  </a>
-                                </td>
-                                <td className=" ">
-                                  <a
-                                    className="a-link"
-                                    href={`https://ipfs.infura.io/ipfs/${doc.hash}`}
-                                    target="_blank"
-                                  >
-                                    {doc.hash}
                                   </a>
                                 </td>
                                 <td className=" ">{doc.time}</td>
@@ -294,67 +292,67 @@ export default function Profile() {
             </div>
           </footer>
           {Modal.show ? (
-          <>
-            <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
-              <div className="relative w-1/2 my-6 ">
-                {/*content*/}
-                <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
-                  {/*header*/}
+            <>
+              <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+                <div className="relative w-1/2 my-6 ">
+                  {/*content*/}
+                  <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                    {/*header*/}
 
-                  <div
-                    className={`${
-                      Modal.success ? "bg-emerald-500" : "bg-red-500"
-                    }  flex items-start justify-center p-5 border-b border-solid border-blueGray-200 rounded-t`}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="w-16 h-16 text-white my-10"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      {Modal.success ? (
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      ) : (
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      )}
-                    </svg>
-                  </div>
-                  <div className="relative p-6 flex flex-col space-y-4 justify-center ">
-                    <p className="flex-initial my-4 text-center text-2xl leading-relaxed">
-                      {Modal.message}
-                    </p>
-                    <button
+                    <div
                       className={`${
                         Modal.success ? "bg-emerald-500" : "bg-red-500"
-                      } w-min  text-white active:${
-                        Modal.success ? "bg-emerald-600" : "bg-red-600"
-                      } font-bold uppercase text-sm px-6 py-3 rounded-full shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
-                      type="button"
-                      onClick={() => {
-                        setShowModal({ ...Modal, show: false });
-                        window.location.reload(2);
-                      }}
+                      }  flex items-start justify-center p-5 border-b border-solid border-blueGray-200 rounded-t`}
                     >
-                      continuar
-                    </button>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-16 h-16 text-white my-10"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        {Modal.success ? (
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        ) : (
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        )}
+                      </svg>
+                    </div>
+                    <div className="relative p-6 flex flex-col space-y-4 justify-center ">
+                      <p className="flex-initial my-4 text-center text-2xl leading-relaxed">
+                        {Modal.message}
+                      </p>
+                      <button
+                        className={`${
+                          Modal.success ? "bg-emerald-500" : "bg-red-500"
+                        } w-min  text-white active:${
+                          Modal.success ? "bg-emerald-600" : "bg-red-600"
+                        } font-bold uppercase text-sm px-6 py-3 rounded-full shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
+                        type="button"
+                        onClick={() => {
+                          setShowModal({ ...Modal, show: false });
+                          window.location.reload(2);
+                        }}
+                      >
+                        continuar
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
-          </>
-        ) : null}
+              <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+            </>
+          ) : null}
         </main>
       </div>
     </>
