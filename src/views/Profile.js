@@ -143,7 +143,7 @@ export default function Profile() {
         <main className="profile-page ">
           <section className="relative block" style={{ height: "500px" }}>
             <div
-              className="absolute top-0 w-full h-full bg-center bg-cover"
+              className="absolute top-0 w-full h-1/2 lg:h-full bg-center bg-cover"
               style={{
                 backgroundImage:
                   "url('https://images.unsplash.com/photo-1566132127697-4524fea60007?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=750&q=80')",
