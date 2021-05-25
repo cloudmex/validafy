@@ -534,7 +534,7 @@ export default function Landing() {
                         className={
                           "text-xs font-bold uppercase px-5 py-3 shadow-lg rounded block leading-normal " +
                           (openTab === 1
-                            ? "text-white bg-pink-600"
+                            ? "text-white bg-Pentatone"
                             : "text-pink-600 bg-white")
                         }
                         onClick={(e) => {
@@ -650,7 +650,7 @@ export default function Landing() {
               </div>
 
               <div className="w-full md:w-4/12 px-4 mr-auto ml-auto">
-                <div className="relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded-lg bg-pink-600">
+                <div className="relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded-lg bg-Pentatone">
                   <img
                     alt="..."
                     src={require("../assets/img/nasdaq.jpg")}
@@ -669,7 +669,7 @@ export default function Landing() {
                     >
                       <polygon
                         points="-30,95 583,95 583,65"
-                        className="text-pink-600 fill-current"
+                        className="bg-Pentatone fill-current"
                       ></polygon>
                     </svg>
                     <h4 className="text-xl font-bold text-white">Ventajas</h4>

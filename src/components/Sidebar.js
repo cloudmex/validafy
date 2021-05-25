@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-
+import validlogo from  '../assets/img/validafy.png';
 import NotificationDropdown from "./NotificationDropdown.js";
 import UserDropdown from "./UserDropdown.js";
 
@@ -23,7 +23,7 @@ export default function Sidebar() {
             className="md:block text-left md:pb-2 hover:text-pink-600 text-blueGray-600 mr-0 inline-block whitespace-nowrap text-sm uppercase font-bold p-4 px-0"
             to="/"
           >
-            Validafy{" "}
+           <img style={{ width:125}} className="bg-white rounded"  src={validlogo}></img>  
           </Link>
           {/* User */}
           <ul className="md:hidden items-center flex flex-wrap list-none"></ul>
@@ -42,7 +42,7 @@ export default function Sidebar() {
                     className="md:block text-left md:pb-2 text-blueGray-600 mr-0 hover:text-pink-600 inline-block whitespace-nowrap text-sm uppercase font-bold p-4 px-0"
                     to="/"
                   >
-                    Validafy{" "}
+                     
                   </Link>
                 </div>
                 <div className="w-6/12 flex justify-end">
@@ -60,20 +60,20 @@ export default function Sidebar() {
             <ul className="md:flex-col md:min-w-full flex flex-col list-none">
               <li className="items-center">
                 <Link
-                  className=" text-blueGray-700 hover:text-pink-600 text-xs uppercase py-3 font-bold block"
+                  className=" text-blueGray-700 hover:text-pink-600 text-md uppercase py-3 font-bold block"
                   to="/dash"
                 >
-                  <i className="fa fa-link opacity-75 uppercase mr-2 text-sm"></i>{" "}
+                  <i className="fa fa-link opacity-75 uppercase mr-2 text-md"></i>{" "}
                   Estampar
                 </Link>
               </li>
 
               <li className="items-center">
                 <Link
-                  className="text-blueGray-700 hover:text-pink-600 text-xs uppercase py-3 font-bold block"
+                  className="text-blueGray-700 hover:text-pink-600 text-md uppercase py-3 font-bold block"
                   to="/perfil"
                 >
-                  <i className="fas fa-user-circle text-blueGray-400 mr-2 uppercase text-sm"></i>{" "}
+                  <i className="fas fa-user-circle text-blueGray-400 mr-2 uppercase text-md"></i>{" "}
                   mis documentos
                 </Link>
               </li>

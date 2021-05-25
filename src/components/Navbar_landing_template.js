@@ -1,5 +1,7 @@
 import React,{useState,useEffect,useRef} from "react";
 import logo from '../assets/img/metamask.png';
+import validlogo from  '../assets/img/validafy.png';
+
 import Web3 from 'web3';
  
 
@@ -195,7 +197,7 @@ export default function Navbar(props) {
             }
             href=" "
           >
-            Validafy
+            <img style={{ width:125}} className="bg-white rounded"  src={validlogo}></img>  
                       </a>
                      
           <button
@@ -227,7 +229,7 @@ export default function Navbar(props) {
                     : "text-gray-800 hover:text-gray-600") +
                   " px-3 py-4 lg:py-2 flex items-center text-xs uppercase font-bold"
                 }
-                href="https://www.creative-tim.com/learning-lab/tailwind-starter-kit#/landing"
+                href="https://docs.google.com/document/d/1Cm9j-O9LBIVtoBFxtSTB3PraybhxDi5vZwOtYPDXd6Q/edit#"
               >
                 <i
                   className={
@@ -287,27 +289,7 @@ export default function Navbar(props) {
               </a>
             </li>
 
-            <li className="flex items-center">
-              <a
-                className={
-                  (props.transparent
-                    ? "lg:text-white lg:hover:text-gray-300 text-gray-800"
-                    : "text-gray-800 hover:text-gray-600") +
-                  " px-3 py-4 lg:py-2 flex items-center text-xs uppercase font-bold"
-                }
-                href="https://github.com/cloudmex"
-              >
-                <i
-                  className={
-                    (props.transparent
-                      ? "lg:text-gray-300 text-gray-500"
-                      : "text-gray-500") +
-                    " fab fa-github text-lg leading-lg "
-                  }
-                />
-                <span className="lg:hidden inline-block ml-2">Github</span>
-              </a>
-            </li>
+           
 
             <li onClick={see} className="flex inline-block text-xs bg-gray-100   px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none lg:mr-1 lg:mb-0 ml-3 mb-3">
             <img style={{ height:25}}   src={logo}/>  
