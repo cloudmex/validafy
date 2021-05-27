@@ -32,25 +32,24 @@ export default function Footer() {
               Encuentranos en nuestras otras plataformas.
             </h5>
             <div className="mt-6 mb-2 ">
+              <a  href="https://twitter.com/validafy" >
               <button
                 className="bg-white text-blue-400 shadow-lg font-normal h-10 w-10 items-center justify-center align-center rounded-full outline-none focus:outline-none mr-2 p-3"
-                type="button"
+                type="button" href="https://twitter.com/validafy"
               >
-                <i className="flex fab fa-twitter"></i>
+                <i  href="https://twitter.com/validafy"  className="flex fab fa-twitter"></i>
               </button>
+              </a>
+              
+              <a href="https://www.facebook.com/Validafy.io"> 
               <button
                 className="bg-white text-blue-600 shadow-lg font-normal h-10 w-10 items-center justify-center align-center rounded-full outline-none focus:outline-none mr-2 p-3"
                 type="button"
               >
                 <i className="flex fab fa-facebook-square"></i>
               </button>
-          
-              <button
-                className="bg-white text-gray-900 shadow-lg font-normal h-10 w-10 items-center justify-center align-center rounded-full outline-none focus:outline-none mr-2 p-3"
-                type="button"
-              >
-                <i className="flex fab fa-github"></i>
-              </button>
+              </a> 
+             
             </div>
           </div>
           <div className="w-full lg:w-6/12 px-4">
