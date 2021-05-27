@@ -252,7 +252,7 @@ export default function Navbar(props) {
                     : "text-gray-800 hover:text-gray-600") +
                   " px-3 py-4 lg:py-2 flex items-center text-xs uppercase font-bold"
                 }
-                href="https://www.facebook.com/mexanalytics/"
+                href="https://www.facebook.com/Validafy.io"
               >
                 <i
                   className={
@@ -274,8 +274,7 @@ export default function Navbar(props) {
                     : "text-gray-800 hover:text-gray-600") +
                   " px-3 py-4 lg:py-2 flex items-center text-xs uppercase font-bold"
                 }
-                href="https://twitter.com/cloudmex_a?lang=en
-                "
+                href="https://twitter.com/validafy"
               >
                 <i
                   className={
