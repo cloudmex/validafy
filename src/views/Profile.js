@@ -5,6 +5,8 @@ import Navbar from "../components/Navbar_landing_template";
 import Footer from "../components/Footer_landing_template";
 import ValidafySM from "../contracts/Valid.json";
 import Sidebar from "../components/Sidebar.js";
+import validlogo from  '../assets/img/validafy-logotipo.png';
+
 
 console.log(window.ethereum);
 export default function Profile() {
@@ -26,10 +28,7 @@ export default function Profile() {
 
   useEffect(() => {
     (async () => {
-      window.history.pushState(null, document.title, window.location.href);
-      window.addEventListener("popstate", function(event) {
-        window.history.pushState(null, document.title, window.location.href);
-      });
+      unhideCharge(true);
 
       window.ethereum._metamask.isUnlocked().then(function(value) {
         if (value) {
@@ -114,6 +113,7 @@ export default function Profile() {
 
         console.log(documents);
         setDocuments(documents);
+        unhideCharge(false);
       }
 
       console.log(window.ethereum);
@@ -135,6 +135,17 @@ export default function Profile() {
       today.getSeconds() +
       "";
 */
+const unhideCharge = (e) => {
+  var neg = "";
+  if (e) {
+    neg = false;
+  } else {
+    neg = true;
+  }
+  return setInitialBc({ showHideCharge: e });
+};
+
+const { showHideCharge } = initialBc;
   return (
     <>
       {" "}
@@ -182,7 +193,7 @@ export default function Profile() {
                     <div className="w-full lg:w-3/12 px-4 lg:order-2 flex-1 ml-4">
                       <div className="flex justify-center py-4 lg:pt-4 pt-8">
                         <div className=" p-3 text-center">
-                          <span className="text-sm text-gray-500">Address</span>
+                          <span className="text-sm text-pink-700 font-bold">Address</span>
                           <span className="text-sm lg:text-xl  block uppercase  text-gray-700">
                             {Profile.address}
                           </span>
@@ -192,7 +203,7 @@ export default function Profile() {
                     <div className="w-full lg:w-3/12 px-4 lg:order-2">
                       <div className="flex justify-center py-4 lg:pt-4 pt-8">
                         <div className="mr-4 p-3 text-center">
-                          <span className="text-sm text-gray-500">
+                          <span className="text-sm text-pink-700 font-bold">
                             Documentos
                           </span>
                           <span className=" font-bold block uppercase tracking-wide text-gray-700">
@@ -206,31 +217,37 @@ export default function Profile() {
                         <div className="mr-4 p-3 text-center">
                           <img
                             alt="..."
-                            src={require("../assets/img/metamask.png")}
+                            src={validlogo}
                             className=" rounded-full h-auto align-middle border-none absolute -m-16 -ml-20 lg:-ml-16"
                             style={{ maxWidth: "150px" }}
                           />
                         </div>
                       </div>
+
+                      
+                                    
+
                     </div>
                   </div>
+                  
                   {Documents.length ? (
                     <div className="  text-center   mt-12">
-                      <h3 className="text-4xl font-semibold leading-normal mb-2 text-gray-800 mb-2">
+                      <h3 className="text-4xl   leading-normal mb-2 text-pink-700 font-bold shadow-2xl mb-2">
                         Mis Documentos
                       </h3>
 
                       <div className="overflow-x-auto  mb-6 ">
-                        <table className=" w-full bg-gray-200 ">
-                          <thead>
+                        <table className=" ml-1 w-full bg-gray-200 ">
+                          <thead className="ml-3 bg-pink-600">
                             <tr>
-                              <th className="  py-4">TokenID</th>
-                              <th className=" py-4">TxHash</th>
-                              <th className="  py-4"> IpfsHash</th>
-                              <th className="  py-4">TimeStamp</th>
+                              <th className=" text-white  "> <a className="ml-2"> TokenID</a></th>
+                             
+                              <th className=" text-white  py-4"> IpfsHash</th>
+                              <th className="text-white py-4">TxHash</th>
+                              <th className="text-white  py-4">TimeStamp</th>
                             </tr>
                           </thead>
-                          <tbody className="text-base">
+                          <tbody className="text-base py-3 bg-pink-200">
                             {Documents.map((doc, i) => (
                               <tr key={i} className="px-6">
                                 <td className=" ">{doc.tokenid}</td>
@@ -240,18 +257,19 @@ export default function Profile() {
                                     href={`https://ipfs.infura.io/ipfs/${doc.hash}`}
                                     target="_blank"
                                   >
-                                    {doc.hash}
+                                    {doc.hash.substring(0,25)+" ..."}
                                   </a>
                                 </td>
                                 <td className="">
                                   <a
+                                   className="a-link "
                                     href={
                                       "https://testnet.bscscan.com/tx/" +
                                       doc.txhash
                                     }
                                     target="_blank"
                                   >
-                                    {doc.txhash}
+                                    {doc.txhash.substring(0,25)+" ..."}
                                   </a>
                                 </td>
                                 <td className=" ">{doc.time}</td>
@@ -263,11 +281,28 @@ export default function Profile() {
                     </div>
                   ) : (
                     <div className="  text-center   mt-12">
-                      <h3 className="text-4xl font-semibold leading-normal mb-2 text-gray-800 mb-2">
-                        Sin Documentos
+                      <h3 className="text-4xl font-semibold leading-normal mb-2 text-pink-700 font-bold mb-2">
+                        Sin Documentos 
                       </h3>{" "}
+                       
+                      {showHideCharge && (
+                                       
+                                        <img
+                                          src={
+                                            "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"
+                                          }
+                                          style={{ width: "30%" }}
+                                          className="  inline-block content-end items-center"
+                                          alt="loading..."
+                                        />
+                                      )}
+                                      
                     </div>
                   )}
+
+
+
+
                 </div>
               </div>
             </div>
