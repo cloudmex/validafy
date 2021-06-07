@@ -26,10 +26,7 @@ export default function Profile() {
 
   useEffect(() => {
     (async () => {
-      window.history.pushState(null, document.title, window.location.href);
-      window.addEventListener("popstate", function(event) {
-        window.history.pushState(null, document.title, window.location.href);
-      });
+    
 
       window.ethereum._metamask.isUnlocked().then(function(value) {
         if (value) {
@@ -237,7 +234,7 @@ export default function Profile() {
                                 <td className=" ">
                                   <a
                                     className="a-link"
-                                    href={`https://ipfs.infura.io/ipfs/${doc.hash}`}
+                                    href={`https://gateway.pinata.cloud/ipfs/${doc.hash}`}
                                     target="_blank"
                                   >
                                     {doc.hash}

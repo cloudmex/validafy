@@ -1,6 +1,7 @@
 import React, { useState, useEffect, Fragment, useRef } from "react";
 import Web3 from "web3";
 import ValidafySM from "../contracts/Valid.json";
+import axios from 'axios';
 
 import { Dialog, Transition } from "@headlessui/react";
 
@@ -11,7 +12,9 @@ const ipfs = ipfsClient({
   port: 5001,
   protocol: "https",
 });
-
+const pinataSDK = require('@pinata/sdk');
+const pinata = pinataSDK('510af907e7ead62d2ae2', 'e7856b06e43355f6c0898c742b36df34a301faf2a8772f77d2e3637c86c855e0');
+ 
 export default function Dashboard() {
   const [open, setOpen] = useState(false);
 
@@ -37,6 +40,7 @@ export default function Dashboard() {
   const [estadoProgress, setestadoProgress] = useState("");
 
   const [buffer, setBuffer] = useState("");
+  const [buffername, setBuffername] = useState("");
   const [ipfss, setIpfs] = useState("");
   const [sm, setSm] = useState([]);
   const [progress, setprogress] = useState(0);
@@ -153,13 +157,22 @@ export default function Dashboard() {
 
   useEffect(() => {
     (async () => {
+
+
+      pinata.testAuthentication().then((result) => {
+        //handle successful authentication here
+        console.log(result);
+    }).catch((err) => {
+        //handle error here
+        console.log(err);
+    });
     //console.log("mycomi"+mycomision.getItem("payed"))
     try {
       window.ethereum._metamask.isUnlocked().then(function(value) {
         if (value) {
-          console.log("Abierto");
+         // console.log("Abierto");
         } else {
-          console.log("Cerrado");
+         // console.log("Cerrado");
           window.location.href = "/";
         }
       });
@@ -208,7 +221,7 @@ export default function Dashboard() {
                 "Ya se pagó la comision. Seleccione un Documento",
             }) 
       :
-      console.log("false")
+      console.log("")
      
 
       
@@ -375,7 +388,7 @@ const ValidarCaptura = async (event) => {
     try {
       //tratamos de cargar el documento que el usuario eligio
       const file = event.target.files[0];
-
+      
       if (!event.target.files) {
         throw "no agrego ningun archivo";
       }
@@ -384,10 +397,7 @@ const ValidarCaptura = async (event) => {
       const networkId =  await web3.eth.net.getId();
       
       if( networkId != 97) {
-     
-        // window.alert('Error de red,Selecciona la red de BSC para seguir.')
       
-       
          setTimeout(function(){
           window.location.reload(1);
        }, 2000); 
@@ -445,6 +455,8 @@ const ValidarCaptura = async (event) => {
             });
             setInitialBc({ buffer: Buffer(reader.result) });
             setBuffer({ buffer: Buffer(reader.result) });
+            setBuffername({ buffername: file.name });
+           // console.log(buffername);
             hideFile(false);
             setprogress(20);
             setestadoProgress("Paso 2 de 6: pagando comisión : ");
@@ -506,10 +518,10 @@ const ValidarCaptura = async (event) => {
                   setTimeout(function() {
                     window.location.reload(1);
                   }, 5000);
-                  console.log("err", err);
+                 // console.log("err", err);
                 });
             } catch (error) {
-              console.log("err", error);
+             // console.log("err", error);
             }
           });
       };
@@ -526,7 +538,8 @@ const ValidarCaptura = async (event) => {
 
   const onSubmit = (e) => {
     //window.alert("Usted esta pagando el costo de minar un nuevo token(metodo de minado)");
-
+ //console.log(buffername);
+ 
     e.preventDefault();
     //console.log("buffer1", initialBc.buffer);
     //console.log("buffer2", buffer.buffer);
@@ -536,7 +549,7 @@ const ValidarCaptura = async (event) => {
        
       //Se avanza el estado del estampado
       setprogress(50);
-      setestadoProgress("Paso 4 de 6: pagando Estamapado");
+      setestadoProgress("Paso 4 de 6: pagando Estampado");
 
       unhideCharge(true);
 
@@ -549,8 +562,19 @@ const ValidarCaptura = async (event) => {
 
           unhideCharge(true);
 
-          sm.contr.methods
-            .createItem(sm.useraccount, result[0].path)
+        //  console.log( buffername.buffername );
+          const options = {
+            pinataMetadata: {
+                name: buffername.buffername,
+                
+            },
+           
+        };
+        pinata.pinByHash( result[0].path, options).then((result) => {
+            //handle results here
+          //  console.log(result.ipfsHash);
+            sm.contr.methods
+            .createItem(sm.useraccount, result.ipfsHash)
             .send({ from: sm.useraccount })
             .once("receipt", (receipt) => {
               //Se avanza el estado del estampado
@@ -591,8 +615,21 @@ const ValidarCaptura = async (event) => {
               window.onbeforeunload = function() {
                 return "¡No salir de esta ventana,se perderá la trasaccion!";
               };
-              console.log("Se cancelo transanccion paso 5:" + error);
+             // console.log("Se cancelo transanccion paso 5:" + error);
             });
+
+
+
+
+
+
+
+
+        }).catch((err) => {
+            //handle error here
+            console.log(err);
+        });
+        /*  */
         })
         .catch((err) => {
           setShowModal({
@@ -602,7 +639,7 @@ const ValidarCaptura = async (event) => {
             message: "!Error!. El estampado ha sido cancelado",
           });
           window.alert("La trasacción ha sido cancelada");
-          window.location.reload();
+        //  window.location.reload();
           console.log("err", err);
         });
     } catch (error) {
@@ -775,7 +812,7 @@ const ValidarCaptura = async (event) => {
                                       }}
                                       type="submit"
                                     >
-                                      Estamapar
+                                      Estampar
                                     </button>
                                   )}
                                 </form>
