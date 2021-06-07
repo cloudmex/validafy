@@ -1234,7 +1234,7 @@ select {
 
 .bg-Pentatone {
   --tw-bg-opacity: 1;
-  background-color: #F40f60;
+  background-color: #f40f60;
 }
 .bg-pink-100 {
   --tw-bg-opacity: 1;
@@ -4922,6 +4922,13 @@ select {
 
   .lg\:h-full {
     height: 100%;
+  }
+  .lg\:bg-gray-100 {
+    --tw-bg-opacity: 1;
+    background-color: rgba(244, 244, 245, var(--tw-bg-opacity));
+  }
+  .lg\:h-3\/12 {
+    height: 25%;
   }
 }
 

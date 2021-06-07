@@ -119,12 +119,10 @@ export default function Dashboard() {
     setSm([]);
     mycomision.setItem("payed", 0);
   };
- 
+
   async function addNetwork() {
-    
     try {
-      
-   await  window.ethereum.request({
+      await window.ethereum.request({
         method: "wallet_addEthereumChain",
         params: [
           {
@@ -140,32 +138,28 @@ export default function Dashboard() {
           },
         ],
       });
-       
-     
     } catch (error) {
-     
       addNetwork();
       window.location.reload();
-     // window.alert("Cambia de red porfavor")
+      // window.alert("Cambia de red porfavor")
     }
-   
-  } 
+  }
 
   useEffect(() => {
     (async () => {
-    //console.log("mycomi"+mycomision.getItem("payed"))
-    try {
-      window.ethereum._metamask.isUnlocked().then(function(value) {
-        if (value) {
-          console.log("Abierto");
-        } else {
-          console.log("Cerrado");
-          window.location.href = "/";
-        }
-      });
-    } catch (error) {
-      console.log("e"+error);
-    }
+      //console.log("mycomi"+mycomision.getItem("payed"))
+      try {
+        window.ethereum._metamask.isUnlocked().then(function(value) {
+          if (value) {
+            console.log("Abierto");
+          } else {
+            console.log("Cerrado");
+            window.location.href = "/";
+          }
+        });
+      } catch (error) {
+        console.log("e" + error);
+      }
       if (window.ethereum) {
         window.web3 = new Web3(window.ethereum);
 
@@ -182,15 +176,15 @@ export default function Dashboard() {
         let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
 
         if (!tokenNetworkData) {
-         // window.alert("Ese smartcontract no se desplego en esta red");
+          // window.alert("Ese smartcontract no se desplego en esta red");
           setShowModal({
             ...initialBc,
             show: true,
             success: false,
             message: "!Advertencia!  cambia de red",
           });
-          
-           return;
+
+          return;
         }
         //instantiate the contract object
         let contract = new window.web3.eth.Contract(
@@ -199,19 +193,14 @@ export default function Dashboard() {
         );
         setSm({ contr: contract, useraccount: useraccounts[0] });
       }
-      (mycomision.getItem("payed")==1) ?  
-            setShowModal({
-              ...initialBc,
-              show: true,
-              success: true,
-              message:
-                "Ya se pagó la comision. Seleccione un Documento",
-            }) 
-      :
-      console.log("false")
-     
-
-      
+      mycomision.getItem("payed") == 1
+        ? setShowModal({
+            ...initialBc,
+            show: true,
+            success: true,
+            message: "Ya se pagó la comision. Seleccione un Documento",
+          })
+        : console.log("false");
     })();
   }, []);
 
@@ -264,265 +253,221 @@ export default function Dashboard() {
   //console.log("buffer v", initialBc.buffer);
   };
 */
-const Validar = async (event) => {
-  event.preventDefault();
-  ///browser detection
-  unhideCharge(true);
-  if (window.ethereum) {
-    window.web3 = new Web3(window.ethereum);
+  const Validar = async (event) => {
+    event.preventDefault();
+    ///browser detection
+    unhideCharge(true);
+    if (window.ethereum) {
+      window.web3 = new Web3(window.ethereum);
 
-    try {
-      //tratamos de cargar el documento que el usuario eligio
-      const file = event.target.files[0];
+      try {
+        //tratamos de cargar el documento que el usuario eligio
+        const file = event.target.files[0];
 
-      if (!event.target.files) {
-        throw "no agrego ningun archivo";
-      }
-      //cambiar red
+        if (!event.target.files) {
+          throw "no agrego ningun archivo";
+        }
+        //cambiar red
 
-      const web3 = window.web3
-      const networkId =  await web3.eth.net.getId();
-      
-      if( networkId != 97) {
-     
-        // window.alert('Error de red,Selecciona la red de BSC para seguir.')
-      
-        setShowModal({
-          ...initialBc,
-          show: true,
-          success: false,
-          message: " !Error de red,Selecciona la red de BSC para seguir.¡",
-        });
-         setTimeout(function(){
-          window.location.reload(1);
-       }, 2000); 
-      
-       }
-      await window.ethereum.request({
-        method: "wallet_addEthereumChain",
-        params: [
-          {
-            chainId: "0x61",
-            chainName: "BSCTESTNET",
-            rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
-            nativeCurrency: {
-              name: "BINANCE COIN",
-              symbol: "BNB",
-              decimals: 18,
-            },
-            blockExplorerUrls: ["https://testnet.bscscan.com/"],
-          },
-        ],
-      });
-      //get the actual networkid or chainid
-      let ActualnetworkId = await window.ethereum.request({
-        method: "net_version",
-      });
-      // sm address
-      let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
-      //instantiate the contract object
-      let contract = new window.web3.eth.Contract(
-        ValidafySM.abi,
-        tokenNetworkData.address
-      );
+        const web3 = window.web3;
+        const networkId = await web3.eth.net.getId();
 
-      //nos permite cargar el archivo
-      const reader = new window.FileReader();
-      reader.readAsArrayBuffer(file);
-      reader.onloadend = () => {
-        //obtener el hash de ipfs ,una vez que cargo el archivo
-        ipfs
-          .add(Buffer(reader.result), { onlyHash: true })
-          .then(async (result) => {
-            //comprobar si el hash se encuetra dentro de algun tokenuri
-            let ishashed = await contract.methods
-              .IsHashed(result[0].hash)
-              .call();
-            //console.log(result[0].hash);
-            let estado = "Documento no estampado";
-            if (ishashed) estado = "Documento Valido";
-            setShowModal({
-              ...initialBc,
-              show: true,
-              success: ishashed,
-              message: estado,
-            });
+        if (networkId != 97) {
+          // window.alert('Error de red,Selecciona la red de BSC para seguir.')
 
-            setInitialBc({ ...initialBc, namepdf: file.name, showImg:true });
+          setShowModal({
+            ...initialBc,
+            show: true,
+            success: false,
+            message: " !Error de red,Selecciona la red de BSC para seguir.¡",
           });
-      };
-    } catch (err) {
-   //   window.alert(err.message || err);
-      return;
-    }
-  } else {
-    //no tiene metamask lo mandamos a la pagina oficial de descarga
+          setTimeout(function() {
+            window.location.reload(1);
+          }, 2000);
+        }
+        await window.ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: "0x61",
+              chainName: "BSCTESTNET",
+              rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
+              nativeCurrency: {
+                name: "BINANCE COIN",
+                symbol: "BNB",
+                decimals: 18,
+              },
+              blockExplorerUrls: ["https://testnet.bscscan.com/"],
+            },
+          ],
+        });
+        //get the actual networkid or chainid
+        let ActualnetworkId = await window.ethereum.request({
+          method: "net_version",
+        });
+        // sm address
+        let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
+        //instantiate the contract object
+        let contract = new window.web3.eth.Contract(
+          ValidafySM.abi,
+          tokenNetworkData.address
+        );
 
-    window.open("https://metamask.io/download", "_blank");
-  }
-};
-
-const ValidarCaptura = async (event) => {
-  event.preventDefault();
-  unhideCharge(true);
-
-  setestadoProgress("Paso 1 de 6: Validando documento : ");
-  setprogress(10);
-  ///browser detection
-  if (window.ethereum) {
-    window.web3 = new Web3(window.ethereum);
-
-    try {
-      //tratamos de cargar el documento que el usuario eligio
-      const file = event.target.files[0];
-
-      if (!event.target.files) {
-        throw "no agrego ningun archivo";
-      }
-      //cambiar red
-      const web3 = window.web3
-      const networkId =  await web3.eth.net.getId();
-      
-      if( networkId != 97) {
-     
-        // window.alert('Error de red,Selecciona la red de BSC para seguir.')
-      
-       
-         setTimeout(function(){
-          window.location.reload(1);
-       }, 2000); 
-      
-       }
-      //get the actual networkid or chainid
-      let ActualnetworkId = await window.ethereum.request({
-        method: "net_version",
-      });
-      // sm address
-      let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
-      //instantiate the contract object
-      let contract = new window.web3.eth.Contract(
-        ValidafySM.abi,
-        tokenNetworkData.address
-      );
-
-      //nos permite cargar el archivo
-      const reader = new window.FileReader();
-      reader.readAsArrayBuffer(file);
-      reader.onloadend = () => {
-        //obtener el hash de ipfs ,una vez que cargo el archivo
-        ipfs
-          .add(Buffer(reader.result), { onlyHash: true })
-          .then(async (result) => {
-            //comprobar si el hash se encuetra dentro de algun tokenuri
-            let ishashed = await contract.methods
-              .IsHashed(result[0].hash)
-              .call();
-            //console.log(result[0].hash);
-            let estado = "El documento es invalido";
-            if (ishashed) {
+        //nos permite cargar el archivo
+        const reader = new window.FileReader();
+        reader.readAsArrayBuffer(file);
+        reader.onloadend = () => {
+          //obtener el hash de ipfs ,una vez que cargo el archivo
+          ipfs
+            .add(Buffer(reader.result), { onlyHash: true })
+            .then(async (result) => {
+              //comprobar si el hash se encuetra dentro de algun tokenuri
+              let ishashed = await contract.methods
+                .IsHashed(result[0].hash)
+                .call();
+              //console.log(result[0].hash);
+              let estado = "Documento no estampado";
+              if (ishashed) estado = "Documento Valido";
               setShowModal({
                 ...initialBc,
                 show: true,
-                success: false,
-                message: "!Error!.\nEl documento ya ha sido estampado",
+                success: ishashed,
+                message: estado,
               });
-              // window.alert("El documento ya ha sido estampado");
-              estado = "El documento es valido";
-              unhideCharge(false);
-              hideFile(true);
 
-              //window.location.reload();
-              setTimeout(function() {
-                window.location.reload(1);
-              }, 5000);
-              return;
-            }
-
-            //guardar el mensaje
-            setInitialBc({
-              ...initialBc,
-              Validado: estado,
+              setInitialBc({ ...initialBc, namepdf: file.name, showImg: true });
             });
-            setInitialBc({ buffer: Buffer(reader.result) });
-            setBuffer({ buffer: Buffer(reader.result) });
-            hideFile(false);
-            setprogress(20);
-            setestadoProgress("Paso 2 de 6: pagando comisión : ");
+        };
+      } catch (err) {
+        //   window.alert(err.message || err);
+        return;
+      }
+    } else {
+      //no tiene metamask lo mandamos a la pagina oficial de descarga
 
-            //console.log(initialBc.buffer)
-            //console.log(Buffer.buffer)
+      window.open("https://metamask.io/download", "_blank");
+    }
+  };
 
-            //console.log("vamos bien");
-            unhideCharge(true);
-            
-            if(mycomision.getItem("payed")==1){
-               setestadoProgress("Paso 3 de 6: Comisión pagada");
-               setprogress(30);
-               hideComponent(true);
-               return;
-            }
-            try {
-              //   window.alert("Usted esta pagando la comision de la Dapp(metodo de comision)");
-              const value = window.web3.utils.toWei("0.00022", "ether"); //invest
-              const to = "0x9F4152a30cb683aD284dff6629E809B80Ff555C1";
-              const payload = { to, from: sm.useraccount, value };
-              window.web3.eth
-                .sendTransaction(payload)
-                .then((res) => {
-                  window.onbeforeunload = function() {
-                    return "¡No salir de esta ventana,se perderá la trasaccion!";
-                  };
-                  //console.log("TX:"+res +"\n Se pago comisión");
-                  hideComponent(true);
+  const ValidarCaptura = async (event) => {
+    event.preventDefault();
+    unhideCharge(true);
+    ///browser detection
+    if (window.ethereum) {
+      window.web3 = new Web3(window.ethereum);
 
-                  mycomision.setItem("payed", 1);
-                  setestadoProgress("Paso 3 de 6: Comisión pagada");
-                  //console.log("mycomi"+mycomision.getItem("payed"));
-                  //Se avanza el estado del estampado
-                  setprogress(30);
+      try {
+        //tratamos de cargar el documento que el usuario eligio
+        const file = event.target.files[0];
 
-                  setShowModal({
-                    ...initialBc,
-                    show: true,
-                    success: true,
-                    message:
-                      "!Exito!.La comision se ha pagado    \npresione el boton Espampar  para continuar",
-                  });
+        if (!event.target.files) {
+          throw "no agrego ningun archivo";
+        }
+        //cambiar red
+        const web3 = window.web3;
+        const networkId = await web3.eth.net.getId();
 
-                  //  window.alert("La comision se ha pagado,presione el boton registrar para continuar");
-                })
-                .catch((err) => {
-                  if (err) {
+        //get the actual networkid or chainid
+        let ActualnetworkId = await window.ethereum.request({
+          method: "net_version",
+        });
+        // sm address
+        let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
+        //instantiate the contract object
+        let contract = new window.web3.eth.Contract(
+          ValidafySM.abi,
+          tokenNetworkData.address
+        );
+
+        //nos permite cargar el archivo
+        const reader = new window.FileReader();
+        reader.readAsArrayBuffer(file);
+        reader.onloadend = () => {
+          //obtener el hash de ipfs ,una vez que cargo el archivo
+          ipfs
+            .add(Buffer(reader.result), { onlyHash: true })
+            .then(async (result) => {
+              //comprobar si el hash se encuetra dentro de algun tokenuri
+              let ishashed = await contract.methods
+                .IsHashed(result[0].hash)
+                .call();
+              //console.log(result[0].hash);
+              if (ishashed) {
+                setShowModal({
+                  ...initialBc,
+                  show: true,
+                  success: false,
+                  message: "!Error!.\nEl documento ya ha sido estampado",
+                });
+                // window.alert("El documento ya ha sido estampado");
+                unhideCharge(false);
+                hideFile(true);
+                //window.location.reload();
+                setTimeout(function() {
+                  window.location.reload(1);
+                }, 5000);
+                return;
+              }
+
+              //si no se encuentra el hash dentro de algun tokenuri los estampamos
+
+              //comision
+              const comision = window.web3.utils.toWei("0.00022", "ether");
+
+              //guardar el archivo a ipfs
+              ipfs.add(Buffer(reader.result)).then((result) => {
+                sm.contr.methods
+                  .createItem(result[0].hash)
+                  .send({
+                    from: sm.useraccount,
+                    value: comision,
+                  })
+                  .once("receipt", (receipt) => {
+                    console.log(receipt);
+
+                    setShowModal({
+                      ...initialBc,
+                      show: true,
+                      success: true,
+                      message:
+                        "!Exito!. Se ha minado,el nuevo token esta en su cartera",
+                    });
+
+                    //quitar la imagen de carga
+                    setInitialBc({ ...initialBc, showHideCharge: false });
+                  })
+                  .catch((err) => {
+                    console.log(err);
+
                     setShowModal({
                       ...initialBc,
                       show: true,
                       success: false,
-                      message: "!Error!.La transaccion ha sido cancelada",
+                      message: err.stack,
                     });
+                    setInitialBc({ ...initialBc, showHideCharge: false });
+                  });
+              });
+            });
+        };
+      } catch (err) {
+        console.log(err);
+        setShowModal({
+          ...initialBc,
+          show: true,
+          success: false,
+          message: "!Hubo un rrror!.  ",
+        });
+        setInitialBc({ ...initialBc, showHideCharge: false });
+        // window.alert(err.message || err);
+        return;
+      }
+    } else {
+      //no tiene metamask lo mandamos a la pagina oficial de descarga
 
-                    hideComponent(false);
-                  }
-
-                  setTimeout(function() {
-                    window.location.reload(1);
-                  }, 5000);
-                  console.log("err", err);
-                });
-            } catch (error) {
-              console.log("err", error);
-            }
-          });
-      };
-    } catch (err) {
-     // window.alert(err.message || err);
-      return;
+      window.open("https://metamask.io/download", "_blank");
     }
-  } else {
-    //no tiene metamask lo mandamos a la pagina oficial de descarga
-
-    window.open("https://metamask.io/download", "_blank");
-  }
-};
+  };
 
   const onSubmit = (e) => {
     //window.alert("Usted esta pagando el costo de minar un nuevo token(metodo de minado)");
@@ -533,7 +478,6 @@ const ValidarCaptura = async (event) => {
     unhideCharge(true);
 
     try {
-       
       //Se avanza el estado del estampado
       setprogress(50);
       setestadoProgress("Paso 4 de 6: pagando Estamapado");
@@ -556,7 +500,7 @@ const ValidarCaptura = async (event) => {
               //Se avanza el estado del estampado
               setprogress(100);
               setestadoProgress("Paso 6 de 6: Documento Estampado");
-              mycomision.setItem("payed",0)
+              mycomision.setItem("payed", 0);
               //console.log(receipt);
               //console.log(result);
               resetForm();
@@ -724,123 +668,24 @@ const ValidarCaptura = async (event) => {
                           </li>
                         </ul>
 
-                        <div className="  flex flex-col min-w-0 break-words bg-white w-full mb-6  rounded">
-                          <div className="px-4 py-5 flex-auto">
-                            <div>
-                              <div
-                                className={
-                                  openTab === 2 ? "visble" : "invisible"
-                                }
-                                id="link1"
-                              >
-                                <form
-                                  onSubmit={onSubmit}
-                                  className="space-y-5 mt-10"
-                                >
-                                  {showHideFile && (
-                                    <label className="w-full flex flex-col items-center px-4 py-6 bg-white rounded-lg  tracking-wide uppercase  cursor-pointer ">
-                                      <svg
-                                        className="w-8 h-8 text-pink-600"
-                                        fill="currentColor"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 20 20"
-                                      >
-                                        <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
-                                      </svg>
-                                      <span className="mt-2 text-base leading-normal">
-                                        Estampa un archivo
-                                      </span>
-
-                                      <input
-                                        type="file"
-                                        className="hidden"
-                                        accept=".pdf"
-                                        onChange={ValidarCaptura}
-                                        required
-                                        onClick={() => {
-                                          setInitialBc({
-                                            ...initialBc,
-                                            Validado: "",
-                                          });
-                                        }}
-                                      />
-                                    </label>
-                                  )}
-                                  {showHidebutton && (
-                                    <button
-                                      className="bg-green-400 hover:bg-green-500 text-white font-bold py-2 px-4 rounded"
-                                      style={{
-                                        WebkitTextStroke: "0px black",
-                                        margin: "10px 0px 6px 0px",
-                                      }}
-                                      type="submit"
-                                    >
-                                      Estamapar
-                                    </button>
-                                  )}
-                                </form>
-                                <div className="relative pt-1">
-                                  <div className="flex mb-2 items-center justify-between">
-                                    <div>
-                                      <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-pink-600 bg-pink-200">
-                                        Progreso del estampado
-                                      </span>
-                                    </div>
-
-                                    <div>
-                                      {showHideCharge && (
-                                        <img
-                                          src={
-                                            "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"
-                                          }
-                                          style={{ width: "30%" }}
-                                          alt="loading..."
-                                        />
-                                      )}
-                                    </div>
-
-                                    <div>
-                                      <div className="text-right">
-                                        <span className="text-sm font-semibold inline-block text-pink-600">
-                                          {estadoProgress}
-                                          {initialBc.namepdf}
-                                        </span>
-                                      </div>
-                                    </div>
-                                    <div className="text-right">
-                                      <span className="text-sm font-semibold inline-block text-pink-600">
-                                        {progress}%
-                                      </span>
-                                    </div>
-                                  </div>
-                                  <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-pink-200">
-                                    <div
-                                      style={{ width: progress + "%" }}
-                                      className={
-                                        "shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-pink-500"
-                                      }
-                                    ></div>
-                                  </div>
-                                </div>
-                              </div>
-                              <div
-                                className={
-                                  openTab === 1 ? "visible" : "invisible"
-                                }
-                                id="link1"
-                              >
-                                <label className="-mt-32 w-full flex flex-col items-center px-4 py-6 bg-white rounded-lg  tracking-wide uppercase  cursor-pointer ">
-                                  {initialBc.showImg && <svg
+                        <div className="  flex flex-col min-w-0  bg-white w-full  rounded">
+                          <div className="px-4 flex-auto">
+                            {openTab === 1 ? (
+                              <div id="link1">
+                                <label className="w-full flex flex-col items-center px-4 py-6 bg-white rounded-lg  tracking-wide uppercase  cursor-pointew-full flex flex-col items-center px-4   mtbg-white rounded-lg  tracking-wide uppercase  cursor-pointer ">
+                                  <svg
                                     className="w-8 h-8 text-pink-600"
                                     fill="currentColor"
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 20 20"
                                   >
                                     <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
-                                  </svg>}
-                                  {initialBc.showImg && <span className="mt-2 text-base leading-normal">
-                                    Selecciona un archivo
-                                  </span>}
+                                  </svg>
+                                  {initialBc.showImg && (
+                                    <span className="mt-2 text-base leading-normal">
+                                      Selecciona un archivo
+                                    </span>
+                                  )}
 
                                   <input
                                     type="file"
@@ -856,23 +701,63 @@ const ValidarCaptura = async (event) => {
                                       });
                                     }}
                                   />
-                                 </label>
-                                 <div className="w-full flex flex-col items-center">
-                                 {showHideCharge && (
-                                        <img
-                                          src={
-                                            "https://media.giphy.com/media/l3q2SWX1EW3LdD7H2/giphy.gif"
-                                          }
-                                          
-                                          alt="loading..."
-                                          
-                                        />
-                                )}                              
+                                </label>
+                                <div className="w-full flex flex-col items-center">
+                                  {showHideCharge && (
+                                    <img
+                                      src={
+                                        "https://media.giphy.com/media/l3q2SWX1EW3LdD7H2/giphy.gif"
+                                      }
+                                      alt="loading..."
+                                    />
+                                  )}
                                 </div>
                                 <h2>{initialBc.Validado}</h2>
                                 <h2>{initialBc.namepdf}</h2>
                               </div>
-                            </div>
+                            ) : (
+                              <div id="link1" className="flex justify-center">
+                                {showHideFile && (
+                                  <label className="w-full flex flex-col items-center px-4 py-6 bg-white rounded-lg  tracking-wide uppercase  cursor-pointer ">
+                                    <svg
+                                      className="w-8 h-8 text-pink-600"
+                                      fill="currentColor"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      viewBox="0 0 20 20"
+                                    >
+                                      <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
+                                    </svg>
+                                    <span className="mt-2 text-base leading-normal">
+                                      Estampa un archivo
+                                    </span>
+
+                                    <input
+                                      type="file"
+                                      className="hidden"
+                                      accept=".pdf"
+                                      onChange={ValidarCaptura}
+                                      required
+                                      onClick={() => {
+                                        setInitialBc({
+                                          ...initialBc,
+                                          Validado: "",
+                                        });
+                                      }}
+                                    />
+                                  </label>
+                                )}
+
+                                {showHideCharge && (
+                                  <img
+                                    src={
+                                      "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"
+                                    }
+                                    alt="loading..."
+                                    className="w-3/12"
+                                  />
+                                )}
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>

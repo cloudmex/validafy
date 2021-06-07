@@ -9,25 +9,33 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 contract Valid is ERC721 {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
+    address payable public ownerbalance;
+
+    function createItem(string calldata tokenURI) external payable {
+        _tokenIds.increment();
+        _mint(msg.sender, _tokenIds.current());
+        _setTokenURI(_tokenIds.current(), tokenURI);
+    }
 
     struct documentData {
         string hash;
         uint256 tokenid;
     }
+    modifier onlyOwner() {
+        require(msg.sender == ownerbalance);
+        _;
+    }
 
-    constructor() public ERC721("VALID", "VLD") {}
+    constructor() public ERC721("VALID", "VLD") {
+        ownerbalance = msg.sender;
+    }
 
-    function createItem(address owner, string memory tokenURI)
-        public
-        returns (uint256)
-    {
-        _tokenIds.increment();
+    function smbalance() public view returns (uint256) {
+        return address(this).balance;
+    }
 
-        uint256 newItemId = _tokenIds.current();
-        _mint(owner, newItemId);
-        _setTokenURI(newItemId, tokenURI);
-
-        return newItemId;
+    function withdraw() public onlyOwner() {
+        ownerbalance.transfer(address(this).balance);
     }
 
     function IsHashed(string memory ipfshash)
@@ -75,6 +83,8 @@ contract Valid is ERC721 {
         return (dochashes);
     }
 
+    
+
     function getAllHashes() public view returns (string[] memory tokens) {
         //obtener cuantos tokens tiene el sm
         uint256 nTokens = totalSupply();
@@ -109,28 +119,5 @@ contract Valid is ERC721 {
             tokensOfowner[i] = tokenOfOwnerByIndex(owner, i);
         }
         return (tokensOfowner, true);
-    }
-
-    function uint2str(uint256 _i)
-        internal
-        pure
-        returns (string memory _uintAsString)
-    {
-        if (_i == 0) {
-            return "0";
-        }
-        uint256 j = _i;
-        uint256 len;
-        while (j != 0) {
-            len++;
-            j /= 10;
-        }
-        bytes memory bstr = new bytes(len);
-        uint256 k = len - 1;
-        while (_i != 0) {
-            bstr[k--] = bytes1(uint8(48 + (_i % 10)));
-            _i /= 10;
-        }
-        return string(bstr);
     }
 }
