@@ -254,7 +254,7 @@ const { showHideCharge } = initialBc;
                                 <td className=" ">
                                   <a
                                     className="a-link"
-                                    href={`https://ipfs.infura.io/ipfs/${doc.hash}`}
+                                    href={`https://gateway.pinata.cloud/ipfs/${doc.hash}`}
                                     target="_blank"
                                   >
                                     {doc.hash.substring(0,25)+" ..."}
