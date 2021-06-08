@@ -14,7 +14,7 @@ const ipfs = ipfsClient({
 
 //Using the Pinata SDK with dokxo apikeys
 const pinataSDK = require('@pinata/sdk');
-const pinata = pinataSDK('510af907e7ead62d2ae2', 'e7856b06e43355f6c0898c742b36df34a301faf2a8772f77d2e3637c86c855e0');
+const pinata = pinataSDK('8e2b2fe58bbbc6c45be1', '440d5cf3f57689b93028a75c6d71a4ef82c83ba00926ae61674859564fa357a8');
 
 export default function Dashboard() {
   const [open, setOpen] = useState(false);
