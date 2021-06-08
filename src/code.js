@@ -1,14 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Web3 from "web3";
 import ValidafySM from "../contracts/Valid.json";
 import Navbar from "../components/Navbar_landing_template";
 import Footer from "../components/Footer_landing_template";
+import DropzoneComponent from "react-dropzone-component";
 import { useHistory } from "react-router-dom";
 const ipfsClient = require("ipfs-http-client");
-
-/**
- * @type con este hook o objeto obtendremos una via para añadir datos a ipfs
- */
 const ipfs = ipfsClient({
   host: "ipfs.infura.io",
   port: 5001,
@@ -17,10 +14,6 @@ const ipfs = ipfsClient({
 
 export default function Landing() {
   const history = useHistory();
-
-  /**
-   * @type estado que guarda los datos mas relevantes de el componente
-   */
   const [initialBc, setInitialBc] = useState({
     Hash: "",
     contract: null,
@@ -28,15 +21,9 @@ export default function Landing() {
     web3: null,
     account: null,
     Validado: "",
-    showImg:true,
   });
   const [openTab, setOpenTab] = React.useState(1);
-  const [Modal, setShowModal] = React.useState({ show: false });
   //  const [Buffe,setBuffer]=useState(null );
-
-  /**
-   * @type estado que guarda los datos del usuario
-   */
   const [user, setUser] = useState({
     firstname: "",
     lastname: "",
@@ -51,10 +38,6 @@ export default function Landing() {
   const [message, setMessage] = useState("");
   const [buffer, setBuffer] = useState("");
   const [ipfss, setIpfs] = useState("");
-  const [buttontxt, setbuttontxt] = useState("Ingresa");
-  /**
-   * @type representa a la instancia del smart contract
-   */
   const [sm, setSm] = useState();
   const componentConfig = {
     iconFiletypes: [".jpg", ".png", ".gif"],
@@ -62,74 +45,79 @@ export default function Landing() {
     postUrl: "/uploadHandler",
   };
   const djsConfig = { autoProcessQueue: false };
-  /**
-   * capturaba el archivo y lo asignaba a los estados
-   * @deprecated
-   */
+
   const eventHandlers = {
     addedfile: (file) => {
-      //console.log(file);
-      //console.log("just file " + file);
+      console.log(file);
+      console.log("just file " + file);
       const reader = new window.FileReader();
       reader.readAsArrayBuffer(file);
       reader.onloadend = () => {
-        //console.log(reader);
-        //console.log(reader.result);
+        console.log(reader);
+        console.log(reader.result);
 
         setInitialBc({ buffer: Buffer(reader.result) });
         setBuffer({ buffer: Buffer(reader.result) });
-        //console.log("buffer2", buffer);
+        console.log("buffer2", buffer);
       };
     },
   };
-  /**
-   * @deprecated cargaba web3 y el sm  en un componente clase
-   */
+
   async function componentWillMount() {
     await this.loadWeb3();
     await this.loadBlockchainData();
   }
-  /**
-   * @deprecated nos servia cuando teniamos un componente clase
-   */
   async function loadWeb3() {
-    try {
-      if (window.ethereum) {
-        window.web3 = new Web3(window.ethereum);
-        await window.ethereum.enable();
-      } else if (window.web3) {
-        window.web3 = new Web3(window.web3.currentProvider);
-      } else {
-        window.alert(
-          "No se ha detectado un navegador compatible con ethereum,prueba instalando la extension de MetaMask!"
-        );
-        window.location.href = "https://metamask.io/download";
-      }
-    } catch (error) {
-      //console.error(error);
-      window.location.reload();
+    if (window.ethereum) {
+      window.web3 = new Web3(window.ethereum);
+      await window.ethereum.enable();
+    } else if (window.web3) {
+      window.web3 = new Web3(window.web3.currentProvider);
+    } else {
+      window.alert(
+        "Non-Ethereum browser detected. You should consider trying MetaMask!"
+      );
     }
   }
-  /**
-   * @deprecated nos servia cuando teniamos un componente clase
-   */
   async function loadBlockchainData() {
     const web3 = window.web3;
     // Load account
     const accounts = await web3.eth.getAccounts();
     setInitialBc({ account: accounts[0] });
-    ////console.log(initialBc.account);
+    console.log(initialBc.account);
     const networkId = await web3.eth.net.getId();
 
     if (networkId) {
-      //console.log(initialBc.contract);
+      console.log(initialBc.contract);
     } else {
       window.alert("Smart contract not deployed to detected network.");
     }
   }
-  /**
-   * @deprecated estaba asociado al onchange del input file del componente anterior
-   */
+
+  let timerID = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(timerID);
+    };
+  }, []);
+  const onChange = (e) => {
+    setUser({ ...user, [e.target.name]: e.target.value });
+  };
+
+  const resetForm = () => {
+    setUser({
+      firstname: "",
+      lastname: "",
+      username: "",
+      password: "",
+      phone: "",
+      institution: "",
+      carrer: "",
+      finish: "",
+      role: "user",
+    });
+  };
   const captureFile = async (event) => {
     event.preventDefault();
     try {
@@ -144,56 +132,28 @@ export default function Landing() {
             file.name.length > 13 ? file.name.slice(0, 12) + "..." : file.name,
         });
         setBuffer({ buffer: Buffer(reader.result) });
-        //console.log("buffer2", buffer);
+        console.log("buffer2", buffer);
       };
     } catch (error) {
-      //console.log(error);
+      console.log(error);
     }
 
-    //console.log("buffer v", initialBc.buffer);
+    console.log("buffer v", initialBc.buffer);
   };
-  /**
-   * podemos validar la existencia de un archivo con este metodo
-   * @param {*} event tiene toda la informacion del input asociado
-   * @returns  no regresa nada
-   */
-  const resetInput = () =>{
 
-  }
   const Validar = async (event) => {
     event.preventDefault();
     ///browser detection
-    unhideCharge(true);
     if (window.ethereum) {
       window.web3 = new Web3(window.ethereum);
 
       try {
-        //tratamos de cargar el documento que el usuario eligio
         const file = event.target.files[0];
 
         if (!event.target.files) {
           throw "no agrego ningun archivo";
         }
         //cambiar red
-
-        const web3 = window.web3
-        const networkId =  await web3.eth.net.getId();
-        
-        if( networkId != 97) {
-       
-          // window.alert('Error de red,Selecciona la red de BSC para seguir.')
-        
-          setShowModal({
-            ...initialBc,
-            show: true,
-            success: false,
-            message: " !Error de red,Selecciona la red de BSC para seguir.¡",
-          });
-           setTimeout(function(){
-            window.location.reload(1);
-         }, 2000); 
-        
-         }
         await window.ethereum.request({
           method: "wallet_addEthereumChain",
           params: [
@@ -221,12 +181,9 @@ export default function Landing() {
           ValidafySM.abi,
           tokenNetworkData.address
         );
-
-        //nos permite cargar el archivo
         const reader = new window.FileReader();
         reader.readAsArrayBuffer(file);
         reader.onloadend = () => {
-          //obtener el hash de ipfs ,una vez que cargo el archivo
           ipfs
             .add(Buffer(reader.result), { onlyHash: true })
             .then(async (result) => {
@@ -234,17 +191,14 @@ export default function Landing() {
               let ishashed = await contract.methods
                 .IsHashed(result[0].hash)
                 .call();
-              //console.log(result[0].hash);
-              let estado = "Documento no estampado";
-              if (ishashed) estado = "Documento Valido";
-              setShowModal({
-                ...initialBc,
-                show: true,
-                success: ishashed,
-                message: estado,
-              });
+              console.log(result[0].hash);
+              let estado = "El documento es invalido";
+              if (ishashed) estado = "El documento es valido";
 
-              setInitialBc({ ...initialBc, namepdf: file.name, showImg:true });
+              setInitialBc({
+                ...initialBc,
+                Validado: estado,
+              });
             });
         };
       } catch (err) {
@@ -257,12 +211,6 @@ export default function Landing() {
       window.open("https://metamask.io/download", "_blank");
     }
   };
-
-  /**
-   * nos permite agragar una red
-   * @param {*} e  este parametro se refiere al input al cual esta asociado
-   * @returns
-   */
   async function addNetwork(e) {
     e.preventDefault();
     try {
@@ -287,11 +235,6 @@ export default function Landing() {
       return;
     }
   }
-  /**
-   * nos permite estampar documentos
-   * @deprecated no se utiliza en el landing
-   * @param {*} e representa al input al que esta asociado
-   */
   const onSubmit = (e) => {
     e.preventDefault();
     try {
@@ -304,8 +247,8 @@ export default function Landing() {
             .createItem(sm.useraccount, result[0].path)
             .send({ from: sm.useraccount })
             .once("receipt", (receipt) => {
-              //console.log(receipt);
-              //console.log(result);
+              console.log(receipt);
+              console.log(result);
               //se hizo correctamente la transaccion
               if (receipt.status) {
                 setIpfs(result[0].path);
@@ -314,7 +257,7 @@ export default function Landing() {
         });
       };
     } catch (error) {
-      //console.log(error);
+      console.log(error);
     }
   };
   const alert = (event) => {
@@ -323,98 +266,9 @@ export default function Landing() {
     window.alert("haz click en el boton de Metamask");
   };
 
-  useEffect(() => {
-    loadWeb3();
-    try {
-      window.ethereum._metamask
-        .isUnlocked()
-        .then(function(value) {
-          if (value) {
-            //console.log("en landing Abierto");
-            setbuttontxt("Mi cuenta");
-            //console.log("=> " + buttontxt);
-            setbuttontxt("Mi cuenta");
-            //console.log(buttontxt);
-          } else {
-            //console.log("Cerrado");
-          }
-        })
-         
-    } catch (error) {
-      //console.log("e");
-    }
-  });
-  async function see() {
-    const web3 = window.web3
-    const networkId =  await web3.eth.net.getId();
-    try {
-       window.ethereum._metamask
-        .isUnlocked()
-        .then(function(value) {
-          if (value) {
-            
-            console.log(networkId)
-
-            if( networkId == 97) {
-       
-              setShowModal({
-                ...initialBc,
-                show: true,
-                success: true,
-                message: "!Vamos a Estampar¡",
-              });
-          
-              setTimeout(function(){
-                window.location.href="/dash";
-             }, 5000); 
-             
-            }else {
-              // window.alert('Error de red,Selecciona la red de BSC para seguir.')
-               setShowModal({
-                 ...initialBc,
-                 show: true,
-                 success: false,
-                 message: " !Error de red¡,Selecciona la red de BSC para seguir.",
-               });
-              
-               
-             }
-             
-           
-          } else {
-             setShowModal({
-              ...initialBc,
-              show: true,
-              success: false,
-              message: "!Advertencia !.\nPrimero logeate",
-            });
-            window.location.href = "/login";
-          }
-          
-        });
-        
-    } catch (error) {
-      // window.alertt(error)
-      console.log("e" );
-    }
-   
-    
-    }
-    const unhideCharge = (e) => {
-      var neg = "";
-      if (e) {
-        neg = false;
-      } else {
-        neg = true;
-      }
-      return setInitialBc({ showHideCharge: e });
-    };
-    
-    const { showHideCharge } = initialBc;
   return (
     <>
       <Navbar transparent />
-
       {message}
       <main>
         <div
@@ -480,7 +334,7 @@ export default function Landing() {
         </div>
 
         <section className="pb-20 bg-gray-300 -mt-24">
-          <div className=" ">
+          <div className="container mx-auto px-4">
             <div className="flex flex-wrap">
               <div className="lg:pt-12 pt-6 w-full md:w-4/12 px-4 text-center">
                 <div className="relative flex flex-col min-w-0 break-words bg-white w-full mb-8 shadow-lg rounded-lg">
@@ -529,15 +383,12 @@ export default function Landing() {
                 </div>
               </div>
             </div>
-            <div
-              name="valida"
-              className=" w-full flex flex-wrap items-center pt-16 justify-center "
-            >
-              <h1 className="self-center w-full text-center	 shadow text-6xl text-gray-600 mb-6 ">
-                Valida tu documento
+            <div name="valida" className="flex flex-wrap items-center pt-16">
+              <h1 className="self-center w-full text-center	 text-6xl text-gray-100 mb-6 ">
+                Validame
               </h1>
-              <div className=" w-full lg:w-11/12 px-4  text-center pb-20 ">
-                <div className=" md:px-2 break-words  mb-8  rounded-lg mt-4 shadow-md">
+              <div className=" w-full md:w-1  text-center pb-20 ">
+                <div className="px-12 sm:px-0   min-w-0 break-words  mb-8  rounded-lg mt-4">
                   <ul
                     className="flex mb-0 list-none flex-wrap pt-3 pb-4 flex-row"
                     role="tablist"
@@ -547,7 +398,7 @@ export default function Landing() {
                         className={
                           "text-xs font-bold uppercase px-5 py-3 shadow-lg rounded block leading-normal " +
                           (openTab === 1
-                            ? "text-white bg-Pentatone"
+                            ? "text-white bg-pink-600"
                             : "text-pink-600 bg-white")
                         }
                         onClick={(e) => {
@@ -563,14 +414,12 @@ export default function Landing() {
                         Validar
                       </a>
                     </li>
-                    <li
-                      onClick={see}
-                      className="-mb-px mr-2 last:mr-0 flex-auto text-center"
-                    >
+                    <li className="-mb-px mr-2 last:mr-0 flex-auto text-center">
                       <a
                         className={
                           "text-xs font-bold uppercase px-5 py-3 shadow-lg rounded block leading-normal text-pink-600 bg-white"
                         }
+                        href="#link1"
                         role="tablist"
                       >
                         <i className="fas fa-link text-base mr-1"></i>
@@ -579,25 +428,25 @@ export default function Landing() {
                     </li>
                   </ul>
 
-                  <div className="relative flex flex-col min-w-0 break-words bg-white  mb-6  rounded">
-                    <div className=" py-5 ">
+                  <div className="relative flex flex-col min-w-0 break-words bg-white w-full mb-6  rounded">
+                    <div className="px-4 py-5 flex-auto">
                       <div>
                         <div
                           className={openTab === 1 ? "block" : "hidden"}
                           id="link1"
                         >
                           <label className="w-full flex flex-col items-center px-4 py-6 bg-white rounded-lg  tracking-wide uppercase  cursor-pointer ">
-                            {initialBc.showImg && <svg
+                            <svg
                               className="w-8 h-8 text-pink-600"
                               fill="currentColor"
                               xmlns="http://www.w3.org/2000/svg"
                               viewBox="0 0 20 20"
                             >
                               <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
-                            </svg>}
-                            {initialBc.showImg && <span className="mt-2 text-base leading-normal">
+                            </svg>
+                            <span className="mt-2 text-base leading-normal">
                               Selecciona un archivo
-                            </span>}
+                            </span>
 
                             <input
                               type="file"
@@ -606,23 +455,11 @@ export default function Landing() {
                               onChange={Validar}
                               required
                               onClick={() => {
-                                setInitialBc({ ...initialBc, Validado: "", showImg: !initialBc.showImg, });
+                                setInitialBc({ ...initialBc, Validado: "" });
                               }}
                             />
                           </label>
-                          <div className="w-full flex flex-col items-center">
-                                 {showHideCharge && (
-                                        <img
-                                          src={
-                                            "https://media.giphy.com/media/l3q2SWX1EW3LdD7H2/giphy.gif"
-                                          }
-                                          
-                                          alt="loading..."
-                                          
-                                        />
-                                )}                              
-                                </div>
-                          <h2>{initialBc.namepdf}</h2>
+                          <h2>{initialBc.Validado}</h2>
                         </div>
                       </div>
                     </div>
@@ -675,7 +512,7 @@ export default function Landing() {
               </div>
 
               <div className="w-full md:w-4/12 px-4 mr-auto ml-auto">
-                <div className="relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded-lg bg-Pentatone">
+                <div className="relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded-lg bg-pink-600">
                   <img
                     alt="..."
                     src={require("../assets/img/nasdaq.jpg")}
@@ -694,7 +531,7 @@ export default function Landing() {
                     >
                       <polygon
                         points="-30,95 583,95 583,65"
-                        className="bg-Pentatone fill-current"
+                        className="text-pink-600 fill-current"
                       ></polygon>
                     </svg>
                     <h4 className="text-xl font-bold text-white">Ventajas</h4>
@@ -713,11 +550,6 @@ export default function Landing() {
                         <i className="fa fa-gavel" aria-hidden="true"></i>{" "}
                         Legalmente válido
                       </li>
-                      <li>
-                        {" "}
-                        <i className="fa fa-link" aria-hidden="true"></i>{" "}
-                        Respaldado en la Binance Smart Chain
-                      </li>
                     </ul>
                   </blockquote>
                 </div>
@@ -725,13 +557,14 @@ export default function Landing() {
             </div>
           </div>
         </section>
-        <section className="relative  bg-gray-900">
+
+        <section className="pb-20 relative block bg-gray-900">
           <div
             className="bottom-auto top-0 left-0 right-0 w-full absolute pointer-events-none overflow-hidden -mt-20"
             style={{ height: "80px" }}
           >
             <svg
-              className="absolute bottom-0 overflow-hidden bord"
+              className="absolute bottom-0 overflow-hidden"
               xmlns="http://www.w3.org/2000/svg"
               preserveAspectRatio="none"
               version="1.1"
@@ -746,9 +579,9 @@ export default function Landing() {
             </svg>
           </div>
 
-          <div className=" mx-auto px-4 ">
+          <div className="container mx-auto px-4 lg:pt-24 lg:pb-64">
             <div className="flex flex-wrap text-center justify-center">
-              <div className="lg:w-6/12 py-24">
+              <div className="w-full lg:w-6/12 px-4">
                 <h2 className="text-4xl font-semibold text-white">
                   Construye con nosotros
                 </h2>
@@ -762,68 +595,15 @@ export default function Landing() {
             </div>
           </div>
         </section>
-
-        {Modal.show ? (
-          <>
-            <div className="  justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none ">
-              <div className="w-full md:w-6/12 my-6 ">
-                {/*content*/}
-                <div className=" rounded-lg shadow-lg  flex flex-col  bg-white outline-none focus:outline-none">
-                  {/*header*/}
-
-                  <div
-                    className={`${
-                      Modal.success ? "bg-emerald-500" : "bg-red-500"
-                    }  flex items-start justify-center p-5 border-b border-solid border-blueGray-200 rounded-t`}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="w-16 h-16 text-white my-10"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      {Modal.success ? (
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      ) : (
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      )}
-                    </svg>
-                  </div>
-                  <div className="relative p-6 flex flex-col space-y-4 justify-center ">
-                    <p className="flex-initial my-4 text-center text-2xl leading-relaxed">
-                      {Modal.message}
-                    </p>
-                    <button
-                      className={`${
-                        Modal.success ? "bg-emerald-500" : "bg-red-500"
-                      } w-min  text-white active:${
-                        Modal.success ? "bg-emerald-600" : "bg-red-600"
-                      } font-bold uppercase text-sm px-6 py-3 rounded-full shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
-                      type="button"
-                      onClick={() => {
-                        setShowModal({ ...Modal, show: false });
-                      }}
-                    >
-                      continuar
-                    </button>
-                  </div>
-                </div>
+        <section className="relative block py-24 lg:pt-0 bg-gray-900">
+          <div className="container mx-auto px-4">
+            <div className="flex flex-wrap justify-center lg:-mt-64 -mt-48">
+              <div className="w-full lg:w-6/12 px-4">
+                <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-gray-300"></div>
               </div>
             </div>
-            <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
-          </>
-        ) : null}
+          </div>
+        </section>
       </main>
       <Footer />
     </>

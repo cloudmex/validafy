@@ -1,26 +1,116 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
+import Web3 from "web3";
 
 import Navbar from "../components/Navbar_login_template";
 import FooterSmall from "../components/FooterSmall_login_template";
+import logo from "../assets/img/metamask.png";
 
 export default function Login() {
+  const [initialBc, setInitialBc] = useState({
+    Hash: "",
+    contract: null,
+    buffer: null,
+    web3: null,
+    account: null,
+  });
+  const [account, setAccount] = useState("");
+
+  async function loadWeb3() {
+    try {
+      if (window.ethereum) {
+        window.web3 = new Web3(window.ethereum);
+        if (await window.ethereum.enable()) {
+          loadBlockchainData();
+        }
+      } else if (window.web3) {
+        window.web3 = new Web3(window.web3.currentProvider);
+      } else {
+        window.alert(
+          "No se ha detectado un navegador compatible con ethereum,prueba instalando la extension de MetaMask!"
+        );
+        window.location.href = "https://metamask.io/download";
+      }
+    } catch (error) {
+      console.error(error);
+      window.location.reload();
+    }
+  }
+  async function loadBlockchainData() {
+    try {
+      const web3 = window.web3;
+      // Load account
+      const accounts = await web3.eth.getAccounts();
+
+      setInitialBc({ initialBc, account: accounts[0] });
+      setAccount({ account: accounts[0] });
+      console.log(account);
+      const networkId = await web3.eth.net.getId();
+
+      if (account != null) {
+        console.log(account);
+        addNetwork();
+      } else {
+        window.alert("Error de red,Selecciona la red de BSC para seguir.");
+      }
+    } catch (error) {
+      //console.error(error)
+    }
+  }
+  async function addNetwork() {
+    try {
+      await window.ethereum.request({
+        method: "wallet_addEthereumChain",
+        params: [
+          {
+            chainId: "0x61",
+            chainName: "BSCTESTNET",
+            rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
+            nativeCurrency: {
+              name: "BINANCE COIN",
+              symbol: "BNB",
+              decimals: 18,
+            },
+            blockExplorerUrls: ["https://testnet.bscscan.com/"],
+          },
+        ],
+      });
+      window.location.href = "/dash";
+    } catch (error) {}
+  }
+
+  useEffect(() => {
+    window.history.pushState(null, document.title, window.location.href);
+    window.addEventListener("popstate", function(event) {
+      window.history.pushState(null, document.title, window.location.href);
+    });
+
+    window.ethereum._metamask.isUnlocked().then(function(value) {
+      if (value) {
+        console.log("Abierto");
+        window.location.href = "/dash";
+      } else {
+        console.log("Cerrado");
+      }
+    });
+
+    console.log(window.ethereum);
+  });
+
   return (
     <>
       <Navbar transparent />
       <main>
         <section className="absolute w-full h-full">
           <div
-            className="absolute top-0 w-full h-full bg-gray-900"
+            className="absolute top-0 w-full h-full bg-gray-900 bg-cover lg:bg-center bg-no-repeat"
             style={{
               backgroundImage:
                 "url(" + require("../assets/img/register_bg_2.png") + ")",
-              backgroundSize: "100%",
-              backgroundRepeat: "no-repeat",
             }}
           ></div>
           <div className="container mx-auto px-4 h-full">
             <div className="flex content-center items-center justify-center h-full">
-              <div className="w-full lg:w-4/12 px-4">
+              <div className="w-full sm:w-4/12 px-4">
                 <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-gray-300 border-0">
                   <div className="rounded-t mb-0 px-6 py-6">
                     <div className="text-center mb-3">
@@ -29,111 +119,20 @@ export default function Login() {
                       </h6>
                     </div>
                     <div className="btn-wrapper text-center">
+                      <div className="flex justify-center">
+                        <img style={{ height: 100 }} src={logo} />
+                      </div>
+
                       <button
+                        onClick={loadWeb3}
                         className="bg-white active:bg-gray-100 text-gray-800 font-normal px-4 py-2 rounded outline-none focus:outline-none mr-2 mb-1 uppercase shadow hover:shadow-md inline-flex items-center font-bold text-xs"
                         type="button"
                         style={{ transition: "all .15s ease" }}
                       >
-                        <img
-                          alt="..."
-                          className="w-5 mr-1"
-                          src={require("../assets/img/github.svg")}
-                        />
-                        Github
-                      </button>
-                      <button
-                        className="bg-white active:bg-gray-100 text-gray-800 font-normal px-4 py-2 rounded outline-none focus:outline-none mr-1 mb-1 uppercase shadow hover:shadow-md inline-flex items-center font-bold text-xs"
-                        type="button"
-                        style={{ transition: "all .15s ease" }}
-                      >
-                        <img
-                          alt="..."
-                          className="w-5 mr-1"
-                          src={require("../assets/img/google.svg")}
-                        />
-                        Google
+                        Ingresar
                       </button>
                     </div>
                     <hr className="mt-6 border-b-1 border-gray-400" />
-                  </div>
-                  <div className="flex-auto px-4 lg:px-10 py-10 pt-0">
-                    <div className="text-gray-500 text-center mb-3 font-bold">
-                      <small>Or sign in with credentials</small>
-                    </div>
-                    <form>
-                      <div className="relative w-full mb-3">
-                        <label
-                          className="block uppercase text-gray-700 text-xs font-bold mb-2"
-                          htmlFor="grid-password"
-                        >
-                          Email
-                        </label>
-                        <input
-                          type="email"
-                          className="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
-                          placeholder="Email"
-                          style={{ transition: "all .15s ease" }}
-                        />
-                      </div>
-
-                      <div className="relative w-full mb-3">
-                        <label
-                          className="block uppercase text-gray-700 text-xs font-bold mb-2"
-                          htmlFor="grid-password"
-                        >
-                          Password
-                        </label>
-                        <input
-                          type="password"
-                          className="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
-                          placeholder="Password"
-                          style={{ transition: "all .15s ease" }}
-                        />
-                      </div>
-                      <div>
-                        <label className="inline-flex items-center cursor-pointer">
-                          <input
-                            id="customCheckLogin"
-                            type="checkbox"
-                            className="form-checkbox border-0 rounded text-gray-800 ml-1 w-5 h-5"
-                            style={{ transition: "all .15s ease" }}
-                          />
-                          <span className="ml-2 text-sm font-semibold text-gray-700">
-                            Remember me
-                          </span>
-                        </label>
-                      </div>
-
-                      <div className="text-center mt-6">
-                        <button
-                          className="bg-gray-900 text-white active:bg-gray-700 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full"
-                          type="button"
-                          style={{ transition: "all .15s ease" }}
-                        >
-                          Sign In
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-                <div className="flex flex-wrap mt-6">
-                  <div className="w-1/2">
-                    <a
-                      href="#pablo"
-                      onClick={(e) => e.preventDefault()}
-                      className="text-gray-300"
-                    >
-                      <small>Forgot password?</small>
-                    </a>
-                  </div>
-                  <div className="w-1/2 text-right">
-                    <a
-                      href="#pablo"
-                      onClick={(e) => e.preventDefault()}
-                      className="text-gray-300"
-                    >
-                      <small>Create new account</small>
-                    </a>
                   </div>
                 </div>
               </div>
