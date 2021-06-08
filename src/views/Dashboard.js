@@ -12,6 +12,10 @@ const ipfs = ipfsClient({
   protocol: "https",
 });
 
+//Using the Pinata SDK with dokxo apikeys
+const pinataSDK = require('@pinata/sdk');
+const pinata = pinataSDK('8e2b2fe58bbbc6c45be1', '440d5cf3f57689b93028a75c6d71a4ef82c83ba00926ae61674859564fa357a8');
+
 export default function Dashboard() {
   const [open, setOpen] = useState(false);
 
@@ -139,14 +143,23 @@ export default function Dashboard() {
         ],
       });
     } catch (error) {
-      addNetwork();
-      window.location.reload();
-      // window.alert("Cambia de red porfavor")
+    
+       
+      
     }
   }
 
   useEffect(() => {
     (async () => {
+      //Testing if Validafy is conected to Pinata.
+      pinata.testAuthentication().then((result) => {
+        //handle successful authentication here
+        console.log(result);
+    }).catch((err) => {
+        //handle error here
+        console.log(err);
+    });
+    /////
       //console.log("mycomi"+mycomision.getItem("payed"))
       try {
         window.ethereum._metamask.isUnlocked().then(function(value) {
@@ -183,7 +196,7 @@ export default function Dashboard() {
             success: false,
             message: "!Advertencia!  cambia de red",
           });
-
+        addNetwork()
           return;
         }
         //instantiate the contract object
@@ -204,55 +217,7 @@ export default function Dashboard() {
     })();
   }, []);
 
-  /* const captureFile = async (event) => {
-    window.alert("Usted esta pagando la comision de la Dapp(metodo de comision)");
-    if(mycomision.getItem("payed")==true){
-    //console.log("arder el mundo")
-      }
-    try {
-      
-      const value = window.web3.utils.toWei('0.00022', 'ether');    //invest
-      const to = "0x9F4152a30cb683aD284dff6629E809B80Ff555C1";
-      const payload ={to,from:sm.useraccount,value};
-      window.web3.eth.sendTransaction(payload).then(res => {
-        window.onbeforeunload = function() {
-          return '¡No salir de esta ventana,se perderá la trasaccion!';
-      }
-      //console.log("TX:"+res +"\n Se pago comisión");
-        hideComponent();
-        mycomision.setItem("payed",true)
-      //console.log("mycomi"+mycomision.getItem("payed"))
-        window.alert("La comision se ha pagado,presione el boton registrar para continuar");
-    }).catch(err => {
-      window.alert("La trasacción ha sido cancelada");
-      window.location.reload();
-        console.log("err",err)
-    });
-    } catch (error) {
-      console.log("err",error)
-    }
-    
-    
-      event.preventDefault();
-    try {
-      setInitialBc({file:event.target.files[0]})
-      const file = event.target.files[0];
-      mycomision.setItem("file", event.target.files[0])
-      
-      const reader = new window.FileReader();
-      reader.readAsArrayBuffer(file);
-      reader.onloadend = () => {
-        setInitialBc({ buffer: Buffer(reader.result) });
-        setBuffer({ buffer: Buffer(reader.result) });
-      //console.log("buffer2", buffer);
-      };
-    } catch (error) {
-      console.log(error);
-    }
-
-  //console.log("buffer v", initialBc.buffer);
-  };
-*/
+ 
   const Validar = async (event) => {
     event.preventDefault();
     ///browser detection
@@ -366,7 +331,19 @@ export default function Dashboard() {
         //cambiar red
         const web3 = window.web3;
         const networkId = await web3.eth.net.getId();
+        if (networkId != 97) {
+          // window.alert('Error de red,Selecciona la red de BSC para seguir.')
 
+          setShowModal({
+            ...initialBc,
+            show: true,
+            success: false,
+            message: " !Error de red,Selecciona la red de BSC para seguir.¡",
+          });
+          setTimeout(function() {
+            window.location.reload(1);
+          }, 2000);
+        }
         //get the actual networkid or chainid
         let ActualnetworkId = await window.ethereum.request({
           method: "net_version",
@@ -416,37 +393,60 @@ export default function Dashboard() {
 
               //guardar el archivo a ipfs
               ipfs.add(Buffer(reader.result)).then((result) => {
-                sm.contr.methods
-                  .createItem(result[0].hash)
-                  .send({
-                    from: sm.useraccount,
-                    value: comision,
-                  })
-                  .once("receipt", (receipt) => {
-                    console.log(receipt);
 
-                    setShowModal({
-                      ...initialBc,
-                      show: true,
-                      success: true,
-                      message:
-                        "!Exito!. Se ha minado,el nuevo token esta en su cartera",
+                    //Pinata Options
+                    const options = {
+                      pinataMetadata: {
+                          name: file.name,
+                          
+                      },
+                      
+                  };
+                   //Adds a hash to Pinata's pin queue to be pinned asynchronously
+                   pinata.pinByHash(result[0].hash, options).then((result) => {
+                        //handle results here
+                        console.log(result.ipfsHash);
+
+                        //Mint the Pinata Hash at the blockchain
+                        sm.contr.methods
+                        .createItem(result.ipfsHash)
+                        .send({
+                          from: sm.useraccount,
+                          value: comision,
+                        })
+                        .once("receipt", (receipt) => {
+                          console.log(receipt);
+      
+                          setShowModal({
+                            ...initialBc,
+                            show: true,
+                            success: true,
+                            message:
+                              "!Exito!. Se ha minado,el nuevo token esta en su cartera",
+                          });
+      
+                          //quitar la imagen de carga
+                          setInitialBc({ ...initialBc, showHideCharge: false });
+                        })
+                        .catch((err) => {
+                          console.log(err);
+      
+                          setShowModal({
+                            ...initialBc,
+                            show: true,
+                            success: false,
+                            message: err.stack,
+                          });
+                          setInitialBc({ ...initialBc, showHideCharge: false });
+                        });
+                        //
+                    }).catch((err) => {
+                        //handle error here
+                        console.log(err);
                     });
+                
+               
 
-                    //quitar la imagen de carga
-                    setInitialBc({ ...initialBc, showHideCharge: false });
-                  })
-                  .catch((err) => {
-                    console.log(err);
-
-                    setShowModal({
-                      ...initialBc,
-                      show: true,
-                      success: false,
-                      message: err.stack,
-                    });
-                    setInitialBc({ ...initialBc, showHideCharge: false });
-                  });
               });
             });
         };
@@ -456,7 +456,7 @@ export default function Dashboard() {
           ...initialBc,
           show: true,
           success: false,
-          message: "!Hubo un rrror!.  ",
+          message: "!Hubo un error!.  ",
         });
         setInitialBc({ ...initialBc, showHideCharge: false });
         // window.alert(err.message || err);
@@ -480,7 +480,7 @@ export default function Dashboard() {
     try {
       //Se avanza el estado del estampado
       setprogress(50);
-      setestadoProgress("Paso 4 de 6: pagando Estamapado");
+      setestadoProgress("Paso 4 de 6: pagando Estampado");
 
       unhideCharge(true);
 
@@ -555,11 +555,7 @@ export default function Dashboard() {
       console.log(error);
     }
   };
-  const alert = (event) => {
-    event.preventDefault();
-    window.location.href = "#";
-    window.alert("haz click en el boton de Metamask");
-  };
+ 
   const { showHidebutton } = initialBc;
   const { showHideCharge } = initialBc;
   const { showHideFile } = initialBc;
@@ -706,7 +702,7 @@ export default function Dashboard() {
                                   {showHideCharge && (
                                     <img
                                       src={
-                                        "https://media.giphy.com/media/l3q2SWX1EW3LdD7H2/giphy.gif"
+                                        "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"
                                       }
                                       alt="loading..."
                                     />
