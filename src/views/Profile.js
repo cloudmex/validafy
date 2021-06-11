@@ -5,10 +5,8 @@ import Navbar from "../components/Navbar_landing_template";
 import Footer from "../components/Footer_landing_template";
 import ValidafySM from "../contracts/Valid.json";
 import Sidebar from "../components/Sidebar.js";
-import validlogo from  '../assets/img/validafy-logotipo.png';
+import validlogo from "../assets/img/validafy-logotipo.png";
 
-
-console.log(window.ethereum);
 export default function Profile() {
   const [initialBc, setInitialBc] = useState({
     Hash: "",
@@ -65,8 +63,9 @@ export default function Profile() {
 
           return;
         }
+
         //instantiate the contract object
-        setProfile({ address: useraccounts });
+
         let contract = new window.web3.eth.Contract(
           ValidafySM.abi,
           tokenNetworkData.address
@@ -75,7 +74,10 @@ export default function Profile() {
         let tokensarr = await contract.methods
           .documentsOF(useraccounts[0])
           .call();
-
+        //get the owner of the contract
+        setProfile({
+          address: useraccounts,
+        });
         //arreglo con todos los documentos
         let documents = [];
 
@@ -135,17 +137,17 @@ export default function Profile() {
       today.getSeconds() +
       "";
 */
-const unhideCharge = (e) => {
-  var neg = "";
-  if (e) {
-    neg = false;
-  } else {
-    neg = true;
-  }
-  return setInitialBc({ showHideCharge: e });
-};
+  const unhideCharge = (e) => {
+    var neg = "";
+    if (e) {
+      neg = false;
+    } else {
+      neg = true;
+    }
+    return setInitialBc({ showHideCharge: e });
+  };
 
-const { showHideCharge } = initialBc;
+  const { showHideCharge } = initialBc;
   return (
     <>
       {" "}
@@ -193,7 +195,9 @@ const { showHideCharge } = initialBc;
                     <div className="w-full lg:w-3/12 px-4 lg:order-2 flex-1 ml-4">
                       <div className="flex justify-center py-4 lg:pt-4 pt-8">
                         <div className=" p-3 text-center">
-                          <span className="text-sm text-pink-700 font-bold">Address</span>
+                          <span className="text-sm text-pink-700 font-bold">
+                            Address
+                          </span>
                           <span className="text-sm lg:text-xl  block uppercase  text-gray-700">
                             {Profile.address}
                           </span>
@@ -223,13 +227,9 @@ const { showHideCharge } = initialBc;
                           />
                         </div>
                       </div>
-
-                      
-                                    
-
                     </div>
                   </div>
-                  
+
                   {Documents.length ? (
                     <div className="  text-center   mt-12">
                       <h3 className="text-4xl   leading-normal mb-2 text-pink-700 font-bold shadow-2xl mb-2">
@@ -240,8 +240,11 @@ const { showHideCharge } = initialBc;
                         <table className=" ml-1 w-full bg-gray-200 ">
                           <thead className="ml-3 bg-pink-600">
                             <tr>
-                              <th className=" text-white  "> <a className="ml-2"> TokenID</a></th>
-                             
+                              <th className=" text-white  ">
+                                {" "}
+                                <a className="ml-2"> TokenID</a>
+                              </th>
+
                               <th className=" text-white  py-4"> IpfsHash</th>
                               <th className="text-white py-4">TxHash</th>
                               <th className="text-white  py-4">TimeStamp</th>
@@ -257,19 +260,19 @@ const { showHideCharge } = initialBc;
                                     href={`https://gateway.pinata.cloud/ipfs/${doc.hash}`}
                                     target="_blank"
                                   >
-                                    {doc.hash.substring(0,25)+" ..."}
+                                    {doc.hash.substring(0, 25) + " ..."}
                                   </a>
                                 </td>
                                 <td className="">
                                   <a
-                                   className="a-link "
+                                    className="a-link "
                                     href={
                                       "https://testnet.bscscan.com/tx/" +
                                       doc.txhash
                                     }
                                     target="_blank"
                                   >
-                                    {doc.txhash.substring(0,25)+" ..."}
+                                    {doc.txhash.substring(0, 25) + " ..."}
                                   </a>
                                 </td>
                                 <td className=" ">{doc.time}</td>
@@ -282,27 +285,20 @@ const { showHideCharge } = initialBc;
                   ) : (
                     <div className="  text-center   mt-12">
                       <h3 className="text-4xl font-semibold leading-normal mb-2 text-pink-700 font-bold mb-2">
-                        Sin Documentos 
+                        Sin Documentos
                       </h3>{" "}
-                       
                       {showHideCharge && (
-                                       
-                                        <img
-                                          src={
-                                            "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"
-                                          }
-                                          style={{ width: "30%" }}
-                                          className="  inline-block content-end items-center"
-                                          alt="loading..."
-                                        />
-                                      )}
-                                      
+                        <img
+                          src={
+                            "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"
+                          }
+                          style={{ width: "30%" }}
+                          className="  inline-block content-end items-center"
+                          alt="loading..."
+                        />
+                      )}
                     </div>
                   )}
-
-
-
-
                 </div>
               </div>
             </div>

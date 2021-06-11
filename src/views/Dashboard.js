@@ -13,8 +13,11 @@ const ipfs = ipfsClient({
 });
 
 //Using the Pinata SDK with dokxo apikeys
-const pinataSDK = require('@pinata/sdk');
-const pinata = pinataSDK('8e2b2fe58bbbc6c45be1', '440d5cf3f57689b93028a75c6d71a4ef82c83ba00926ae61674859564fa357a8');
+const pinataSDK = require("@pinata/sdk");
+const pinata = pinataSDK(
+  "8e2b2fe58bbbc6c45be1",
+  "440d5cf3f57689b93028a75c6d71a4ef82c83ba00926ae61674859564fa357a8"
+);
 
 export default function Dashboard() {
   const [open, setOpen] = useState(false);
@@ -142,24 +145,23 @@ export default function Dashboard() {
           },
         ],
       });
-    } catch (error) {
-    
-       
-      
-    }
+    } catch (error) {}
   }
 
   useEffect(() => {
     (async () => {
       //Testing if Validafy is conected to Pinata.
-      pinata.testAuthentication().then((result) => {
-        //handle successful authentication here
-        console.log(result);
-    }).catch((err) => {
-        //handle error here
-        console.log(err);
-    });
-    /////
+      pinata
+        .testAuthentication()
+        .then((result) => {
+          //handle successful authentication here
+          console.log(result);
+        })
+        .catch((err) => {
+          //handle error here
+          console.log(err);
+        });
+      /////
       //console.log("mycomi"+mycomision.getItem("payed"))
       try {
         window.ethereum._metamask.isUnlocked().then(function(value) {
@@ -196,7 +198,7 @@ export default function Dashboard() {
             success: false,
             message: "!Advertencia!  cambia de red",
           });
-        addNetwork()
+          addNetwork();
           return;
         }
         //instantiate the contract object
@@ -217,7 +219,6 @@ export default function Dashboard() {
     })();
   }, []);
 
- 
   const Validar = async (event) => {
     event.preventDefault();
     ///browser detection
@@ -393,60 +394,57 @@ export default function Dashboard() {
 
               //guardar el archivo a ipfs
               ipfs.add(Buffer(reader.result)).then((result) => {
+                //Pinata Options
+                const options = {
+                  pinataMetadata: {
+                    name: file.name,
+                  },
+                };
+                //Adds a hash to Pinata's pin queue to be pinned asynchronously
+                pinata
+                  .pinByHash(result[0].hash, options)
+                  .then((result) => {
+                    //handle results here
+                    console.log(result.ipfsHash);
 
-                    //Pinata Options
-                    const options = {
-                      pinataMetadata: {
-                          name: file.name,
-                          
-                      },
-                      
-                  };
-                   //Adds a hash to Pinata's pin queue to be pinned asynchronously
-                   pinata.pinByHash(result[0].hash, options).then((result) => {
-                        //handle results here
-                        console.log(result.ipfsHash);
+                    //Mint the Pinata Hash at the blockchain
+                    sm.contr.methods
+                      .createItem(result.ipfsHash)
+                      .send({
+                        from: sm.useraccount,
+                        value: comision,
+                      })
+                      .once("receipt", (receipt) => {
+                        console.log(receipt);
 
-                        //Mint the Pinata Hash at the blockchain
-                        sm.contr.methods
-                        .createItem(result.ipfsHash)
-                        .send({
-                          from: sm.useraccount,
-                          value: comision,
-                        })
-                        .once("receipt", (receipt) => {
-                          console.log(receipt);
-      
-                          setShowModal({
-                            ...initialBc,
-                            show: true,
-                            success: true,
-                            message:
-                              "!Exito!. Se ha minado,el nuevo token esta en su cartera",
-                          });
-      
-                          //quitar la imagen de carga
-                          setInitialBc({ ...initialBc, showHideCharge: false });
-                        })
-                        .catch((err) => {
-                          console.log(err);
-      
-                          setShowModal({
-                            ...initialBc,
-                            show: true,
-                            success: false,
-                            message: err.stack,
-                          });
-                          setInitialBc({ ...initialBc, showHideCharge: false });
+                        setShowModal({
+                          ...initialBc,
+                          show: true,
+                          success: true,
+                          message:
+                            "!Exito!. Se ha minado,el nuevo token esta en su cartera",
                         });
-                        //
-                    }).catch((err) => {
-                        //handle error here
-                        console.log(err);
-                    });
-                
-               
 
+                        //quitar la imagen de carga
+                        setInitialBc({ ...initialBc, showHideCharge: false });
+                      })
+                      .catch((err) => {
+                        console.log(err);
+
+                        setShowModal({
+                          ...initialBc,
+                          show: true,
+                          success: false,
+                          message: err.stack,
+                        });
+                        setInitialBc({ ...initialBc, showHideCharge: false });
+                      });
+                    //
+                  })
+                  .catch((err) => {
+                    //handle error here
+                    console.log(err);
+                  });
               });
             });
         };
@@ -555,7 +553,7 @@ export default function Dashboard() {
       console.log(error);
     }
   };
- 
+
   const { showHidebutton } = initialBc;
   const { showHideCharge } = initialBc;
   const { showHideFile } = initialBc;
