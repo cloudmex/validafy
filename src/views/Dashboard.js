@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Fragment, useRef } from "react";
 import Web3 from "web3";
 import ValidafySM from "../contracts/Valid.json";
-
+import { addNetwork, wait, sameNetwork } from "../utils/interaction_blockchain";
 import { Dialog, Transition } from "@headlessui/react";
 
 import Sidebar from "../components/Sidebar.js";
@@ -127,27 +127,6 @@ export default function Dashboard() {
     mycomision.setItem("payed", 0);
   };
 
-  async function addNetwork() {
-    try {
-      await window.ethereum.request({
-        method: "wallet_addEthereumChain",
-        params: [
-          {
-            chainId: "0x61",
-            chainName: "BSCTESTNET",
-            rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
-            nativeCurrency: {
-              name: "BINANCE COIN",
-              symbol: "BNB",
-              decimals: 18,
-            },
-            blockExplorerUrls: ["https://testnet.bscscan.com/"],
-          },
-        ],
-      });
-    } catch (error) {}
-  }
-
   useEffect(() => {
     (async () => {
       //Testing if Validafy is conected to Pinata.
@@ -198,7 +177,7 @@ export default function Dashboard() {
             success: false,
             message: "!Advertencia!  cambia de red",
           });
-          addNetwork();
+
           return;
         }
         //instantiate the contract object
@@ -238,35 +217,33 @@ export default function Dashboard() {
         const web3 = window.web3;
         const networkId = await web3.eth.net.getId();
 
-        if (networkId != 97) {
+        if (!(await sameNetwork())) {
           // window.alert('Error de red,Selecciona la red de BSC para seguir.')
 
-          setShowModal({
+          setInitialBc({
             ...initialBc,
             show: true,
             success: false,
-            message: " !Error de red,Selecciona la red de BSC para seguir.¡",
+            message: "Selecciona la red e intentalo de nuevo",
+            disabled: true,
           });
-          setTimeout(function() {
-            window.location.reload(1);
-          }, 2000);
+
+          //se sale del bucle hasta que agregue la red
+          let data = false;
+          while (data != null) {
+            wait(200);
+            data = await addNetwork(
+              parseInt(localStorage.getItem("network"))
+            ).catch((err) => {
+              return err;
+            });
+          }
+          setInitialBc({
+            ...initialBc,
+            show: false,
+            showHideCharge: true,
+          });
         }
-        await window.ethereum.request({
-          method: "wallet_addEthereumChain",
-          params: [
-            {
-              chainId: "0x61",
-              chainName: "BSCTESTNET",
-              rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
-              nativeCurrency: {
-                name: "BINANCE COIN",
-                symbol: "BNB",
-                decimals: 18,
-              },
-              blockExplorerUrls: ["https://testnet.bscscan.com/"],
-            },
-          ],
-        });
         //get the actual networkid or chainid
         let ActualnetworkId = await window.ethereum.request({
           method: "net_version",
@@ -332,18 +309,25 @@ export default function Dashboard() {
         //cambiar red
         const web3 = window.web3;
         const networkId = await web3.eth.net.getId();
-        if (networkId != 97) {
-          // window.alert('Error de red,Selecciona la red de BSC para seguir.')
-
-          setShowModal({
+        if (!(await sameNetwork())) {
+          setInitialBc({
             ...initialBc,
             show: true,
             success: false,
-            message: " !Error de red,Selecciona la red de BSC para seguir.¡",
+            message: "Selecciona la red e intentalo de nuevo",
+            disabled: true,
           });
-          setTimeout(function() {
-            window.location.reload(1);
-          }, 2000);
+
+          //se sale del bucle hasta que agregue la red
+          let data = false;
+          while (data != null) {
+            wait(200);
+            data = await addNetwork(
+              parseInt(localStorage.getItem("network"))
+            ).catch((err) => {
+              return err;
+            });
+          }
         }
         //get the actual networkid or chainid
         let ActualnetworkId = await window.ethereum.request({
@@ -666,48 +650,50 @@ export default function Dashboard() {
                           <div className="px-4 flex-auto">
                             {openTab === 1 ? (
                               <div id="link1">
-                                <label className="w-full flex flex-col items-center px-4 py-6 bg-white rounded-lg  tracking-wide uppercase  cursor-pointew-full flex flex-col items-center px-4   mtbg-white rounded-lg  tracking-wide uppercase  cursor-pointer ">
-                                  <svg
-                                    className="w-8 h-8 text-pink-600"
-                                    fill="currentColor"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20"
-                                  >
-                                    <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
-                                  </svg>
-                                  {initialBc.showImg && (
-                                    <span className="mt-2 text-base leading-normal">
-                                      Selecciona un archivo
-                                    </span>
-                                  )}
+                                <div>
+                                  {!showHideCharge ? (
+                                    <label className="w-full flex flex-col items-center px-4 py-6 bg-white rounded-lg  tracking-wide uppercase  cursor-pointew-full flex flex-col items-center px-4   mtbg-white rounded-lg  tracking-wide uppercase  cursor-pointer ">
+                                      <svg
+                                        className="w-8 h-8 text-pink-600"
+                                        fill="currentColor"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 20 20"
+                                      >
+                                        <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
+                                      </svg>
 
-                                  <input
-                                    type="file"
-                                    className="hidden"
-                                    accept=".pdf"
-                                    onChange={Validar}
-                                    required
-                                    onClick={() => {
-                                      setInitialBc({
-                                        ...initialBc,
-                                        Validado: "",
-                                        showImg: !initialBc.showImg,
-                                      });
-                                    }}
-                                  />
-                                </label>
-                                <div className="w-full flex flex-col items-center">
-                                  {showHideCharge && (
-                                    <img
-                                      src={
-                                        "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"
-                                      }
-                                      alt="loading..."
-                                    />
+                                      <span className="mt-2 text-base leading-normal">
+                                        Selecciona un archivo
+                                      </span>
+
+                                      <input
+                                        type="file"
+                                        className="hidden"
+                                        accept=".pdf"
+                                        onChange={Validar}
+                                        required
+                                        onClick={() => {
+                                          setInitialBc({
+                                            ...initialBc,
+                                            Validado: "",
+                                            showImg: !initialBc.showImg,
+                                          });
+                                        }}
+                                      />
+                                    </label>
+                                  ) : (
+                                    <div className="w-full flex flex-col items-center">
+                                      <img
+                                        src={
+                                          "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"
+                                        }
+                                        alt="loading..."
+                                      />
+                                    </div>
                                   )}
+                                  <h2>{initialBc.Validado}</h2>
+                                  <h2>{initialBc.namepdf}</h2>
                                 </div>
-                                <h2>{initialBc.Validado}</h2>
-                                <h2>{initialBc.namepdf}</h2>
                               </div>
                             ) : (
                               <div id="link1" className="flex justify-center">
