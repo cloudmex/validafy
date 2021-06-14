@@ -108,7 +108,7 @@ export default function Dashboard() {
   const hideProgresss = (e) => {
     return setInitialBc({ showHideProgress: e });
   };
-
+  
   const resetForm = () => {
     setInitialBc({
       Hash: "",
@@ -220,6 +220,7 @@ export default function Dashboard() {
  
   const Validar = async (event) => {
     event.preventDefault();
+    
     ///browser detection
     unhideCharge(true);
     if (window.ethereum) {
@@ -228,10 +229,12 @@ export default function Dashboard() {
       try {
         //tratamos de cargar el documento que el usuario eligio
         const file = event.target.files[0];
-
+        console.log(file);
+        
         if (!event.target.files) {
           throw "no agrego ningun archivo";
         }
+        
         //cambiar red
 
         const web3 = window.web3;
@@ -302,6 +305,7 @@ export default function Dashboard() {
 
               setInitialBc({ ...initialBc, namepdf: file.name, showImg: true });
             });
+
         };
       } catch (err) {
         //   window.alert(err.message || err);
@@ -682,7 +686,7 @@ export default function Dashboard() {
                                       Selecciona un archivo
                                     </span>
                                   )}
-
+                                    
                                   <input
                                     type="file"
                                     className="hidden"
@@ -695,7 +699,9 @@ export default function Dashboard() {
                                         Validado: "",
                                         showImg: !initialBc.showImg,
                                       });
+                                      
                                     }}
+                                    
                                   />
                                 </label>
                                 <div className="w-full flex flex-col items-center">
