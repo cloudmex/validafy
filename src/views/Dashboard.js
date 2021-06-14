@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Fragment, useRef } from "react";
 import Web3 from "web3";
 import ValidafySM from "../contracts/Valid.json";
-
+import { addNetwork, wait, sameNetwork } from "../utils/interaction_blockchain";
 import { Dialog, Transition } from "@headlessui/react";
 
 import Sidebar from "../components/Sidebar.js";
@@ -13,8 +13,11 @@ const ipfs = ipfsClient({
 });
 
 //Using the Pinata SDK with dokxo apikeys
-const pinataSDK = require('@pinata/sdk');
-const pinata = pinataSDK('8e2b2fe58bbbc6c45be1', '440d5cf3f57689b93028a75c6d71a4ef82c83ba00926ae61674859564fa357a8');
+const pinataSDK = require("@pinata/sdk");
+const pinata = pinataSDK(
+  "8e2b2fe58bbbc6c45be1",
+  "440d5cf3f57689b93028a75c6d71a4ef82c83ba00926ae61674859564fa357a8"
+);
 
 export default function Dashboard() {
   const [open, setOpen] = useState(false);
@@ -108,7 +111,7 @@ export default function Dashboard() {
   const hideProgresss = (e) => {
     return setInitialBc({ showHideProgress: e });
   };
-  
+
   const resetForm = () => {
     setInitialBc({
       Hash: "",
@@ -124,42 +127,20 @@ export default function Dashboard() {
     mycomision.setItem("payed", 0);
   };
 
-  async function addNetwork() {
-    try {
-      await window.ethereum.request({
-        method: "wallet_addEthereumChain",
-        params: [
-          {
-            chainId: "0x61",
-            chainName: "BSCTESTNET",
-            rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
-            nativeCurrency: {
-              name: "BINANCE COIN",
-              symbol: "BNB",
-              decimals: 18,
-            },
-            blockExplorerUrls: ["https://testnet.bscscan.com/"],
-          },
-        ],
-      });
-    } catch (error) {
-    
-       
-      
-    }
-  }
-
   useEffect(() => {
     (async () => {
       //Testing if Validafy is conected to Pinata.
-      pinata.testAuthentication().then((result) => {
-        //handle successful authentication here
-        console.log(result);
-    }).catch((err) => {
-        //handle error here
-        console.log(err);
-    });
-    /////
+      pinata
+        .testAuthentication()
+        .then((result) => {
+          //handle successful authentication here
+          console.log(result);
+        })
+        .catch((err) => {
+          //handle error here
+          console.log(err);
+        });
+      /////
       //console.log("mycomi"+mycomision.getItem("payed"))
       try {
         window.ethereum._metamask.isUnlocked().then(function(value) {
@@ -196,7 +177,7 @@ export default function Dashboard() {
             success: false,
             message: "!Advertencia!  cambia de red",
           });
-        addNetwork()
+
           return;
         }
         //instantiate the contract object
@@ -217,10 +198,9 @@ export default function Dashboard() {
     })();
   }, []);
 
- 
   const Validar = async (event) => {
     event.preventDefault();
-    
+
     ///browser detection
     unhideCharge(true);
     if (window.ethereum) {
@@ -231,47 +211,45 @@ export default function Dashboard() {
         const file = event.target.files[0];
         console.log(file);
         if (file === undefined) {
-          window.location.reload()
+          window.location.reload();
         }
-        
+
         if (!event.target.files) {
           throw "no agrego ningun archivo";
         }
-        
+
         //cambiar red
 
         const web3 = window.web3;
         const networkId = await web3.eth.net.getId();
 
-        if (networkId != 97) {
+        if (!(await sameNetwork())) {
           // window.alert('Error de red,Selecciona la red de BSC para seguir.')
 
-          setShowModal({
+          setInitialBc({
             ...initialBc,
             show: true,
             success: false,
-            message: " !Error de red,Selecciona la red de BSC para seguir.¡",
+            message: "Selecciona la red e intentalo de nuevo",
+            disabled: true,
           });
-          setTimeout(function() {
-            window.location.reload(1);
-          }, 2000);
+
+          //se sale del bucle hasta que agregue la red
+          let data = false;
+          while (data != null) {
+            wait(200);
+            data = await addNetwork(
+              parseInt(localStorage.getItem("network"))
+            ).catch((err) => {
+              return err;
+            });
+          }
+          setInitialBc({
+            ...initialBc,
+            show: false,
+            showHideCharge: true,
+          });
         }
-        await window.ethereum.request({
-          method: "wallet_addEthereumChain",
-          params: [
-            {
-              chainId: "0x61",
-              chainName: "BSCTESTNET",
-              rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
-              nativeCurrency: {
-                name: "BINANCE COIN",
-                symbol: "BNB",
-                decimals: 18,
-              },
-              blockExplorerUrls: ["https://testnet.bscscan.com/"],
-            },
-          ],
-        });
         //get the actual networkid or chainid
         let ActualnetworkId = await window.ethereum.request({
           method: "net_version",
@@ -308,7 +286,6 @@ export default function Dashboard() {
 
               setInitialBc({ ...initialBc, namepdf: file.name, showImg: true });
             });
-
         };
       } catch (err) {
         //   window.alert(err.message || err);
@@ -331,25 +308,32 @@ export default function Dashboard() {
       try {
         //tratamos de cargar el documento que el usuario eligio
         const file = event.target.files[0];
-  
+
         if (!event.target.files) {
           throw "no agrego ningun archivo";
         }
         //cambiar red
         const web3 = window.web3;
         const networkId = await web3.eth.net.getId();
-        if (networkId != 97) {
-          // window.alert('Error de red,Selecciona la red de BSC para seguir.')
-
-          setShowModal({
+        if (!(await sameNetwork())) {
+          setInitialBc({
             ...initialBc,
             show: true,
             success: false,
-            message: " !Error de red,Selecciona la red de BSC para seguir.¡",
+            message: "Selecciona la red e intentalo de nuevo",
+            disabled: true,
           });
-          setTimeout(function() {
-            window.location.reload(1);
-          }, 2000);
+
+          //se sale del bucle hasta que agregue la red
+          let data = false;
+          while (data != null) {
+            wait(200);
+            data = await addNetwork(
+              parseInt(localStorage.getItem("network"))
+            ).catch((err) => {
+              return err;
+            });
+          }
         }
         //get the actual networkid or chainid
         let ActualnetworkId = await window.ethereum.request({
@@ -383,7 +367,11 @@ export default function Dashboard() {
                   success: false,
                   message: "!Error!.\nEl documento ya ha sido estampado",
                 });
-                  setInitialBc({ ...initialBc, namepdf: file.name, showImg:true });
+                setInitialBc({
+                  ...initialBc,
+                  namepdf: file.name,
+                  showImg: true,
+                });
                 // window.alert("El documento ya ha sido estampado");
                 unhideCharge(false);
                 hideFile(true);
@@ -401,60 +389,57 @@ export default function Dashboard() {
 
               //guardar el archivo a ipfs
               ipfs.add(Buffer(reader.result)).then((result) => {
+                //Pinata Options
+                const options = {
+                  pinataMetadata: {
+                    name: file.name,
+                  },
+                };
+                //Adds a hash to Pinata's pin queue to be pinned asynchronously
+                pinata
+                  .pinByHash(result[0].hash, options)
+                  .then((result) => {
+                    //handle results here
+                    console.log(result.ipfsHash);
 
-                    //Pinata Options
-                    const options = {
-                      pinataMetadata: {
-                          name: file.name,
-                          
-                      },
-                      
-                  };
-                   //Adds a hash to Pinata's pin queue to be pinned asynchronously
-                   pinata.pinByHash(result[0].hash, options).then((result) => {
-                        //handle results here
-                        console.log(result.ipfsHash);
+                    //Mint the Pinata Hash at the blockchain
+                    sm.contr.methods
+                      .createItem(result.ipfsHash)
+                      .send({
+                        from: sm.useraccount,
+                        value: comision,
+                      })
+                      .once("receipt", (receipt) => {
+                        console.log(receipt);
 
-                        //Mint the Pinata Hash at the blockchain
-                        sm.contr.methods
-                        .createItem(result.ipfsHash)
-                        .send({
-                          from: sm.useraccount,
-                          value: comision,
-                        })
-                        .once("receipt", (receipt) => {
-                          console.log(receipt);
-      
-                          setShowModal({
-                            ...initialBc,
-                            show: true,
-                            success: true,
-                            message:
-                              "!Exito!. Se ha minado,el nuevo token esta en su cartera",
-                          });
-      
-                          //quitar la imagen de carga
-                          setInitialBc({ ...initialBc, showHideCharge: false });
-                        })
-                        .catch((err) => {
-                          console.log(err);
-      
-                          setShowModal({
-                            ...initialBc,
-                            show: true,
-                            success: false,
-                            message: err.stack,
-                          });
-                          setInitialBc({ ...initialBc, showHideCharge: false });
+                        setShowModal({
+                          ...initialBc,
+                          show: true,
+                          success: true,
+                          message:
+                            "!Exito!. Se ha minado,el nuevo token esta en su cartera",
                         });
-                        //
-                    }).catch((err) => {
-                        //handle error here
-                        console.log(err);
-                    });
-                
-               
 
+                        //quitar la imagen de carga
+                        setInitialBc({ ...initialBc, showHideCharge: false });
+                      })
+                      .catch((err) => {
+                        console.log(err);
+
+                        setShowModal({
+                          ...initialBc,
+                          show: true,
+                          success: false,
+                          message: err.stack,
+                        });
+                        setInitialBc({ ...initialBc, showHideCharge: false });
+                      });
+                    //
+                  })
+                  .catch((err) => {
+                    //handle error here
+                    console.log(err);
+                  });
               });
             });
         };
@@ -563,7 +548,7 @@ export default function Dashboard() {
       console.log(error);
     }
   };
- 
+
   const { showHidebutton } = initialBc;
   const { showHideCharge } = initialBc;
   const { showHideFile } = initialBc;
@@ -676,53 +661,51 @@ export default function Dashboard() {
                           <div className="px-4 flex-auto">
                             {openTab === 1 ? (
                               <div id="link1">
-                                <label className="w-full flex flex-col items-center px-4 py-6 bg-white rounded-lg  tracking-wide uppercase  cursor-pointew-full flex flex-col items-center px-4   mtbg-white rounded-lg  tracking-wide uppercase  cursor-pointer ">
-                                  <svg
-                                    className="w-8 h-8 text-pink-600"
-                                    fill="currentColor"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20"
-                                  >
-                                    <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
-                                  </svg>
-                                  {initialBc.showImg && (
-                                    <span className="mt-2 text-base leading-normal">
-                                      Selecciona un archivo
-                                    </span>
+                                <div>
+                                  {!showHideCharge ? (
+                                    <label className="w-full flex flex-col items-center px-4 py-6 bg-white rounded-lg  tracking-wide uppercase  cursor-pointew-full flex flex-col items-center px-4   mtbg-white rounded-lg  tracking-wide uppercase  cursor-pointer ">
+                                      <svg
+                                        className="w-8 h-8 text-pink-600"
+                                        fill="currentColor"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 20 20"
+                                      >
+                                        <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
+                                      </svg>
+
+                                      <span className="mt-2 text-base leading-normal">
+                                        Selecciona un archivo
+                                      </span>
+
+                                      <input
+                                        type="file"
+                                        className="hidden"
+                                        accept=".pdf"
+                                        onChange={Validar}
+                                        required
+                                        onClick={() => {
+                                          setInitialBc({
+                                            ...initialBc,
+                                            Validado: "",
+                                            showImg: !initialBc.showImg,
+                                            Validar,
+                                          });
+                                        }}
+                                      />
+                                    </label>
+                                  ) : (
+                                    <div className="w-full flex flex-col items-center">
+                                      <img
+                                        src={
+                                          "https://media.giphy.com/media/l3q2SWX1EW3LdD7H2/giphy.gif"
+                                        }
+                                        alt="loading..."
+                                      />
+                                    </div>
                                   )}
-                                    
-                                  <input
-                                    type="file"
-                                    className="hidden"
-                                    accept=".pdf"
-                                    onChange={Validar}
-                                    required
-                                    onClick={() => {
-                                      setInitialBc({
-                                        ...initialBc,
-                                        Validado: "",
-                                        showImg: true,
-                                        Validar
-                                      });
-                                      
-                                    }}
-                                    
-                                  />
-                                </label>
-                                <div className="w-full flex flex-col items-center">
-                                 {showHideCharge && (
-                                        <img
-                                          src={
-                                            "https://media.giphy.com/media/l3q2SWX1EW3LdD7H2/giphy.gif"
-                                          }
-                                          
-                                          alt="loading..."
-                                          
-                                        />
-                                )}                              
+                                  <h2>{initialBc.Validado}</h2>
+                                  <h2>{initialBc.namepdf}</h2>
                                 </div>
-                                <h2>{initialBc.Validado}</h2>
-                                <h2>{initialBc.namepdf}</h2>
                               </div>
                             ) : (
                               <div id="link1" className="flex justify-center">
