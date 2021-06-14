@@ -3,7 +3,12 @@ import logo from "../assets/img/metamask.png";
 import validlogo from "../assets/img/validafy.png";
 
 import Web3 from "web3";
-
+import {
+  addNetwork,
+  isDeployed,
+  wait,
+  sameNetwork,
+} from "../utils/interaction_blockchain";
 export default function Navbar(props) {
   const [initialBc, setInitialBc] = useState({
     Hash: "",
@@ -16,65 +21,15 @@ export default function Navbar(props) {
   const [buttontxt, setbuttontxt] = useState("Ingresar");
   const [Modal, setShowModal] = React.useState({ show: false });
 
-  async function loadBlockchainData() {
-    try {
-      const web3 = window.web3;
-      // Load account
-      const accounts = await web3.eth.getAccounts();
-
-      setInitialBc({ initialBc, account: accounts[0] });
-      setAccount({ account: accounts[0] });
-      console.log(account);
-      const networkId = await web3.eth.net.getId();
-      // window.alert(networkId)
-      if (networkId == 97) {
-      } else {
-        // window.alert('Error de red,Selecciona la red de BSC para seguir.')
-        setShowModal({
-          ...initialBc,
-          show: true,
-          success: false,
-          message: " !Error de red¡,Selecciona la red de BSC para seguir.",
-        });
-        setTimeout(function() {
-          addNetwork();
-        }, 3000);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }
-  async function addNetwork() {
-    try {
-      await window.ethereum.request({
-        method: "wallet_addEthereumChain",
-        params: [
-          {
-            chainId: "0x61",
-            chainName: "BSCTESTNET",
-            rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
-            nativeCurrency: {
-              name: "BINANCE COIN",
-              symbol: "BNB",
-              decimals: 18,
-            },
-            blockExplorerUrls: ["https://testnet.bscscan.com/"],
-          },
-        ],
-      });
-    } catch (error) {
-      // window.alert("Cambia de red porfavor")
-    }
-  }
   async function see() {
     const web3 = window.web3;
     const networkId = await web3.eth.net.getId();
     try {
-      window.ethereum._metamask.isUnlocked().then(function(value) {
+      window.ethereum._metamask.isUnlocked().then(async function(value) {
         if (value) {
           console.log(networkId);
 
-          if (networkId == 97) {
+          if (await sameNetwork()) {
             window.location.href = "/dash";
           } else {
             // window.alert('Error de red,Selecciona la red de BSC para seguir.')

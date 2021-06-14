@@ -86,6 +86,16 @@ export async function isDeployed() {
   return nets.includes(ActualnetworkId.toString());
 }
 
+export async function sameNetwork() {
+  //get the actual networkid or chainid
+  let ActualnetworkId = await window.ethereum.request({
+    method: "net_version",
+  });
+
+  //check if the stored network is the same as the selected
+  return ActualnetworkId == parseInt(localStorage.getItem("network"));
+}
+
 /**
  * with this function we will pause the execution of code , sended as parameter
  * @param {int} miliseconds es el numero de milisegundos a esperar

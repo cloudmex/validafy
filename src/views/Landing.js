@@ -2,7 +2,12 @@ import React, { useState, useEffect } from "react";
 import ValidafySM from "../contracts/Valid.json";
 import Navbar from "../components/Navbar_landing_template";
 import Footer from "../components/Footer_landing_template";
-import { addNetwork, isDeployed, wait } from "../utils/interaction_blockchain";
+import {
+  addNetwork,
+  isDeployed,
+  wait,
+  sameNetwork,
+} from "../utils/interaction_blockchain";
 
 export default function Landing() {
   /**
@@ -30,7 +35,7 @@ export default function Landing() {
       const file = event.target.files[0];
 
       //confirmamos que la red seleccionada y la
-      if (!(await isDeployed())) {
+      if (!(await sameNetwork())) {
         setInitialBc({
           ...initialBc,
           show: true,
@@ -105,7 +110,7 @@ export default function Landing() {
         if (value) {
           console.log(networkId);
 
-          if (await isDeployed()) {
+          if (await sameNetwork()) {
             setInitialBc({
               ...initialBc,
               show: true,
@@ -141,6 +146,7 @@ export default function Landing() {
               show: true,
               success: true,
               message: "!Vamos a Estampar¡",
+              disabled: false,
             });
 
             setTimeout(function() {
