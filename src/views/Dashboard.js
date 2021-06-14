@@ -111,7 +111,7 @@ export default function Dashboard() {
   const hideProgresss = (e) => {
     return setInitialBc({ showHideProgress: e });
   };
-
+  
   const resetForm = () => {
     setInitialBc({
       Hash: "",
@@ -221,6 +221,7 @@ export default function Dashboard() {
 
   const Validar = async (event) => {
     event.preventDefault();
+    
     ///browser detection
     unhideCharge(true);
     if (window.ethereum) {
@@ -229,10 +230,15 @@ export default function Dashboard() {
       try {
         //tratamos de cargar el documento que el usuario eligio
         const file = event.target.files[0];
-
+        console.log(file);
+        if (file === undefined) {
+          window.location.reload()
+        }
+        
         if (!event.target.files) {
           throw "no agrego ningun archivo";
         }
+        
         //cambiar red
 
         const web3 = window.web3;
@@ -303,6 +309,7 @@ export default function Dashboard() {
 
               setInitialBc({ ...initialBc, namepdf: file.name, showImg: true });
             });
+
         };
       } catch (err) {
         //   window.alert(err.message || err);
@@ -325,7 +332,7 @@ export default function Dashboard() {
       try {
         //tratamos de cargar el documento que el usuario eligio
         const file = event.target.files[0];
-
+  
         if (!event.target.files) {
           throw "no agrego ningun archivo";
         }
@@ -377,6 +384,7 @@ export default function Dashboard() {
                   success: false,
                   message: "!Error!.\nEl documento ya ha sido estampado",
                 });
+                  setInitialBc({ ...initialBc, namepdf: file.name, showImg:true });
                 // window.alert("El documento ya ha sido estampado");
                 unhideCharge(false);
                 hideFile(true);
@@ -680,7 +688,7 @@ export default function Dashboard() {
                                       Selecciona un archivo
                                     </span>
                                   )}
-
+                                    
                                   <input
                                     type="file"
                                     className="hidden"
@@ -691,20 +699,25 @@ export default function Dashboard() {
                                       setInitialBc({
                                         ...initialBc,
                                         Validado: "",
-                                        showImg: !initialBc.showImg,
+                                        showImg: true,
+                                        Validar
                                       });
+                                      
                                     }}
+                                    
                                   />
                                 </label>
                                 <div className="w-full flex flex-col items-center">
-                                  {showHideCharge && (
-                                    <img
-                                      src={
-                                        "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"
-                                      }
-                                      alt="loading..."
-                                    />
-                                  )}
+                                 {showHideCharge && (
+                                        <img
+                                          src={
+                                            "https://media.giphy.com/media/l3q2SWX1EW3LdD7H2/giphy.gif"
+                                          }
+                                          
+                                          alt="loading..."
+                                          
+                                        />
+                                )}                              
                                 </div>
                                 <h2>{initialBc.Validado}</h2>
                                 <h2>{initialBc.namepdf}</h2>
