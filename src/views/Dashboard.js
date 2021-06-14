@@ -230,6 +230,9 @@ export default function Dashboard() {
         //tratamos de cargar el documento que el usuario eligio
         const file = event.target.files[0];
         console.log(file);
+        if (file === undefined) {
+          window.location.reload()
+        }
         
         if (!event.target.files) {
           throw "no agrego ningun archivo";
@@ -328,7 +331,7 @@ export default function Dashboard() {
       try {
         //tratamos de cargar el documento que el usuario eligio
         const file = event.target.files[0];
-
+  
         if (!event.target.files) {
           throw "no agrego ningun archivo";
         }
@@ -380,6 +383,7 @@ export default function Dashboard() {
                   success: false,
                   message: "!Error!.\nEl documento ya ha sido estampado",
                 });
+                  setInitialBc({ ...initialBc, namepdf: file.name, showImg:true });
                 // window.alert("El documento ya ha sido estampado");
                 unhideCharge(false);
                 hideFile(true);
@@ -697,7 +701,8 @@ export default function Dashboard() {
                                       setInitialBc({
                                         ...initialBc,
                                         Validado: "",
-                                        showImg: !initialBc.showImg,
+                                        showImg: true,
+                                        Validar
                                       });
                                       
                                     }}
@@ -705,14 +710,16 @@ export default function Dashboard() {
                                   />
                                 </label>
                                 <div className="w-full flex flex-col items-center">
-                                  {showHideCharge && (
-                                    <img
-                                      src={
-                                        "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"
-                                      }
-                                      alt="loading..."
-                                    />
-                                  )}
+                                 {showHideCharge && (
+                                        <img
+                                          src={
+                                            "https://media.giphy.com/media/l3q2SWX1EW3LdD7H2/giphy.gif"
+                                          }
+                                          
+                                          alt="loading..."
+                                          
+                                        />
+                                )}                              
                                 </div>
                                 <h2>{initialBc.Validado}</h2>
                                 <h2>{initialBc.namepdf}</h2>
