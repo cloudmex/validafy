@@ -6,6 +6,8 @@ import  Dropdown from "./Dropdown.js";
 import UserDropdown from "./UserDropdown.js";
 import Web3 from "web3";
 import ValidafySM from "../contracts/Valid.json";
+import { addNetwork,isDeployed, wait, sameNetwork } from "../utils/interaction_blockchain";
+
 export default function Sidebar() {
   const [collapseShow, setCollapseShow] = React.useState("hidden");
   const [sidebar, setSidebar] = React.useState(false);
@@ -15,6 +17,8 @@ export default function Sidebar() {
   let contract ;
   useEffect(() => {
     (async () => {
+      console.log("is");
+      console.log(await isDeployed());
       //get the useraccounts
       let useraccounts = await window.ethereum.request({
         method: "eth_requestAccounts",

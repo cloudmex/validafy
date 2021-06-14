@@ -1,6 +1,6 @@
 import React from "react";
 import { createPopper } from "@popperjs/core";
-import { addNetwork, wait, sameNetwork } from "../utils/interaction_blockchain";
+import { addNetwork,isDeployed, wait, sameNetwork } from "../utils/interaction_blockchain";
 
 const Dropdown = ({ color }) => {
   // dropdown props
@@ -55,7 +55,7 @@ const Dropdown = ({ color }) => {
                 className={
                   "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-white"  
                 }
-                onClick={() => {addNetwork(97);closeDropdownPopover();  }}
+                onClick={() => {addNetwork(97);closeDropdownPopover(); console.log(isDeployed()); }}
               >
                 Binance Smart Chain -Testnet
               </a>
