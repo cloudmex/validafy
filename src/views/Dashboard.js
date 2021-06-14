@@ -168,7 +168,7 @@ export default function Dashboard() {
 
         // sm address
         let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
-
+console.log(tokenNetworkData)
         if (!tokenNetworkData) {
           // window.alert("Ese smartcontract no se desplego en esta red");
           setShowModal({
