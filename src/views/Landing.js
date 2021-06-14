@@ -30,6 +30,7 @@ export default function Landing() {
     Validado: "",
     showImg:true,
   });
+  
   const [openTab, setOpenTab] = React.useState(1);
   const [Modal, setShowModal] = React.useState({ show: false });
   //  const [Buffe,setBuffer]=useState(null );
@@ -149,9 +150,9 @@ export default function Landing() {
     } catch (error) {
       //console.log(error);
     }
-
     //console.log("buffer v", initialBc.buffer);
   };
+  
   /**
    * podemos validar la existencia de un archivo con este metodo
    * @param {*} event tiene toda la informacion del input asociado
@@ -170,7 +171,11 @@ export default function Landing() {
       try {
         //tratamos de cargar el documento que el usuario eligio
         const file = event.target.files[0];
-
+        console.log(file);
+        if (file === undefined) {
+          window.location.reload()
+        }
+        
         if (!event.target.files) {
           throw "no agrego ningun archivo";
         }
@@ -411,6 +416,7 @@ export default function Landing() {
     };
     
     const { showHideCharge } = initialBc;
+    
   return (
     <>
       <Navbar transparent />
@@ -606,7 +612,7 @@ export default function Landing() {
                               onChange={Validar}
                               required
                               onClick={() => {
-                                setInitialBc({ ...initialBc, Validado: "", showImg: !initialBc.showImg, });
+                                setInitialBc({ ...initialBc, Validado: "", showImg: true , Validar});
                               }}
                             />
                           </label>
@@ -622,7 +628,9 @@ export default function Landing() {
                                         />
                                 )}                              
                                 </div>
+                                
                           <h2>{initialBc.namepdf}</h2>
+                          
                         </div>
                       </div>
                     </div>
