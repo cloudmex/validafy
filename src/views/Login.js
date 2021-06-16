@@ -4,15 +4,8 @@ import Web3 from "web3";
 import Navbar from "../components/Navbar_login_template";
 import FooterSmall from "../components/FooterSmall_login_template";
 import logo from "../assets/img/metamask.png";
-
+import { addNetwork, isDeployed, wait } from "../utils/interaction_blockchain";
 export default function Login() {
-  const [initialBc, setInitialBc] = useState({
-    Hash: "",
-    contract: null,
-    buffer: null,
-    web3: null,
-    account: null,
-  });
   const [account, setAccount] = useState("");
 
   async function loadWeb3() {
@@ -40,42 +33,30 @@ export default function Login() {
       const web3 = window.web3;
       // Load account
       const accounts = await web3.eth.getAccounts();
-
-      setInitialBc({ initialBc, account: accounts[0] });
       setAccount({ account: accounts[0] });
       console.log(account);
       const networkId = await web3.eth.net.getId();
 
       if (account != null) {
         console.log(account);
-        addNetwork();
+
+        //se sale del bucle hasta que agregue la red
+        let data = false;
+        while (data != null) {
+          wait(200);
+          data = await addNetwork(
+            parseInt(localStorage.getItem("network"))
+          ).catch((err) => {
+            return err;
+          });
+        }
+        window.location.href = "/dash";
       } else {
         window.alert("Error de red,Selecciona la red de BSC para seguir.");
       }
     } catch (error) {
       //console.error(error)
     }
-  }
-  async function addNetwork() {
-    try {
-      await window.ethereum.request({
-        method: "wallet_addEthereumChain",
-        params: [
-          {
-            chainId: "0x61",
-            chainName: "BSCTESTNET",
-            rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
-            nativeCurrency: {
-              name: "BINANCE COIN",
-              symbol: "BNB",
-              decimals: 18,
-            },
-            blockExplorerUrls: ["https://testnet.bscscan.com/"],
-          },
-        ],
-      });
-      window.location.href = "/dash";
-    } catch (error) {}
   }
 
   useEffect(() => {

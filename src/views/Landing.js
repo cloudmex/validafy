@@ -1,421 +1,176 @@
 import React, { useState, useEffect } from "react";
-import Web3 from "web3";
 import ValidafySM from "../contracts/Valid.json";
 import Navbar from "../components/Navbar_landing_template";
 import Footer from "../components/Footer_landing_template";
-import { useHistory } from "react-router-dom";
-const ipfsClient = require("ipfs-http-client");
-
-/**
- * @type con este hook o objeto obtendremos una via para añadir datos a ipfs
- */
-const ipfs = ipfsClient({
-  host: "ipfs.infura.io",
-  port: 5001,
-  protocol: "https",
-});
+import {
+  addNetwork,
+  isDeployed,
+  wait,
+  sameNetwork,
+} from "../utils/interaction_blockchain";
 
 export default function Landing() {
-  const history = useHistory();
-
   /**
    * @type estado que guarda los datos mas relevantes de el componente
    */
-  const [initialBc, setInitialBc] = useState({
-    Hash: "",
-    contract: null,
-    buffer: null,
-    web3: null,
-    account: null,
-    Validado: "",
-    showImg:true,
+  const [initialBc, setInitialBc] = React.useState({
+    showImg: true,
+    openTab: 1,
+    show: false,
   });
-  const [openTab, setOpenTab] = React.useState(1);
-  const [Modal, setShowModal] = React.useState({ show: false });
-  //  const [Buffe,setBuffer]=useState(null );
 
-  /**
-   * @type estado que guarda los datos del usuario
-   */
-  const [user, setUser] = useState({
-    firstname: "",
-    lastname: "",
-    username: "",
-    password: "",
-    phone: "",
-    institution: "",
-    carrer: "",
-    finish: "",
-    role: "user",
-  });
-  const [message, setMessage] = useState("");
-  const [buffer, setBuffer] = useState("");
-  const [ipfss, setIpfs] = useState("");
-  const [buttontxt, setbuttontxt] = useState("Ingresa");
-  /**
-   * @type representa a la instancia del smart contract
-   */
-  const [sm, setSm] = useState();
-  const componentConfig = {
-    iconFiletypes: [".jpg", ".png", ".gif"],
-    showFiletypeIcon: true,
-    postUrl: "/uploadHandler",
-  };
-  const djsConfig = { autoProcessQueue: false };
-  /**
-   * capturaba el archivo y lo asignaba a los estados
-   * @deprecated
-   */
-  const eventHandlers = {
-    addedfile: (file) => {
-      //console.log(file);
-      //console.log("just file " + file);
-      const reader = new window.FileReader();
-      reader.readAsArrayBuffer(file);
-      reader.onloadend = () => {
-        //console.log(reader);
-        //console.log(reader.result);
-
-        setInitialBc({ buffer: Buffer(reader.result) });
-        setBuffer({ buffer: Buffer(reader.result) });
-        //console.log("buffer2", buffer);
-      };
-    },
-  };
-  /**
-   * @deprecated cargaba web3 y el sm  en un componente clase
-   */
-  async function componentWillMount() {
-    await this.loadWeb3();
-    await this.loadBlockchainData();
-  }
-  /**
-   * @deprecated nos servia cuando teniamos un componente clase
-   */
-  async function loadWeb3() {
-    try {
-      if (window.ethereum) {
-        window.web3 = new Web3(window.ethereum);
-        await window.ethereum.enable();
-      } else if (window.web3) {
-        window.web3 = new Web3(window.web3.currentProvider);
-      } else {
-        window.alert(
-          "No se ha detectado un navegador compatible con ethereum,prueba instalando la extension de MetaMask!"
-        );
-        window.location.href = "https://metamask.io/download";
-      }
-    } catch (error) {
-      //console.error(error);
-      window.location.reload();
-    }
-  }
-  /**
-   * @deprecated nos servia cuando teniamos un componente clase
-   */
-  async function loadBlockchainData() {
-    const web3 = window.web3;
-    // Load account
-    const accounts = await web3.eth.getAccounts();
-    setInitialBc({ account: accounts[0] });
-    ////console.log(initialBc.account);
-    const networkId = await web3.eth.net.getId();
-
-    if (networkId) {
-      //console.log(initialBc.contract);
-    } else {
-      window.alert("Smart contract not deployed to detected network.");
-    }
-  }
-  /**
-   * @deprecated estaba asociado al onchange del input file del componente anterior
-   */
-  const captureFile = async (event) => {
-    event.preventDefault();
-    try {
-      const file = event.target.files[0];
-      const reader = new window.FileReader();
-      reader.readAsArrayBuffer(file);
-      reader.onloadend = () => {
-        setInitialBc({
-          ...initialBc,
-          buffer: Buffer(reader.result),
-          filename:
-            file.name.length > 13 ? file.name.slice(0, 12) + "..." : file.name,
-        });
-        setBuffer({ buffer: Buffer(reader.result) });
-        //console.log("buffer2", buffer);
-      };
-    } catch (error) {
-      //console.log(error);
-    }
-
-    //console.log("buffer v", initialBc.buffer);
-  };
   /**
    * podemos validar la existencia de un archivo con este metodo
    * @param {*} event tiene toda la informacion del input asociado
    * @returns  no regresa nada
    */
-  const resetInput = () =>{
 
-  }
   const Validar = async (event) => {
-    event.preventDefault();
     ///browser detection
-    unhideCharge(true);
-    if (window.ethereum) {
-      window.web3 = new Web3(window.ethereum);
+    event.preventDefault();
+    setInitialBc({ ...initialBc, showHideCharge: true });
 
-      try {
-        //tratamos de cargar el documento que el usuario eligio
-        const file = event.target.files[0];
+    try {
+      //tratamos de cargar el documento que el usuario eligio
+      const file = event.target.files[0];
 
-        if (!event.target.files) {
-          throw "no agrego ningun archivo";
-        }
-        //cambiar red
+      //confirmamos que la red seleccionada y la
+      if (!(await sameNetwork())) {
+        setInitialBc({
+          ...initialBc,
+          show: true,
+          success: false,
+          message: "Selecciona la red e intentalo de nuevo",
+          disabled: true,
+        });
 
-        const web3 = window.web3
-        const networkId =  await web3.eth.net.getId();
-        
-        if( networkId != 97) {
-       
-          // window.alert('Error de red,Selecciona la red de BSC para seguir.')
-        
-          setShowModal({
-            ...initialBc,
-            show: true,
-            success: false,
-            message: " !Error de red,Selecciona la red de BSC para seguir.¡",
+        //se sale del bucle hasta que agregue la red
+        let data = false;
+        while (data != null) {
+          wait(200);
+          data = await addNetwork(
+            parseInt(localStorage.getItem("network"))
+          ).catch((err) => {
+            return err;
           });
-           setTimeout(function(){
-            window.location.reload(1);
-         }, 2000); 
-        
-         }
-        await window.ethereum.request({
-          method: "wallet_addEthereumChain",
-          params: [
-            {
-              chainId: "0x61",
-              chainName: "BSCTESTNET",
-              rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
-              nativeCurrency: {
-                name: "BINANCE COIN",
-                symbol: "BNB",
-                decimals: 18,
-              },
-              blockExplorerUrls: ["https://testnet.bscscan.com/"],
-            },
-          ],
+        }
+        setInitialBc({
+          ...initialBc,
+          show: false,
+          showHideCharge: true,
         });
-        //get the actual networkid or chainid
-        let ActualnetworkId = await window.ethereum.request({
-          method: "net_version",
-        });
-        // sm address
-        let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
-        //instantiate the contract object
-        let contract = new window.web3.eth.Contract(
-          ValidafySM.abi,
-          tokenNetworkData.address
-        );
-
-        //nos permite cargar el archivo
-        const reader = new window.FileReader();
-        reader.readAsArrayBuffer(file);
-        reader.onloadend = () => {
-          //obtener el hash de ipfs ,una vez que cargo el archivo
-          ipfs
-            .add(Buffer(reader.result), { onlyHash: true })
-            .then(async (result) => {
-              //comprobar si el hash se encuetra dentro de algun tokenuri
-              let ishashed = await contract.methods
-                .IsHashed(result[0].hash)
-                .call();
-              //console.log(result[0].hash);
-              let estado = "Documento no estampado";
-              if (ishashed) estado = "Documento Valido";
-              setShowModal({
-                ...initialBc,
-                show: true,
-                success: ishashed,
-                message: estado,
-              });
-
-              setInitialBc({ ...initialBc, namepdf: file.name, showImg:true });
-            });
-        };
-      } catch (err) {
-        window.alert(err.message || err);
-        return;
       }
-    } else {
-      //no tiene metamask lo mandamos a la pagina oficial de descarga
 
-      window.open("https://metamask.io/download", "_blank");
-    }
-  };
+      // sm address
+      let tokenNetworkData =
+        ValidafySM.networks[localStorage.getItem("network")];
+      //instantiate the contract object
+      let contract = new window.web3.eth.Contract(
+        ValidafySM.abi,
+        tokenNetworkData.address
+      );
 
-  /**
-   * nos permite agragar una red
-   * @param {*} e  este parametro se refiere al input al cual esta asociado
-   * @returns
-   */
-  async function addNetwork(e) {
-    e.preventDefault();
-    try {
-      await window.ethereum.request({
-        method: "wallet_addEthereumChain",
-        params: [
-          {
-            chainId: "0x61",
-            chainName: "BSCTESTNET",
-            rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
-            nativeCurrency: {
-              name: "BINANCE COIN",
-              symbol: "BNB",
-              decimals: 18,
-            },
-            blockExplorerUrls: ["https://testnet.bscscan.com/"],
-          },
-        ],
-      });
-    } catch (err) {
-      window.alert(err.message);
-      return;
-    }
-  }
-  /**
-   * nos permite estampar documentos
-   * @deprecated no se utiliza en el landing
-   * @param {*} e representa al input al que esta asociado
-   */
-  const onSubmit = (e) => {
-    e.preventDefault();
-    try {
-      const file = e.target.files[0];
+      //nos permite cargar el archivo
       const reader = new window.FileReader();
       reader.readAsArrayBuffer(file);
       reader.onloadend = () => {
-        ipfs.add(Buffer(reader.result)).then((result) => {
-          sm.contr.methods
-            .createItem(sm.useraccount, result[0].path)
-            .send({ from: sm.useraccount })
-            .once("receipt", (receipt) => {
-              //console.log(receipt);
-              //console.log(result);
-              //se hizo correctamente la transaccion
-              if (receipt.status) {
-                setIpfs(result[0].path);
-              }
+        //obtener el hash de ipfs ,una vez que cargo el archivo
+        window.ipfs
+          .add(Buffer(reader.result), { onlyHash: true })
+          .then(async (result) => {
+            //comprobar si el hash se encuetra dentro de algun tokenuri
+            let ishashed = await contract.methods
+              .IsHashed(result[0].hash)
+              .call();
+            //console.log(result[0].hash);
+            let estado = "Documento no estampado";
+            if (ishashed) estado = "Documento Valido";
+            setInitialBc({
+              ...initialBc,
+              show: true,
+              success: ishashed,
+              message: estado,
+              namepdf: file.name,
+              showImg: true,
+              disabled: false,
             });
-        });
+          });
       };
-    } catch (error) {
-      //console.log(error);
+    } catch (err) {
+      window.alert(err.message || err);
+      return;
     }
-  };
-  const alert = (event) => {
-    event.preventDefault();
-    window.location.href = "#";
-    window.alert("haz click en el boton de Metamask");
   };
 
-  useEffect(() => {
-    loadWeb3();
-    try {
-      window.ethereum._metamask
-        .isUnlocked()
-        .then(function(value) {
-          if (value) {
-            //console.log("en landing Abierto");
-            setbuttontxt("Mi cuenta");
-            //console.log("=> " + buttontxt);
-            setbuttontxt("Mi cuenta");
-            //console.log(buttontxt);
-          } else {
-            //console.log("Cerrado");
-          }
-        })
-         
-    } catch (error) {
-      //console.log("e");
-    }
-  });
   async function see() {
-    const web3 = window.web3
-    const networkId =  await web3.eth.net.getId();
+    const web3 = window.web3;
+    const networkId = await web3.eth.net.getId();
     try {
-       window.ethereum._metamask
-        .isUnlocked()
-        .then(function(value) {
-          if (value) {
-            
-            console.log(networkId)
+      window.ethereum._metamask.isUnlocked().then(async function(value) {
+        if (value) {
+          console.log(networkId);
 
-            if( networkId == 97) {
-       
-              setShowModal({
-                ...initialBc,
-                show: true,
-                success: true,
-                message: "!Vamos a Estampar¡",
-              });
-          
-              setTimeout(function(){
-                window.location.href="/dash";
-             }, 5000); 
-             
-            }else {
-              // window.alert('Error de red,Selecciona la red de BSC para seguir.')
-               setShowModal({
-                 ...initialBc,
-                 show: true,
-                 success: false,
-                 message: " !Error de red¡,Selecciona la red de BSC para seguir.",
-               });
-              
-               
-             }
-             
-           
+          if (await sameNetwork()) {
+            setInitialBc({
+              ...initialBc,
+              show: true,
+              success: true,
+              message: "!Vamos a Estampar¡",
+            });
+
+            setTimeout(function() {
+              window.location.href = "/dash";
+            }, 5000);
           } else {
-             setShowModal({
+            setInitialBc({
               ...initialBc,
               show: true,
               success: false,
-              message: "!Advertencia !.\nPrimero logeate",
+              message: " !Error de red¡,Cambiando de red",
+              disabled: true,
             });
-            window.location.href = "/login";
+
+            //se sale del bucle hasta que agregue la red
+            let data = false;
+            while (data != null) {
+              wait(200);
+              data = await addNetwork(
+                parseInt(localStorage.getItem("network"))
+              ).catch((err) => {
+                return err;
+              });
+            }
+
+            setInitialBc({
+              ...initialBc,
+              show: true,
+              success: true,
+              message: "!Vamos a Estampar¡",
+              disabled: false,
+            });
+
+            setTimeout(function() {
+              window.location.href = "/dash";
+            }, 5000);
           }
-          
-        });
-        
+        } else {
+          setInitialBc({
+            ...initialBc,
+            show: true,
+            success: false,
+            message: "!Advertencia !.\nPrimero logeate",
+          });
+          window.location.href = "/login";
+        }
+      });
     } catch (error) {
       // window.alertt(error)
-      console.log("e" );
+      console.log("e");
     }
-   
-    
-    }
-    const unhideCharge = (e) => {
-      var neg = "";
-      if (e) {
-        neg = false;
-      } else {
-        neg = true;
-      }
-      return setInitialBc({ showHideCharge: e });
-    };
-    
-    const { showHideCharge } = initialBc;
+  }
   return (
     <>
       <Navbar transparent />
-
-      {message}
       <main>
         <div
           className="relative pt-16 pb-32 flex content-center items-center justify-center"
@@ -546,14 +301,12 @@ export default function Landing() {
                       <a
                         className={
                           "text-xs font-bold uppercase px-5 py-3 shadow-lg rounded block leading-normal " +
-                          (openTab === 1
+                          (initialBc.openTab === 1
                             ? "text-white bg-Pentatone"
                             : "text-pink-600 bg-white")
                         }
                         onClick={(e) => {
                           e.preventDefault();
-                          setOpenTab(1);
-                          setInitialBc({ ...initialBc, buffer: undefined });
                         }}
                         data-toggle="tab"
                         href="#link1"
@@ -583,21 +336,27 @@ export default function Landing() {
                     <div className=" py-5 ">
                       <div>
                         <div
-                          className={openTab === 1 ? "block" : "hidden"}
+                          className={
+                            initialBc.openTab === 1 ? "block" : "hidden"
+                          }
                           id="link1"
                         >
                           <label className="w-full flex flex-col items-center px-4 py-6 bg-white rounded-lg  tracking-wide uppercase  cursor-pointer ">
-                            {initialBc.showImg && <svg
-                              className="w-8 h-8 text-pink-600"
-                              fill="currentColor"
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 20 20"
-                            >
-                              <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
-                            </svg>}
-                            {initialBc.showImg && <span className="mt-2 text-base leading-normal">
-                              Selecciona un archivo
-                            </span>}
+                            {initialBc.showImg && (
+                              <svg
+                                className="w-8 h-8 text-pink-600"
+                                fill="currentColor"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                              >
+                                <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
+                              </svg>
+                            )}
+                            {initialBc.showImg && (
+                              <span className="mt-2 text-base leading-normal">
+                                Selecciona un archivo
+                              </span>
+                            )}
 
                             <input
                               type="file"
@@ -606,22 +365,23 @@ export default function Landing() {
                               onChange={Validar}
                               required
                               onClick={() => {
-                                setInitialBc({ ...initialBc, Validado: "", showImg: !initialBc.showImg, });
+                                setInitialBc({
+                                  ...initialBc,
+                                  showImg: !initialBc.showImg,
+                                });
                               }}
                             />
                           </label>
                           <div className="w-full flex flex-col items-center">
-                                 {showHideCharge && (
-                                        <img
-                                          src={
-                                            "https://media.giphy.com/media/l3q2SWX1EW3LdD7H2/giphy.gif"
-                                          }
-                                          
-                                          alt="loading..."
-                                          
-                                        />
-                                )}                              
-                                </div>
+                            {initialBc.showHideCharge && (
+                              <img
+                                src={
+                                  "https://media.giphy.com/media/l3q2SWX1EW3LdD7H2/giphy.gif"
+                                }
+                                alt="loading..."
+                              />
+                            )}
+                          </div>
                           <h2>{initialBc.namepdf}</h2>
                         </div>
                       </div>
@@ -763,7 +523,7 @@ export default function Landing() {
           </div>
         </section>
 
-        {Modal.show ? (
+        {initialBc.show ? (
           <>
             <div className="  justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none ">
               <div className="w-full md:w-6/12 my-6 ">
@@ -773,7 +533,7 @@ export default function Landing() {
 
                   <div
                     className={`${
-                      Modal.success ? "bg-emerald-500" : "bg-red-500"
+                      initialBc.success ? "bg-emerald-500" : "bg-red-500"
                     }  flex items-start justify-center p-5 border-b border-solid border-blueGray-200 rounded-t`}
                   >
                     <svg
@@ -783,7 +543,7 @@ export default function Landing() {
                       viewBox="0 0 24 24"
                       stroke="currentColor"
                     >
-                      {Modal.success ? (
+                      {initialBc.success ? (
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
@@ -802,17 +562,18 @@ export default function Landing() {
                   </div>
                   <div className="relative p-6 flex flex-col space-y-4 justify-center ">
                     <p className="flex-initial my-4 text-center text-2xl leading-relaxed">
-                      {Modal.message}
+                      {initialBc.message}
                     </p>
                     <button
                       className={`${
-                        Modal.success ? "bg-emerald-500" : "bg-red-500"
+                        initialBc.success ? "bg-emerald-500" : "bg-red-500"
                       } w-min  text-white active:${
-                        Modal.success ? "bg-emerald-600" : "bg-red-600"
+                        initialBc.success ? "bg-emerald-600" : "bg-red-600"
                       } font-bold uppercase text-sm px-6 py-3 rounded-full shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
                       type="button"
+                      disabled={initialBc.disabled}
                       onClick={() => {
-                        setShowModal({ ...Modal, show: false });
+                        setInitialBc({ ...initialBc, show: false });
                       }}
                     >
                       continuar
