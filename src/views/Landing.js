@@ -7,8 +7,12 @@ import {
   isDeployed,
   wait,
   sameNetwork,
+  getExplorerUrl,
 } from "../utils/interaction_blockchain";
 
+import { acceptedFormats } from "../utils/constraints";
+
+console.log(getExplorerUrl());
 export default function Landing() {
   /**
    * @type estado que guarda los datos mas relevantes de el componente
@@ -17,7 +21,7 @@ export default function Landing() {
     showImg: true,
     openTab: 1,
     show: false,
-    Validado:"",
+    Validado: "",
   });
 
   /**
@@ -29,18 +33,13 @@ export default function Landing() {
   const Validar = async (event) => {
     ///browser detection
     event.preventDefault();
-    setInitialBc({ ...initialBc, showHideCharge: true, showImg:false, });
+    setInitialBc({ ...initialBc, showHideCharge: true, showImg: false });
 
     try {
       //tratamos de cargar el documento que el usuario eligio
       const file = event.target.files[0];
-      console.log(file)
-      if (file === undefined) {
-        window.location.reload()
-      }
-  
-      if (!event.target.files) {
-        window.location.reload()
+      if (file === undefined || !event.target.files) {
+        window.location.reload();
       }
       //confirmamos que la red seleccionada y la
       if (!(await sameNetwork())) {
@@ -102,7 +101,6 @@ export default function Landing() {
               showImg: true,
               disabled: false,
             });
-            setInitialBc({ ...initialBc, namepdf: file.name, });
           });
       };
     } catch (err) {
@@ -110,7 +108,6 @@ export default function Landing() {
       return;
     }
   };
-  
 
   async function see() {
     const web3 = window.web3;
@@ -177,12 +174,8 @@ export default function Landing() {
       // window.alertt(error)
       console.log("e");
     }
-    
   }
 
-  
- 
-            
   return (
     <>
       <Navbar transparent />
@@ -376,11 +369,16 @@ export default function Landing() {
                             <input
                               type="file"
                               className="hidden"
-                              accept=".pdf"
+                              accept={acceptedFormats}
                               onChange={Validar}
                               required
                               onClick={() => {
-                                setInitialBc({ ...initialBc, Validado:"", showImg: true, Validar });
+                                setInitialBc({
+                                  ...initialBc,
+                                  Validado: "",
+                                  showImg: true,
+                                  Validar,
+                                });
                               }}
                             />
                           </label>
