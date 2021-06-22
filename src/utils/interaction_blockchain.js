@@ -1,17 +1,27 @@
 import Web3 from "web3";
 import ValidafySM from "../contracts/Valid.json";
 const ipfsClient = require("ipfs-http-client");
-/**
- * agrega o cambia la red con el chainid que le mandes
- * si se le manda el chainid de la red que tiene el usario seleccionada no hace nada
- * @param {int} id es el chainid de la blockchain
- */
-export async function addNetwork(id) {
-  let networkData;
-  switch (id) {
-    //bsctestnet
-    case 97:
-      networkData = [
+//contiene todas las redes que puede manejar validafy
+var nets = [
+    {
+      chainId: 56,
+      data: [
+        {
+          chainId: "0x38",
+          chainName: "BSCMAINET",
+          rpcUrls: ["https://bsc-dataseed1.binance.org"],
+          nativeCurrency: {
+            name: "BINANCE COIN",
+            symbol: "BNB",
+            decimals: 18,
+          },
+          blockExplorerUrls: ["https://bscscan.com/"],
+        },
+      ],
+    },
+    {
+      chainId: 97,
+      data: [
         {
           chainId: "0x61",
           chainName: "BSCTESTNET",
@@ -23,27 +33,23 @@ export async function addNetwork(id) {
           },
           blockExplorerUrls: ["https://testnet.bscscan.com/"],
         },
-      ];
-      break;
-    //bscmainet
-    case 56:
-      networkData = [
-        {
-          chainId: "0x38",
-          chainName: "BSCMAINET",
-          rpcUrls: ["https://bsc-dataseed1.binance.org"],
-          nativeCurrency: {
-            name: "BINANCE COIN",
-            symbol: "BNB",
-            decimals: 18,
-          },
-          blockExplorerUrls: ["https://testnet.bscscan.com/"],
-        },
-      ];
-      break;
-    default:
-      break;
-  }
+      ],
+    },
+  ],
+  nets = Object.assign(
+    ...nets.map(({ chainId, data }) => ({ [chainId]: data }))
+  );
+
+export var nets;
+/**
+ * agrega o cambia la red con el chainid que le mandes
+ * si se le manda el chainid de la red que tiene el usario seleccionada no hace nada
+ * @param {int} id es el chainid de la blockchain
+ */
+
+export async function addNetwork(id) {
+  let networkData = nets[id];
+  if (!networkData) return "no existe esa red";
 
   // agregar red o cambiar red
   return window.ethereum.request({
@@ -107,4 +113,15 @@ export function wait(miliseconds) {
       break;
     }
   }
+}
+
+/**
+ * con este metodo podemos obtener el url del explorer
+ * @returns {String} es el url de la explorer de esa red
+ */
+
+export function getExplorerUrl() {
+  return (
+    nets[parseInt(localStorage.getItem("network"))][0].blockExplorerUrls + "tx/"
+  );
 }
