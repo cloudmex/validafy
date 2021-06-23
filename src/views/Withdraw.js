@@ -11,6 +11,25 @@ export default function Profile() {
   const [withdraw, setwithdraw] = useState({ showHideCharge: false });
   const [Modal, setShowModal] = React.useState({ show: false });
 
+  const Retirar = async () => {
+    let useraccounts = await window.ethereum.request({
+      method: "eth_requestAccounts",
+    });
+    console.log(
+      useraccounts[0] ==
+        (await withdraw.contr.methods.ownerbalance.call().call())
+    );
+
+    withdraw.contr.methods
+      .withdraw()
+      .send({
+        from: useraccounts[0],
+      })
+      .once("receipt", (receipt) => {
+        console.log(receipt);
+      });
+  };
+
   useEffect(() => {
     (async () => {
       window.web3 = new Web3(window.ethereum);
@@ -20,7 +39,8 @@ export default function Profile() {
       });
 
       // sm address
-      let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
+      let tokenNetworkData =
+        ValidafySM.networks[localStorage.getItem("network")];
 
       if (!tokenNetworkData) {
         // window.alert("Ese smartcontract no se desplego en esta red");
@@ -48,6 +68,7 @@ export default function Profile() {
 
       setwithdraw({
         smBalance: window.web3.utils.fromWei(smBalance),
+        contr: contract,
       });
     })();
   }, []);
@@ -58,11 +79,20 @@ export default function Profile() {
       <Sidebar />
       <div className="relative md:ml-64 ">
         <main className="profile-page ">
-          <section className="right-0 flex flex-wrap  py-16  text-center">
-            <div className="container mx-auto px-4 text-pink-600 text-center text-4xl">
+          <section className="right-0 flex flex-col   py-16  justify-center ">
+            <div className="container mx-auto px-4 text-pink-600 text-center text-5xl py-4">
               Disponible
             </div>
-            <div className="justify-center">{withdraw.smBalance} BNB</div>
+            <div className="mx-auto text-lg ">{withdraw.smBalance} BNB</div>
+
+            <button
+              className=" mt-12 mx-auto bg-emerald-500 text-white font-bold uppercase text-sm px-6 py-3 rounded-full shadow hover:bg-red-500 outline-none focus:outline-none  ease-linear transition-all duration-150"
+              onClick={() => {
+                Retirar();
+              }}
+            >
+              Retirar
+            </button>
           </section>
           {Modal.show ? (
             <>

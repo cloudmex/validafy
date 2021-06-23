@@ -7,6 +7,8 @@ import ValidafySM from "../contracts/Valid.json";
 import Sidebar from "../components/Sidebar.js";
 import validlogo from "../assets/img/validafy-logotipo.png";
 
+import { getExplorerUrl } from "../utils/interaction_blockchain";
+
 export default function Profile() {
   const [initialBc, setInitialBc] = useState({
     Hash: "",
@@ -266,10 +268,7 @@ export default function Profile() {
                                 <td className="">
                                   <a
                                     className="a-link "
-                                    href={
-                                      "https://testnet.bscscan.com/tx/" +
-                                      doc.txhash
-                                    }
+                                    href={getExplorerUrl() + doc.txhash}
                                     target="_blank"
                                   >
                                     {doc.txhash.substring(0, 25) + " ..."}
