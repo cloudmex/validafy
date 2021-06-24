@@ -3,6 +3,7 @@ import ValidafySM from "../contracts/Valid.json";
 import Navbar from "../components/Navbar_landing_template";
 import Footer from "../components/Footer_landing_template";
 import {
+  init,
   addNetwork,
   isDeployed,
   wait,
@@ -31,6 +32,17 @@ export default function Landing() {
     event.preventDefault();
     setInitialBc({ ...initialBc, showHideCharge: true, showImg:false, });
 
+    if (!init()) {
+      setInitialBc({
+        show: true,
+        success: false,
+        message:
+          "No cuentas con metamask,te estamos redireccionando al sitio oficial para que procedas con la descarga",
+      });
+      setTimeout(() => {
+        window.location.replace("https://metamask.io/download");
+      }, 5000);
+    }
     try {
       //tratamos de cargar el documento que el usuario eligio
       const file = event.target.files[0];

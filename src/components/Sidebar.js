@@ -17,7 +17,10 @@ export default function Sidebar() {
   let contract ;
   useEffect(() => {
     (async () => {
-      console.log("is");
+       //instantiate the contract object
+   
+      try {
+        console.log("is");
       console.log(await isDeployed());
       //get the useraccounts
       let useraccounts = await window.ethereum.request({
@@ -31,28 +34,22 @@ export default function Sidebar() {
       // sm address
       let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
 
-      //instantiate the contract object
-     try {
       window.web3 = new Web3(window.ethereum);
        contract = new window.web3.eth.Contract(
         ValidafySM.abi,
-        tokenNetworkData.address
-      );
-     } catch (error) {
-       console.error(error)
-     }
+        tokenNetworkData.address);
+
+        setSidebar({
+          smOwner:
+            useraccounts[0] == (await contract.methods.ownerbalance.call().call())
+              ? true
+              : false,
+        });
+      } catch (error) {
+        console.error(error)
+      }
       
-try {
-  setSidebar({
-    smOwner:
-      useraccounts[0] == (await contract.methods.ownerbalance.call().call())
-        ? true
-        : false,
-  });
-} catch (error) {
-  console.error(error)
-}
-      
+   
 
     })();
   }, []);

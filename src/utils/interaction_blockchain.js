@@ -56,19 +56,24 @@ export async function addNetwork(id) {
  * @returns regresa true si tiene metamask si no es asi regresa false
  */
 export function init() {
-  if (window.ethereum || window.web3) {
-    window.web3 = new Web3(window.ethereum);
-    window.ipfs = ipfsClient({
-      host: "ipfs.infura.io",
-      port: 5001,
-      protocol: "https",
-    });
-    if (!localStorage.getItem("network")) localStorage.setItem("network", 97);
-
-    return true;
-  } else {
-    return false;
+  try {
+    if (window.ethereum || window.web3) {
+      window.web3 = new Web3(window.ethereum);
+      window.ipfs = ipfsClient({
+        host: "ipfs.infura.io",
+        port: 5001,
+        protocol: "https",
+      });
+      if (!localStorage.getItem("network")) localStorage.setItem("network", 97);
+  
+      return true;
+    } else {
+      return false;
+    } 
+  } catch (error) {
+    
   }
+ 
 }
 
 /**
@@ -76,7 +81,10 @@ export function init() {
  * @returns {bool} if the current network have been deployed the smart contract will return true otherwise false
  */
 export async function isDeployed() {
-  //get the actual networkid or chainid
+ 
+
+  try {
+     //get the actual networkid or chainid
   let ActualnetworkId = await window.ethereum.request({
     method: "net_version",
   });
@@ -84,16 +92,25 @@ export async function isDeployed() {
   //check if we have the actualnetwork on our validafysm abi
   let nets = Object.keys(ValidafySM.networks);
   return nets.includes(ActualnetworkId.toString());
+  } catch (error) {
+    
+  }
 }
 
 export async function sameNetwork() {
-  //get the actual networkid or chainid
+ 
+
+  try {
+     //get the actual networkid or chainid
   let ActualnetworkId = await window.ethereum.request({
     method: "net_version",
   });
 
   //check if the stored network is the same as the selected
   return ActualnetworkId == parseInt(localStorage.getItem("network"));
+  } catch (error) {
+    
+  }
 }
 
 /**
@@ -101,10 +118,15 @@ export async function sameNetwork() {
  * @param {int} miliseconds es el numero de milisegundos a esperar
  */
 export function wait(miliseconds) {
-  var start = new Date().getTime();
+  try {
+    var start = new Date().getTime();
   for (var i = 0; i < 1e7; i++) {
     if (new Date().getTime() - start > miliseconds) {
       break;
     }
   }
+  } catch (error) {
+    
+  }
+  
 }

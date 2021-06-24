@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import Web3 from "web3";
-
+ 
 import Navbar from "../components/Navbar_landing_template";
 import Footer from "../components/Footer_landing_template";
 import ValidafySM from "../contracts/Valid.json";
 import Sidebar from "../components/Sidebar.js";
 import validlogo from "../assets/img/validafy-logotipo.png";
-
+import { init, addNetwork, isDeployed } from "../utils/interaction_blockchain";
 export default function Profile() {
   const [initialBc, setInitialBc] = useState({
     Hash: "",
@@ -23,9 +23,23 @@ export default function Profile() {
   const [Documents, setDocuments] = useState([]);
   const [Profile, setProfile] = useState([]);
   const [Modal, setShowModal] = React.useState({ show: false });
-
-  useEffect(() => {
+   useEffect(() => {
     (async () => {
+
+      
+        //incializamos la app, si no tiene metamask lo mandamos a la pagina de descarga
+        if (!init()) {
+          setInitialBc({
+            show: true,
+            success: false,
+            message:
+              "No cuentas con metamask,te estamos redireccionando al sitio oficial para que procedas con la descarga",
+          });
+          setTimeout(() => {
+            window.location.replace("https://metamask.io/download");
+          }, 5000);
+        }
+     
       unhideCharge(true);
 
       window.ethereum._metamask.isUnlocked().then(function(value) {
@@ -146,7 +160,7 @@ export default function Profile() {
     }
     return setInitialBc({ showHideCharge: e });
   };
-
+ 
   const { showHideCharge } = initialBc;
   return (
     <>
@@ -248,6 +262,7 @@ export default function Profile() {
                               <th className=" text-white  py-4"> IpfsHash</th>
                               <th className="text-white py-4">TxHash</th>
                               <th className="text-white  py-4">TimeStamp</th>
+                              <th className="text-white  py-4">Detalle</th>
                             </tr>
                           </thead>
                           <tbody className="text-base py-3 bg-pink-200">
@@ -276,6 +291,16 @@ export default function Profile() {
                                   </a>
                                 </td>
                                 <td className=" ">{doc.time}</td>
+                                <td>
+                                <a
+                                    className="a-link "
+                                    href={`./preview/${doc.hash}`}
+                                    target="_blank"
+                                     
+                                  >
+                                   <i className="fa fa-clipboard  ml-2">  </i>
+                                  </a>
+                                </td>
                               </tr>
                             ))}
                           </tbody>

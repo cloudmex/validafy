@@ -3,7 +3,7 @@ import Web3 from "web3";
 import ValidafySM from "../contracts/Valid.json";
 import { addNetwork, wait, sameNetwork } from "../utils/interaction_blockchain";
 import { Dialog, Transition } from "@headlessui/react";
-
+import { init,   isDeployed } from "../utils/interaction_blockchain";
 import Sidebar from "../components/Sidebar.js";
 const ipfsClient = require("ipfs-http-client");
 const ipfs = ipfsClient({
@@ -129,6 +129,18 @@ export default function Dashboard() {
 
   useEffect(() => {
     (async () => {
+
+        if (!init()) {
+          setInitialBc({
+            show: true,
+            success: false,
+            message:
+              "No cuentas con metamask,te estamos redireccionando al sitio oficial para que procedas con la descarga",
+          });
+          setTimeout(() => {
+            window.location.replace("https://metamask.io/download");
+          }, 5000);
+        }
       //Testing if Validafy is conected to Pinata.
       pinata
         .testAuthentication()
@@ -393,6 +405,7 @@ console.log(tokenNetworkData)
                 const options = {
                   pinataMetadata: {
                     name: file.name,
+                   
                   },
                 };
                 //Adds a hash to Pinata's pin queue to be pinned asynchronously
@@ -412,16 +425,36 @@ console.log(tokenNetworkData)
                       .once("receipt", (receipt) => {
                         console.log(receipt);
 
-                        setShowModal({
-                          ...initialBc,
-                          show: true,
-                          success: true,
-                          message:
-                            "!Exito!. Se ha minado,el nuevo token esta en su cartera",
-                        });
+                     
+                        const metadata = {
+                          name: file.name,
+                          keyvalues: {
+                            tokenid: receipt.events.Transfer.returnValues.tokenId,
+                            owner: receipt.events.Transfer.returnValues.to,
+                            txHash:receipt.transactionHash
+                          }
+                      };
+               
+                   console.log(metadata);
+                    pinata.hashMetadata(result.ipfsHash, metadata).then((result) => {
+                      //handle results here
+                      console.log(result + " asqui");
 
-                        //quitar la imagen de carga
-                        setInitialBc({ ...initialBc, showHideCharge: false });
+                      setShowModal({
+                        ...initialBc,
+                        show: true,
+                        success: true,
+                        message:
+                          "!Exito!. Se ha minado,el nuevo token esta en su cartera",
+                      });
+
+                      //quitar la imagen de carga
+                      setInitialBc({ ...initialBc, showHideCharge: false });
+                  }).catch((err) => {
+                      //handle error here
+                      console.log(err);
+                  });
+ 
                       })
                       .catch((err) => {
                         console.log(err);
