@@ -48,22 +48,14 @@ export var nets;
  */
 
 export async function addNetwork(id) {
-  
-  try {
-    let networkData = nets[id];
-    if (!networkData) return "no existe esa red";
-    localStorage.setItem("network", id);
-    // agregar red o cambiar red
-    return window.ethereum.request({
-      method: "wallet_addEthereumChain",
-      params: networkData,
-    });
-    
-  } catch (error) {
- console.error(error)    
-  }
-  
-
+  //obtener el arreglo con los datos de la red
+  let networkData = nets[id];
+  if (!networkData) return "no existe esa red";
+  // agregar red o cambiar red
+  return window.ethereum.request({
+    method: "wallet_addEthereumChain",
+    params: networkData,
+  });
 }
 /**
  *nos permite inicializar la instancia de web3, ipfs etc
@@ -78,16 +70,15 @@ export function init() {
         port: 5001,
         protocol: "https",
       });
-      if (!localStorage.getItem("network")) localStorage.setItem("network", 97);
-  
+      if (!localStorage.getItem("network")) localStorage.setItem("network", 56);
+
       return true;
     } else {
       return false;
     }
   } catch (error) {
-    console.error(error)
+    console.error(error);
   }
- 
 }
 
 /**
@@ -95,34 +86,30 @@ export function init() {
  * @returns {bool} if the current network have been deployed the smart contract will return true otherwise false
  */
 export async function isDeployed() {
-    try {
-      //get the actual networkid or chainid
-      let ActualnetworkId = await window.ethereum.request({
-        method: "net_version",
-      });
+  try {
+    //get the actual networkid or chainid
+    let ActualnetworkId = await window.ethereum.request({
+      method: "net_version",
+    });
 
-      //check if we have the actualnetwork on our validafysm abi
-      let nets = Object.keys(ValidafySM.networks);
-      return nets.includes(ActualnetworkId.toString());
-    } catch (error) {
-      console.error(error)
-    }
- 
+    //check if we have the actualnetwork on our validafysm abi
+    let nets = Object.keys(ValidafySM.networks);
+    return nets.includes(ActualnetworkId.toString());
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 export async function sameNetwork() {
- try {
-     //get the actual networkid or chainid
-  let ActualnetworkId = await window.ethereum.request({
-    method: "net_version",
-  });
+  try {
+    //get the actual networkid or chainid
+    let ActualnetworkId = await window.ethereum.request({
+      method: "net_version",
+    });
 
-  //check if the stored network is the same as the selected
-  return ActualnetworkId == parseInt(localStorage.getItem("network"));
- } catch (error) {
-   
- }
-
+    //check if the stored network is the same as the selected
+    return ActualnetworkId == parseInt(localStorage.getItem("network"));
+  } catch (error) {}
 }
 
 /**
@@ -138,9 +125,8 @@ export function wait(miliseconds) {
       }
     }
   } catch (error) {
-   console.error(error) 
+    console.error(error);
   }
-
 }
 
 /**
@@ -151,10 +137,14 @@ export function wait(miliseconds) {
 export function getExplorerUrl() {
   try {
     return (
-      nets[parseInt(localStorage.getItem("network"))][0].blockExplorerUrls + "tx/"
+      nets[parseInt(localStorage.getItem("network"))][0].blockExplorerUrls +
+      "tx/"
     );
   } catch (error) {
     return console.error(error);
   }
- 
+}
+
+export function getNetworkName() {
+  return nets[parseInt(localStorage.getItem("network"))][0].chainName;
 }
