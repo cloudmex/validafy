@@ -6,12 +6,7 @@ import Dropdown from "./Dropdown.js";
 import UserDropdown from "./UserDropdown.js";
 import Web3 from "web3";
 import ValidafySM from "../contracts/Valid.json";
-import {
-  addNetwork,
-  isDeployed,
-  wait,
-  sameNetwork,
-} from "../utils/interaction_blockchain";
+import { addNetwork, isDeployed } from "../utils/interaction_blockchain";
 
 export default function Sidebar() {
   const [collapseShow, setCollapseShow] = React.useState("hidden");
@@ -23,32 +18,30 @@ export default function Sidebar() {
   useEffect(() => {
     (async () => {
       try {
-      console.log("is");
-      console.log(await isDeployed());
-      //get the useraccounts
-      let useraccounts = await window.ethereum.request({
-        method: "eth_requestAccounts",
-      });
-      //get the actual networkid or chainid
-      ActualnetworkId = await window.ethereum.request({
-        method: "net_version",
-      });
-      setRedtext(ActualnetworkId === "97" ? "BSC -Testnet" : "BSM -Mainnet");
-      // sm address
-      let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
-      window.web3 = new Web3(window.ethereum);
-      contract = new window.web3.eth.Contract(
-        ValidafySM.abi,
-        tokenNetworkData.address );
+        console.log(await isDeployed());
+        //get the useraccounts
+        let useraccounts = await window.ethereum.request({
+          method: "eth_requestAccounts",
+        });
+        //get the actual networkid or chainid
+        ActualnetworkId = await window.ethereum.request({
+          method: "net_version",
+        });
 
+        // sm address
+        let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
+        let contract = new window.web3.eth.Contract(
+          ValidafySM.abi,
+          tokenNetworkData.address
+        );
         setSidebar({
           smOwner:
-            useraccounts[0] ==
-            (await contract.methods.ownerbalance.call().call())
+            useraccounts[0].toUpperCase() ==
+            (await contract.methods.ownerbalance.call().call()).toUpperCase()
               ? true
               : false,
         });
-      }catch (error) {
+      } catch (error) {
         console.error(error);
       }
     })();

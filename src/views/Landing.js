@@ -3,7 +3,6 @@ import ValidafySM from "../contracts/Valid.json";
 import Navbar from "../components/Navbar_landing_template";
 import Footer from "../components/Footer_landing_template";
 import {
-
   init,
   addNetwork,
   isDeployed,
@@ -13,7 +12,7 @@ import {
 } from "../utils/interaction_blockchain";
 
 import { acceptedFormats } from "../utils/constraints";
- 
+
 export default function Landing() {
   /**
    * @type estado que guarda los datos mas relevantes de el componente
@@ -61,20 +60,18 @@ export default function Landing() {
           ...initialBc,
           show: true,
           success: false,
-          message: "Selecciona la red e intentalo de nuevo",
+          message: "Cambia de red",
           disabled: true,
         });
 
-        //se sale del bucle hasta que agregue la red
-        let data = false;
-        while (data != null) {
+        //se sale del bucle hasta que la red the metamask y la llave network en localstorage son identicas
+
+        while (!(await sameNetwork())) {
+          //espera 200 milisegundo para volver a llamar addNetwork evita que no se muestre el modal de metamask
           wait(200);
-          data = await addNetwork(
-            parseInt(localStorage.getItem("network"))
-          ).catch((err) => {
-            return err;
-          });
+          await addNetwork(parseInt(localStorage.getItem("network"))).catch();
         }
+
         setInitialBc({
           ...initialBc,
           show: false,
@@ -90,7 +87,6 @@ export default function Landing() {
         ValidafySM.abi,
         tokenNetworkData.address
       );
-
       //nos permite cargar el archivo
       const reader = new window.FileReader();
       reader.readAsArrayBuffer(file);
@@ -151,15 +147,13 @@ export default function Landing() {
               disabled: true,
             });
 
-            //se sale del bucle hasta que agregue la red
-            let data = false;
-            while (data != null) {
+            //se sale del bucle hasta que la red the metamask y la llave network en localstorage son identicas
+            while (!(await sameNetwork())) {
+              //espera 200 milisegundo para volver a llamar addNetwork evita que no se muestre el modal de metamask
               wait(200);
-              data = await addNetwork(
+              await addNetwork(
                 parseInt(localStorage.getItem("network"))
-              ).catch((err) => {
-                return err;
-              });
+              ).catch();
             }
 
             setInitialBc({
@@ -172,7 +166,7 @@ export default function Landing() {
 
             setTimeout(function() {
               window.location.href = "/dash";
-            }, 5000);
+            }, 3000);
           }
         } else {
           setInitialBc({
