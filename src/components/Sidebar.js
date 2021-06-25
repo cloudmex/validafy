@@ -22,6 +22,7 @@ export default function Sidebar() {
   let contract;
   useEffect(() => {
     (async () => {
+      try {
       console.log("is");
       console.log(await isDeployed());
       //get the useraccounts
@@ -35,19 +36,11 @@ export default function Sidebar() {
       setRedtext(ActualnetworkId === "97" ? "BSC -Testnet" : "BSM -Mainnet");
       // sm address
       let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
+      window.web3 = new Web3(window.ethereum);
+      contract = new window.web3.eth.Contract(
+        ValidafySM.abi,
+        tokenNetworkData.address );
 
-      //instantiate the contract object
-      try {
-        window.web3 = new Web3(window.ethereum);
-        contract = new window.web3.eth.Contract(
-          ValidafySM.abi,
-          tokenNetworkData.address
-        );
-      } catch (error) {
-        console.error(error);
-      }
-
-      try {
         setSidebar({
           smOwner:
             useraccounts[0] ==
@@ -55,7 +48,7 @@ export default function Sidebar() {
               ? true
               : false,
         });
-      } catch (error) {
+      }catch (error) {
         console.error(error);
       }
     })();

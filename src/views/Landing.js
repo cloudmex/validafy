@@ -3,6 +3,8 @@ import ValidafySM from "../contracts/Valid.json";
 import Navbar from "../components/Navbar_landing_template";
 import Footer from "../components/Footer_landing_template";
 import {
+
+  init,
   addNetwork,
   isDeployed,
   wait,
@@ -11,8 +13,7 @@ import {
 } from "../utils/interaction_blockchain";
 
 import { acceptedFormats } from "../utils/constraints";
-
-console.log(getExplorerUrl());
+ 
 export default function Landing() {
   /**
    * @type estado que guarda los datos mas relevantes de el componente
@@ -29,7 +30,20 @@ export default function Landing() {
    * @param {*} event tiene toda la informacion del input asociado
    * @returns  no regresa nada
    */
-
+  useEffect(() => {
+    //incializamos la app, si no tiene metamask lo mandamos a la pagina de descarga
+    if (!init()) {
+      setInitialBc({
+        show: true,
+        success: false,
+        message:
+          "No cuentas con metamask,te estamos redireccionando al sitio oficial para que procedas con la descarga",
+      });
+      setTimeout(() => {
+        window.location.replace("https://metamask.io/download");
+      }, 5000);
+    }
+  }, []);
   const Validar = async (event) => {
     ///browser detection
     event.preventDefault();
