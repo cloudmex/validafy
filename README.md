@@ -1,13 +1,23 @@
-Estampado_Blockchain
+# ValidaFy
 
-## front
+## Requirements
+node version 
+```bash
+10.21.0
+```
 
-front estampado
+## Installation
+```bash
+npm install
+```
 
-### requisitos
 
-- node 10.24.1
-
-### correr el proyecto
-
+## Usage
+```bash
 npm start
+```
+
+
+
+## License
+[MIT](https://choosealicense.com/licenses/mit/)
