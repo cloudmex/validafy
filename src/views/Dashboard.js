@@ -5,6 +5,7 @@ import {init, addNetwork, wait, sameNetwork } from "../utils/interaction_blockch
 import { Dialog, Transition } from "@headlessui/react";
 import { acceptedFormats } from "../utils/constraints";
 import Sidebar from "../components/Sidebar.js";
+import { getExplorerUrl } from "../utils/interaction_blockchain";
 const ipfsClient = require("ipfs-http-client");
 const ipfs = ipfsClient({
   host: "ipfs.infura.io",
@@ -435,7 +436,8 @@ export default function Dashboard() {
                           keyvalues: {
                             tokenid: receipt.events.Transfer.returnValues.tokenId,
                             owner: receipt.events.Transfer.returnValues.to,
-                            txHash:receipt.transactionHash
+                            txHash:receipt.transactionHash,
+                            explorer:getExplorerUrl()
                           }
                       };
                

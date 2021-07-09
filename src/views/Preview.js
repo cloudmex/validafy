@@ -20,7 +20,7 @@ export default function Preview (props) {
   const [Owner, setOwner] = useState("");
   const [filename, setfilename] = useState("nombre");
   const [tokenid, settokenid] = useState("");
-
+  const [explorer, setexplorerd] = useState("");
   const myhash = window.localStorage;
   function reset (){
     setIpfsHash("");
@@ -83,7 +83,7 @@ export default function Preview (props) {
                 setOwner(result.rows[0].metadata.keyvalues.owner);
                 setfilename(result.rows[0].metadata.name);
                 settokenid(result.rows[0].metadata.keyvalues.tokenid);
-               
+                setexplorerd(result.rows[0].metadata.keyvalues.explorer);
                 console.log(tokenid)
             }).catch((err) => {
                 //handle error here
@@ -250,6 +250,8 @@ function getlink2(l){
           <div>
             <div className="text-sm    text-gray-400">Token id</div>
             <div className="text-xs  bg-pink-100 text-gray-800">{tokenid}</div>
+            <div className="text-sm    text-gray-400">Explorer</div>
+            <div className="text-xs  bg-pink-100 text-gray-800">{explorer}</div>
             <div className="text-sm   text-gray-400">Fecha Creada</div>
             <div className="text-xs  bg-pink-100 text-gray-800">{DateCreated}</div>
           </div>
