@@ -10,6 +10,8 @@ import {
 import { Dialog, Transition } from "@headlessui/react";
 import { acceptedFormats } from "../utils/constraints";
 import Sidebar from "../components/Sidebar.js";
+import { getExplorerUrl } from "../utils/interaction_blockchain";
+
 const ipfsClient = require("ipfs-http-client");
 const ipfs = ipfsClient({
   host: "ipfs.infura.io",
@@ -341,12 +343,15 @@ export default function Dashboard() {
             disabled: true,
           });
 
-          //se sale del bucle hasta que la red the metamask y la llave network en localstorage son identicas
-
-          while (!(await sameNetwork())) {
-            //espera 200 milisegundo para volver a llamar addNetwork evita que no se muestre el modal de metamask
+          //se sale del bucle hasta que agregue la red
+          let data = false;
+          while (data != null) {
             wait(200);
-            await addNetwork(parseInt(localStorage.getItem("network"))).catch();
+            data = await addNetwork(
+              parseInt(localStorage.getItem("network"))
+            ).catch((err) => {
+              return err;
+            });
           }
         }
         //get the actual networkid or chainid
@@ -407,6 +412,7 @@ export default function Dashboard() {
                 const options = {
                   pinataMetadata: {
                     name: file.name,
+                   
                   },
                 };
                 //Adds a hash to Pinata's pin queue to be pinned asynchronously
@@ -426,41 +432,37 @@ export default function Dashboard() {
                       .once("receipt", (receipt) => {
                         console.log(receipt);
 
+                     
                         const metadata = {
                           name: file.name,
                           keyvalues: {
-                            tokenid:
-                              receipt.events.Transfer.returnValues.tokenId,
+                            tokenid: receipt.events.Transfer.returnValues.tokenId,
                             owner: receipt.events.Transfer.returnValues.to,
-                            txHash: receipt.transactionHash,
-                          },
-                        };
+                            txHash:receipt.transactionHash,
+                            explorer:getExplorerUrl()
+                          }
+                      };
+               
+                   console.log(metadata);
+                    pinata.hashMetadata(result.ipfsHash, metadata).then((result) => {
+                      //handle results here
+                      console.log(result + " asqui");
 
-                        console.log(metadata);
-                        pinata
-                          .hashMetadata(result.ipfsHash, metadata)
-                          .then((result) => {
-                            //handle results here
-                            console.log(result + " asqui");
+                      setShowModal({
+                        ...initialBc,
+                        show: true,
+                        success: true,
+                        message:
+                          "!Exito!. Se ha minado,el nuevo token esta en su cartera",
+                      });
 
-                            setShowModal({
-                              ...initialBc,
-                              show: true,
-                              success: true,
-                              message:
-                                "!Exito!. Se ha minado,el nuevo token esta en su cartera",
-                            });
-
-                            //quitar la imagen de carga
-                            setInitialBc({
-                              ...initialBc,
-                              showHideCharge: false,
-                            });
-                          })
-                          .catch((err) => {
-                            //handle error here
-                            console.log(err);
-                          });
+                      //quitar la imagen de carga
+                      setInitialBc({ ...initialBc, showHideCharge: false });
+                  }).catch((err) => {
+                      //handle error here
+                      console.log(err);
+                  });
+ 
                       })
                       .catch((err) => {
                         console.log(err);

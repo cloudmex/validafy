@@ -48,7 +48,8 @@ export var nets;
  */
 
 export async function addNetwork(id) {
-  //obtener el arreglo con los datos de la red
+  try {
+     //obtener el arreglo con los datos de la red
   let networkData = nets[id];
   if (!networkData) return "no existe esa red";
   // agregar red o cambiar red
@@ -56,6 +57,10 @@ export async function addNetwork(id) {
     method: "wallet_addEthereumChain",
     params: networkData,
   });
+  } catch (error) {
+    console.error(error);
+  }
+ 
 }
 /**
  *nos permite inicializar la instancia de web3, ipfs etc
@@ -146,5 +151,10 @@ export function getExplorerUrl() {
 }
 
 export function getNetworkName() {
-  return nets[parseInt(localStorage.getItem("network"))][0].chainName;
+  try {
+    return nets[parseInt(localStorage.getItem("network"))][0].chainName;
+  } catch (error) {
+    console.error(error);
+  }
+
 }
