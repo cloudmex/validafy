@@ -17,36 +17,42 @@ export default function Sidebar() {
   let contract;
   useEffect(() => {
     (async () => {
+       //instantiate the contract object
+   
       try {
-        console.log(await isDeployed());
-        //get the useraccounts
-        let useraccounts = await window.ethereum.request({
-          method: "eth_requestAccounts",
-        });
-        //get the actual networkid or chainid
-        ActualnetworkId = await window.ethereum.request({
-          method: "net_version",
-        });
+        console.log("is");
+      console.log(await isDeployed());
+      //get the useraccounts
+      let useraccounts = await window.ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      //get the actual networkid or chainid
+       ActualnetworkId = await window.ethereum.request({
+        method: "net_version",
+      });
+      setRedtext (ActualnetworkId === "97" ? "BSC -Testnet" : "BSM -Mainnet")
+      // sm address
+      let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
 
-        // sm address
-        let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
-        let contract = new window.web3.eth.Contract(
-          ValidafySM.abi,
-          tokenNetworkData.address
-        );
+      window.web3 = new Web3(window.ethereum);
+       contract = new window.web3.eth.Contract(
+        ValidafySM.abi,
+        tokenNetworkData.address);
+
         setSidebar({
           smOwner:
-            useraccounts[0].toUpperCase() ==
-            (await contract.methods.ownerbalance.call().call()).toUpperCase()
+            useraccounts[0] == (await contract.methods.ownerbalance.call().call())
               ? true
               : false,
         });
       } catch (error) {
-        console.error(error);
+        console.error(error)
       }
+      
+   
+
     })();
   }, []);
-
   return (
     <>
       <nav className="md:left-0 md:block md:fixed md:top-0 md:bottom-0 md:overflow-y-auto md:flex-row md:flex-nowrap md:overflow-hidden shadow-xl bg-white flex flex-wrap items-center justify-between relative md:w-64 z-10 py-4 px-6">

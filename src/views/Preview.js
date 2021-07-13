@@ -1,10 +1,9 @@
-import React, { useState, useEffect, Fragment, useRef } from "react";
+import React, { useState, useEffect } from "react";
  
-import Sidebar from "../components/Sidebar.js";
+
  import "../assets/css/pdfstyle.css";
  import { FillButton } from 'tailwind-react-ui'
- import { init,getExplorerUrl } from "../utils/interaction_blockchain";
-//Using the Pinata SDK with dokxo apikeys
+ //Using the Pinata SDK with dokxo apikeys
 const pinataSDK = require("@pinata/sdk");
 const pinata = pinataSDK(
   "8e2b2fe58bbbc6c45be1",
@@ -20,6 +19,7 @@ export default function Preview (props) {
   const [Owner, setOwner] = useState("");
   const [filename, setfilename] = useState("nombre");
   const [tokenid, settokenid] = useState("");
+  const [explorer, setexplorer] = useState("");
 
   const myhash = window.localStorage;
   function reset (){
@@ -29,6 +29,7 @@ export default function Preview (props) {
     setOwner("");
     setfilename("");
     settokenid("");
+    setexplorer("");
   };
   useEffect(async() => {
     (async () => {
@@ -83,8 +84,8 @@ export default function Preview (props) {
                 setOwner(result.rows[0].metadata.keyvalues.owner);
                 setfilename(result.rows[0].metadata.name);
                 settokenid(result.rows[0].metadata.keyvalues.tokenid);
+                setexplorer(result.rows[0].metadata.keyvalues.explorer);
                
-                console.log(tokenid)
             }).catch((err) => {
                 //handle error here
                 console.log(err);
@@ -96,15 +97,7 @@ export default function Preview (props) {
      
     })();
   }, []);
-function getlink2(l){
-  try {
-    navigator.clipboard.writeText(l)
-  } catch (error) {
-    
-  }
-  
 
-}
   function getlink(e) {
     var aux = document.createElement('input');
     aux.setAttribute('value', window.location.href.split('?')[0].split('#')[0]);
@@ -138,8 +131,8 @@ function getlink2(l){
 
   return (
     <>
-      <Sidebar />
-      <div className="relative md:ml-64 bg-blueGray-100">
+       
+      <div className="relative   bg-blueGray-100">
   
         <main className="Preview-page ">
           <section className="relative " style={{ height: "500px" }}>
@@ -235,7 +228,7 @@ function getlink2(l){
                 onClick={() => {
                  
                   getlink("Tx hash");
-                  copyToClipboard(getExplorerUrl() + TxHash);
+                  copyToClipboard(explorer + TxHash);
                  }}>  </i></button></div>
             <div className="text-xs   bg-pink-100 text-gray-800">{TxHash} 
                
@@ -250,6 +243,8 @@ function getlink2(l){
           <div>
             <div className="text-sm    text-gray-400">Token id</div>
             <div className="text-xs  bg-pink-100 text-gray-800">{tokenid}</div>
+            <div className="text-sm    text-gray-400">Explorer</div>
+            <div className="text-xs  bg-pink-100 text-gray-800">{explorer.toString().substring(8,20) }</div>
             <div className="text-sm   text-gray-400">Fecha Creada</div>
             <div className="text-xs  bg-pink-100 text-gray-800">{DateCreated}</div>
           </div>
@@ -260,7 +255,7 @@ function getlink2(l){
                 
                 getlink("URL");
                 copyToClipboard(window.location.href);
-                 }}> Compartir <i class="fa fa-share-alt-square text-white " aria-hidden="true"></i></FillButton>
+                 }}> Compartir <i className="fa fa-share-alt-square text-white " aria-hidden="true"></i></FillButton>
         </div>
         <p>&nbsp;</p>
   <p>&nbsp;</p>
