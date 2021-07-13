@@ -59,6 +59,8 @@
     ]
   },
   "devDependencies": {
-    "@iconify/react": "^1.1.4"
+    "@iconify/react": "^1.1.4",
+    "@testing-library/jest-dom": "^5.14.1",
+    "babel-core": "^7.0.0-bridge.0"
   }
 }
