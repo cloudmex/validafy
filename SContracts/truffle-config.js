@@ -63,11 +63,17 @@ module.exports = {
     },
     bsc: {
       provider: () =>
-        new HDWalletProvider(mnemonic, `https://bsc-dataseed1.binance.org`),
+        new HDWalletProvider(mnemonic, `https://bsc-dataseed1.defibit.io/`),
       network_id: 56,
-      confirmations: 10,
-      timeoutBlocks: 200,
+      confirmations: 7,
+
+      networkCheckTimeout: 1000000000,
+    
+      timeoutBlocks: 200000, 
       skipDryRun: true,
+      from:"0x2028E4e42fFBb4C2134c4981ee75995F7845FD95",
+      gas: 5000000,
+      gasPrice: 5000000000,
     },
   },
   contracts_build_directory: path.join(__dirname, ".././src/contracts"),

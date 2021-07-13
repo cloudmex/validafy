@@ -1,10 +1,17 @@
 import React, { useState, useEffect, Fragment, useRef } from "react";
 import Web3 from "web3";
 import ValidafySM from "../contracts/Valid.json";
-import { addNetwork, wait, sameNetwork } from "../utils/interaction_blockchain";
+import {
+  init,
+  addNetwork,
+  wait,
+  sameNetwork,
+} from "../utils/interaction_blockchain";
 import { Dialog, Transition } from "@headlessui/react";
-
+import { acceptedFormats } from "../utils/constraints";
 import Sidebar from "../components/Sidebar.js";
+import { getExplorerUrl } from "../utils/interaction_blockchain";
+
 const ipfsClient = require("ipfs-http-client");
 const ipfs = ipfsClient({
   host: "ipfs.infura.io",
@@ -129,6 +136,22 @@ export default function Dashboard() {
 
   useEffect(() => {
     (async () => {
+      try {
+        if (!init()) {
+          setInitialBc({
+            show: true,
+            success: false,
+            message:
+              "No cuentas con metamask,te estamos redireccionando al sitio oficial para que procedas con la descarga",
+          });
+          setTimeout(() => {
+            window.location.replace("https://metamask.io/download");
+          }, 5000);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+
       //Testing if Validafy is conected to Pinata.
       pinata
         .testAuthentication()
@@ -168,7 +191,6 @@ export default function Dashboard() {
 
         // sm address
         let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
-console.log(tokenNetworkData)
         if (!tokenNetworkData) {
           // window.alert("Ese smartcontract no se desplego en esta red");
           setShowModal({
@@ -234,15 +256,12 @@ console.log(tokenNetworkData)
             disabled: true,
           });
 
-          //se sale del bucle hasta que agregue la red
-          let data = false;
-          while (data != null) {
+          //se sale del bucle hasta que la red the metamask y la llave network en localstorage son identicas
+
+          while (!(await sameNetwork())) {
+            //espera 200 milisegundo para volver a llamar addNetwork evita que no se muestre el modal de metamask
             wait(200);
-            data = await addNetwork(
-              parseInt(localStorage.getItem("network"))
-            ).catch((err) => {
-              return err;
-            });
+            await addNetwork(parseInt(localStorage.getItem("network"))).catch();
           }
           setInitialBc({
             ...initialBc,
@@ -393,6 +412,7 @@ console.log(tokenNetworkData)
                 const options = {
                   pinataMetadata: {
                     name: file.name,
+                   
                   },
                 };
                 //Adds a hash to Pinata's pin queue to be pinned asynchronously
@@ -412,16 +432,37 @@ console.log(tokenNetworkData)
                       .once("receipt", (receipt) => {
                         console.log(receipt);
 
-                        setShowModal({
-                          ...initialBc,
-                          show: true,
-                          success: true,
-                          message:
-                            "!Exito!. Se ha minado,el nuevo token esta en su cartera",
-                        });
+                     
+                        const metadata = {
+                          name: file.name,
+                          keyvalues: {
+                            tokenid: receipt.events.Transfer.returnValues.tokenId,
+                            owner: receipt.events.Transfer.returnValues.to,
+                            txHash:receipt.transactionHash,
+                            explorer:getExplorerUrl()
+                          }
+                      };
+               
+                   console.log(metadata);
+                    pinata.hashMetadata(result.ipfsHash, metadata).then((result) => {
+                      //handle results here
+                      console.log(result + " asqui");
 
-                        //quitar la imagen de carga
-                        setInitialBc({ ...initialBc, showHideCharge: false });
+                      setShowModal({
+                        ...initialBc,
+                        show: true,
+                        success: true,
+                        message:
+                          "!Exito!. Se ha minado,el nuevo token esta en su cartera",
+                      });
+
+                      //quitar la imagen de carga
+                      setInitialBc({ ...initialBc, showHideCharge: false });
+                  }).catch((err) => {
+                      //handle error here
+                      console.log(err);
+                  });
+ 
                       })
                       .catch((err) => {
                         console.log(err);
@@ -664,30 +705,34 @@ console.log(tokenNetworkData)
                                 <div>
                                   {!showHideCharge ? (
                                     <label className="w-full flex flex-col items-center px-4 py-6 bg-white rounded-lg  tracking-wide uppercase  cursor-pointew-full flex flex-col items-center px-4   mtbg-white rounded-lg  tracking-wide uppercase  cursor-pointer ">
-                                      <svg
-                                        className="w-8 h-8 text-pink-600"
-                                        fill="currentColor"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 20 20"
-                                      >
-                                        <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
-                                      </svg>
+                                      {initialBc.showImg && (
+                                        <svg
+                                          className="w-8 h-8 text-pink-600"
+                                          fill="currentColor"
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          viewBox="0 0 20 20"
+                                        >
+                                          <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
+                                        </svg>
+                                      )}
 
-                                      <span className="mt-2 text-base leading-normal">
-                                        Selecciona un archivo
-                                      </span>
+                                      {initialBc.showImg && (
+                                        <span className="mt-2 text-base leading-normal">
+                                          Selecciona un archivo
+                                        </span>
+                                      )}
 
                                       <input
                                         type="file"
                                         className="hidden"
-                                        accept=".pdf"
+                                        accept={acceptedFormats}
                                         onChange={Validar}
                                         required
                                         onClick={() => {
                                           setInitialBc({
                                             ...initialBc,
                                             Validado: "",
-                                            showImg: !initialBc.showImg,
+                                            showImg: true,
                                             Validar,
                                           });
                                         }}
@@ -726,7 +771,7 @@ console.log(tokenNetworkData)
                                     <input
                                       type="file"
                                       className="hidden"
-                                      accept=".pdf"
+                                      accept={acceptedFormats}
                                       onChange={ValidarCaptura}
                                       required
                                       onClick={() => {

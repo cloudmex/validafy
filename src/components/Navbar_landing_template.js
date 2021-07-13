@@ -37,8 +37,18 @@ export default function Navbar(props) {
               ...initialBc,
               show: true,
               success: false,
-              message: " !Error de red¡,Selecciona la red de BSC para seguir.",
+              message: " Cambia de red porfavor",
             });
+            //se sale del bucle hasta que la red the metamask y la llave network en localstorage son identicas
+
+            while (!(await sameNetwork())) {
+              //espera 200 milisegundo para volver a llamar addNetwork evita que no se muestre el modal de metamask
+              wait(200);
+              await addNetwork(
+                parseInt(localStorage.getItem("network"))
+              ).catch();
+            }
+            window.location.href = "/dash";
           }
         } else {
           setShowModal({

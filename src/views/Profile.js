@@ -7,6 +7,8 @@ import ValidafySM from "../contracts/Valid.json";
 import Sidebar from "../components/Sidebar.js";
 import validlogo from "../assets/img/validafy-logotipo.png";
 
+import { init,getExplorerUrl } from "../utils/interaction_blockchain";
+
 export default function Profile() {
   const [initialBc, setInitialBc] = useState({
     Hash: "",
@@ -27,7 +29,22 @@ export default function Profile() {
   useEffect(() => {
     (async () => {
       unhideCharge(true);
-
+     try {
+      if (!init()) {
+        setInitialBc({
+          show: true,
+          success: false,
+          message:
+            "No cuentas con metamask,te estamos redireccionando al sitio oficial para que procedas con la descarga",
+        });
+        setTimeout(() => {
+          window.location.replace("https://metamask.io/download");
+        }, 5000);
+      }
+     } catch (error) {
+       
+     }
+     try {
       window.ethereum._metamask.isUnlocked().then(function(value) {
         if (value) {
           console.log("Abierto");
@@ -119,7 +136,12 @@ export default function Profile() {
       }
 
       console.log(window.ethereum);
-    })();
+  
+    } catch (error) {
+      console.log(error);
+    }
+    
+       })();
   }, []);
   /*
   var today = new Date(),
@@ -248,6 +270,7 @@ export default function Profile() {
                               <th className=" text-white  py-4"> IpfsHash</th>
                               <th className="text-white py-4">TxHash</th>
                               <th className="text-white  py-4">TimeStamp</th>
+                              <th className="text-white  py-4">Detalle</th>
                             </tr>
                           </thead>
                           <tbody className="text-base py-3 bg-pink-200">
@@ -266,16 +289,23 @@ export default function Profile() {
                                 <td className="">
                                   <a
                                     className="a-link "
-                                    href={
-                                      "https://testnet.bscscan.com/tx/" +
-                                      doc.txhash
-                                    }
+                                    href={getExplorerUrl() + doc.txhash}
                                     target="_blank"
                                   >
                                     {doc.txhash.substring(0, 25) + " ..."}
                                   </a>
                                 </td>
                                 <td className=" ">{doc.time}</td>
+                                <td>
+                                <a
+                                    className="a-link "
+                                    href={`./preview/${doc.hash}`}
+                                    target="_blank"
+                                     
+                                  >
+                                   <i className="fa fa-info-circle">  </i>
+                                  </a>
+                                </td>
                               </tr>
                             ))}
                           </tbody>
