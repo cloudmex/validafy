@@ -1,127 +1,135 @@
+import Web3 from "web3";
 import Validar from "../helpers/Validar"
+import {
+    // init,
+    addNetwork,
+    wait,
+    sameNetwork,
+  } from "../utils/interaction_blockchain";
+  import ValidafySM from "../contracts/Valid.json";
+//   import {useState} from 'react';
+import {renderHook, act } from '@testing-library/react-hooks'
+import { superHook  } from "./Hooks/Hooks";
+// import {useState} from 'react';
+// import React from 'react';
 
 describe('Pruevas en el metodo Validar', () => {
+
+   const todo = {
+        Hash: "",
+        contract: null,
+        buffer: null,
+        web3: null,
+        account: null,
+        file: null,
+        showHidebutton: false,
+        showHideCharge: false,
+        showHideProgress: false,
+        showHideFile: true,
+        showImg: true,
+    }
+
     
     const event = {
         preventDefault: jest.fn(),
         target:{
             files:[
                 {
-                    lastModified: 192732710,
-                    lastModifiedDate: new Date().getTime(),
+                    lastModified: 1625935677999,
+                    lastModifiedDate: 'Sat Jul 10 2021 10:47:57 GMT-0600 (hora de verano de las Montañas Rocosas',
                     name: "informacion (Recuperado automáticamente).docx",
                     size: 14613,
                     type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                    webkitRelativePath: ""
+                    webkitRelativePath: "",
                 }
             ]
         }
     }
-    const unhideCharge =  jest.fn();
-    const Web3 =  jest.fn();
-    const wait = jest.fn();
-    const window = {
-        ethereum: {
-            request: jest.fn()
-        },
-        FileReader: {
-            readAsArrayBuffer: jest.fn(),
-            onloadend: Function,
-            result: {}
-
-        },
-        location: {
-            reload: jest.fn
-        },
-        web3:{
-            eth:{
-                net:{
-                    getId: jest.fn()
-                },
-                Contract: jest.fn()
-            }
-        },
-        open: jest.fn()
-    };
-    const sameNetwork = jest.fn();
-    const initialBc = {
-        Hash: "",
-        Validado: "",
-        Validar: jest.fn(),
-        account: null,
-        buffer: undefined,
-        contract: null,
-        file: null,
-        showHideCharge: false,
-        showHideFile: true,
-        showHideProgress: false,
-        showHidebutton: false,
-        showImg: true,
-        web3: null,
-    };
-    const setInitialBc = jest.fn();
-    const addNetwork = jest.fn();
-    const ValidafySM = {
-        networks:[
-            {address: "123456789"},
-            {address: "10937291392"}
-        ],
-        abi:{}
-
-    };
-    const ipfs = {
-        add: jest.fn()
-    };
-    const setShowModal = jest.fn();
 
     
-test('No deveria de llamarsela funcion reload, si file es diferente a undefine', () => {
+    const {result:initialbc} = renderHook( () => superHook(todo));
+    const {result:Modal} = renderHook( () => superHook({ show: false }));
     
-    const valida =  Validar(
+    
+
+    // console.log(initialbc);
+
+    // // const {result: initialbc} = renderHook(() => initialBc());
+    
+    const unhideCharge = (e) => {
+        var neg = "";
+        if (e) {
+            neg = false;
+        } else {
+            neg = true;
+        }
+        return initialbc.current.reset({ showHideCharge: e });
+    }
+
+    // Window.prototype.location.reload = jest.fn();
+
+    const ipfsClient = require("ipfs-http-client");
+  
+    const ipfs = ipfsClient({
+        host: "ipfs.infura.io",
+        port: 5001,
+        protocol: "https",
+    });
+
+    
+
+test('Deveria recargar la pagina si file.array es undefined', async () => {
+
+    const event = {
+        preventDefault: jest.fn(),
+        target:{
+            files: [undefined]
+        }
+    }
+    window.ethereum= true;
+    const spyReload = jest.spyOn(location,'reload');
+
+
+    const valida =  await Validar(
         event,
         unhideCharge,
         Web3,
         wait,
-        window,
         sameNetwork,
-        initialBc,
-        setInitialBc,
+        initialbc.current.value,
+        initialbc.current.setValue,
         addNetwork,
         ValidafySM,
         ipfs,
-        setShowModal
+        Modal.current.setValue
     );
 
-    expect(window.location.reload()).not.toHaveBeenCalled();
+     expect(spyReload).toHaveBeenCalled();
 });
-test('deveria de regresar un mensaje de error si file es igual a null', () => {
+test('Deveria de redirigir a metamask si window.ethereum es undefined', async () => {
+    jest.resetAllMocks();
     
-    // const event = {
-    //     preventDefault: jest.fn(),
-    //     target:{
-    //         files: null
-    //     }
-    // }
-    const valida =  Validar(
+    window.ethereum= false;
+    
+    const spyWindow = jest.spyOn(window,'open');
+
+    const valida =  await Validar(
         event,
         unhideCharge,
         Web3,
         wait,
-        window,
         sameNetwork,
-        initialBc,
-        setInitialBc,
+        initialbc.current.value,
+        initialbc.current.setValue,
         addNetwork,
         ValidafySM,
         ipfs,
-        setShowModal
+        Modal.current.setValue
     );
 
-    expect(valida).toEqual("no agrego ningun archivo");
-})
-
-
-    
+     expect(spyWindow).toHaveBeenCalled();
+     expect(spyWindow).toHaveBeenCalledWith("https://metamask.io/download", "_blank");
+});
 
 
 

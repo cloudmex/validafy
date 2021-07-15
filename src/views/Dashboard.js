@@ -228,11 +228,11 @@ export default function Dashboard() {
 
 
 const Validar = (e) =>{
-  return valida(e,
+  return valida(
+    e,
     unhideCharge,
     Web3,
     wait,
-    window,
     sameNetwork,
     initialBc,
     setInitialBc,

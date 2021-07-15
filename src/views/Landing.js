@@ -43,6 +43,8 @@ export default function Landing() {
       }, 5000);
     }
   }, []);
+
+  
   const Validar = async (event) => {
     ///browser detection
     event.preventDefault();
