@@ -7,7 +7,6 @@ export default async (event,unhideCharge,Web3,wait,sameNetwork,initialBc,setInit
     // console.log( window.ethereum, "<= Este el WINDOW");
         event.preventDefault();
         ///browser detection
-        await console.log(window.ethereum);
         
         unhideCharge(true);
         if (window.ethereum) {

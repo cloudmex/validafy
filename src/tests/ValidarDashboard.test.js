@@ -1,5 +1,5 @@
 import Web3 from "web3";
-import Validar from "../helpers/Validar"
+import Validar from "../helpers/ValidarDashboard"
 import {
     // init,
     addNetwork,
@@ -46,28 +46,8 @@ describe('Pruevas en el metodo Validar', () => {
         }
     }
 
-    
-    const {result:initialbc} = renderHook( () => superHook(todo));
-    const {result:Modal} = renderHook( () => superHook({ show: false }));
-    
-    
-
-    // console.log(initialbc);
-
-    // // const {result: initialbc} = renderHook(() => initialBc());
-    
-    const unhideCharge = (e) => {
-        var neg = "";
-        if (e) {
-            neg = false;
-        } else {
-            neg = true;
-        }
-        return initialbc.current.reset({ showHideCharge: e });
-    }
-
-    // Window.prototype.location.reload = jest.fn();
-
+    window.open = jest.fn();
+    location.reload = jest.fn();
     const ipfsClient = require("ipfs-http-client");
   
     const ipfs = ipfsClient({
@@ -80,6 +60,17 @@ describe('Pruevas en el metodo Validar', () => {
 
 test('Deveria recargar la pagina si file.array es undefined', async () => {
 
+    const {result:initialbc} = renderHook( () => superHook(todo));
+    const {result:Modal} = renderHook( () => superHook({ show: false }));
+    const unhideCharge = (e) => {
+        var neg = "";
+        if (e) {
+            neg = false;
+        } else {
+            neg = true;
+        }
+        return initialbc.current.reset({ showHideCharge: e });
+    }
     const event = {
         preventDefault: jest.fn(),
         target:{
@@ -108,7 +99,17 @@ test('Deveria recargar la pagina si file.array es undefined', async () => {
 });
 test('Deveria de redirigir a metamask si window.ethereum es undefined', async () => {
     jest.resetAllMocks();
-    
+    const {result:initialbc} = renderHook( () => superHook(todo));
+    const {result:Modal} = renderHook( () => superHook({ show: false }));
+    const unhideCharge = (e) => {
+        var neg = "";
+        if (e) {
+            neg = false;
+        } else {
+            neg = true;
+        }
+        return initialbc.current.reset({ showHideCharge: e });
+    }
     window.ethereum= false;
     
     const spyWindow = jest.spyOn(window,'open');

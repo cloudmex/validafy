@@ -11,7 +11,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { acceptedFormats } from "../utils/constraints";
 import Sidebar from "../components/Sidebar.js";
 import { getExplorerUrl } from "../utils/interaction_blockchain";
-import valida from '../helpers/Validar'
+import valida from '../helpers/ValidarDashboard'
 
 
 const ipfsClient = require("ipfs-http-client");
@@ -227,20 +227,8 @@ export default function Dashboard() {
 
 
 
-const Validar = (e) =>{
-  return valida(
-    e,
-    unhideCharge,
-    Web3,
-    wait,
-    sameNetwork,
-    initialBc,
-    setInitialBc,
-    addNetwork,
-    ValidafySM,
-    ipfs,
-    setShowModal
-    );
+const Validar = async(e) =>{
+  return await valida(e,unhideCharge,Web3,wait,sameNetwork,initialBc,setInitialBc,addNetwork,ValidafySM,ipfs,setShowModal);
 }
 
   // const Validar = async (event) => {
