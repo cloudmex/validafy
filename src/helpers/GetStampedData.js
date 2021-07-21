@@ -5,7 +5,7 @@ const pinataSDK = require("@pinata/sdk");
     );
 
 
-export const GetStampedData  = async(
+export default async(
   reset, 
   setDateCreated,
   setOwner,

@@ -16,17 +16,17 @@ const Dropdown = ({ color }) => {
   const btnDropdownRef = React.createRef();
   const popoverDropdownRef = React.createRef();
 ///////prueba 1
-  export const openDropdownPopover = () => {
+   const openDropdownPopover = () => {
     createPopper(btnDropdownRef.current, 
       popoverDropdownRef.current, {
       placement: "top-end",
     });
     setDropdownPopoverShow(true);
   };
-   export const closeDropdownPopover = () => {
+   const closeDropdownPopover = () => {
     setDropdownPopoverShow(false);
   };
-  export default async function changeNet(id) {
+   async function changeNet(id) {
     //se sale del bucle hasta que la red the metamask y la llave network en localstorage son identicas
     localStorage.setItem("network", id);
     while (!(await sameNetwork())) {

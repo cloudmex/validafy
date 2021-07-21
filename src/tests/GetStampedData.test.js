@@ -1,12 +1,9 @@
 
-import {GetStampedData,helperPinata} from '../helpers/GetStampedData'
+import GetStampedData,{helperPinata} from '../helpers/GetStampedData'
 import {act, renderHook} from '@testing-library/react-hooks';
 import HookGetStampedData from "../Hooks/HookGetStampedData";
 
-
-
-
-describe('pruebas en los hooks que se encuentran de GetStampedData', () => {
+describe('Pruebas en los hooks que se encuentran de GetStampedData', () => {
 
         let hook; //renderHook(() => HookGetStampedData('v1','v2','v3','v4','v5','v6','v7'));
 
@@ -16,7 +13,7 @@ describe('pruebas en los hooks que se encuentran de GetStampedData', () => {
             hook = renderHook(() => HookGetStampedData('v1','v2','v3','v4','v5','v6','v7'));
         });
 
-        test('las variables de los Hooks deberia de ser String', () => {
+        test('Las variables de los Hooks deberia de ser String', () => {
 
             const 
             {
