@@ -10,19 +10,23 @@ import {
 
 const Dropdown = ({ color }) => {
   // dropdown props
-  const [dropdownPopoverShow, setDropdownPopoverShow] = React.useState(false);
+  const [dropdownPopoverShow,
+     setDropdownPopoverShow] = React.useState(false);
+
   const btnDropdownRef = React.createRef();
   const popoverDropdownRef = React.createRef();
-  const openDropdownPopover = () => {
-    createPopper(btnDropdownRef.current, popoverDropdownRef.current, {
+///////prueba 1
+   const openDropdownPopover = () => {
+    createPopper(btnDropdownRef.current, 
+      popoverDropdownRef.current, {
       placement: "top-end",
     });
     setDropdownPopoverShow(true);
   };
-  const closeDropdownPopover = () => {
+   const closeDropdownPopover = () => {
     setDropdownPopoverShow(false);
   };
-  async function changeNet(id) {
+   async function changeNet(id) {
     //se sale del bucle hasta que la red the metamask y la llave network en localstorage son identicas
     localStorage.setItem("network", id);
     while (!(await sameNetwork())) {

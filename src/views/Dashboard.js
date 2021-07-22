@@ -11,6 +11,9 @@ import { Dialog, Transition } from "@headlessui/react";
 import { acceptedFormats } from "../utils/constraints";
 import Sidebar from "../components/Sidebar.js";
 import { getExplorerUrl } from "../utils/interaction_blockchain";
+import valida from '../helpers/ValidarDashboard'
+import HookDashBoard from "../Hooks/HookDashBoard";
+
 
 const ipfsClient = require("ipfs-http-client");
 const ipfs = ipfsClient({
@@ -27,37 +30,97 @@ const pinata = pinataSDK(
 );
 
 export default function Dashboard() {
-  const [open, setOpen] = useState(false);
 
-  const cancelButtonRef = useRef();
 
-  const [initialBc, setInitialBc] = useState({
-    Hash: "",
-    contract: null,
-    buffer: null,
-    web3: null,
-    account: null,
-    file: null,
-    showHidebutton: false,
-    showHideCharge: false,
-    showHideProgress: false,
-    showHideFile: true,
-    showImg: true,
-  });
+  const {
+    open,
+    cancelButtonRef,
+    initialBc,
+    openTab,
+    message,
+    estadoProgress,
+    buffer,
+    ipfss,
+    sm,
+    progress,
+    Modal,
+
+    setOpen,
+    setInitialBc,
+    setOpenTab,
+    setMessage,
+    setestadoProgress,
+    setBuffer,
+    setIpfs,
+    setSm,
+    setprogress,
+    setShowModal,
+
+    hideComponent,
+    unhideCharge,
+    hideFile,
+    hideProgresss,
+    resetForm,
+    goToMetamask,
+    payCommission,
+    alertCahngeNetwork
+  } = HookDashBoard(
+    false,
+    {
+      Hash: "",
+      contract: null,
+      buffer: null,
+      web3: null,
+      account: null,
+      file: null,
+      showHidebutton: false,
+      showHideCharge: false,
+      showHideProgress: false,
+      showHideFile: true,
+      showImg: true,
+    },
+    2,
+    '',
+    '',
+    '',
+    '',
+    [],
+    0,
+    { 
+      show: false 
+    }
+    );
+
+  // const [open, setOpen] = useState(false);
+  // const cancelButtonRef = useRef();
+  // const [initialBc, setInitialBc] = useState({
+  //   Hash: "",
+  //   contract: null,
+  //   buffer: null,
+  //   web3: null,
+  //   account: null,
+  //   file: null,
+  //   showHidebutton: false,
+  //   showHideCharge: false,
+  //   showHideProgress: false,
+  //   showHideFile: true,
+  //   showImg: true,
+  // });
   //  const [Buffe,setBuffer]=useState(null );
-  const [openTab, setOpenTab] = React.useState(2);
+  // const [openTab, setOpenTab] = React.useState(2);
 
-  const [message, setMessage] = useState("");
-  const [estadoProgress, setestadoProgress] = useState("");
+  // const [message, setMessage] = useState("");
+  // const [estadoProgress, setestadoProgress] = useState("");
 
-  const [buffer, setBuffer] = useState("");
-  const [ipfss, setIpfs] = useState("");
-  const [sm, setSm] = useState([]);
-  const [progress, setprogress] = useState(0);
-  const [Modal, setShowModal] = React.useState({ show: false });
+  // const [buffer, setBuffer] = useState("");
+  // const [ipfss, setIpfs] = useState("");
+  // const [sm, setSm] = useState([]);
+  // const [progress, setprogress] = useState(0);
+  // const [Modal, setShowModal] = React.useState({ show: false });
 
   const mycomision = window.localStorage;
   const myfile = window.localStorage;
+  
   function useStickyState(defaultValue, key) {
     const [value, setValue] = React.useState(() => {
       const stickyValue = window.localStorage.getItem(key);
@@ -73,6 +136,7 @@ export default function Dashboard() {
     await this.loadWeb3();
     await this.loadBlockchainData();
   }
+
   async function loadWeb3() {
     if (window.ethereum) {
       window.web3 = new Web3(window.ethereum);
@@ -85,6 +149,7 @@ export default function Dashboard() {
       );
     }
   }
+  
   async function loadBlockchainData() {
     const web3 = window.web3;
     // Load account
@@ -100,50 +165,47 @@ export default function Dashboard() {
     }
   }
 
-  const hideComponent = (e) => {
-    return setInitialBc({ showHidebutton: e });
-  };
-  const unhideCharge = (e) => {
-    var neg = "";
-    if (e) {
-      neg = false;
-    } else {
-      neg = true;
-    }
-    return setInitialBc({ showHideCharge: e });
-  };
-  const hideFile = (e) => {
-    return setInitialBc({ showHideFile: e });
-  };
-  const hideProgresss = (e) => {
-    return setInitialBc({ showHideProgress: e });
-  };
+  // const hideComponent = (e) => {
+  //   return setInitialBc({ showHidebutton: e });
+  // };
 
-  const resetForm = () => {
-    setInitialBc({
-      Hash: "",
-      contract: null,
-      buffer: null,
-      web3: null,
-      account: null,
-      file: null,
-      showHidebutton: false,
-    });
-    setBuffer("");
-    setSm([]);
-    mycomision.setItem("payed", 0);
-  };
+
+  // const unhideCharge = (e) => {
+  //   var neg = "";
+  //   if (e) {
+  //     neg = false;
+  //   } else {
+  //     neg = true;
+  //   }
+  //   return setInitialBc({ showHideCharge: e });
+  // };
+  // const hideFile = (e) => {
+  //   return setInitialBc({ showHideFile: e });
+  // };
+  // const hideProgresss = (e) => {
+  //   return setInitialBc({ showHideProgress: e });
+  // };
+
+  // const resetForm = () => {
+  //   setInitialBc({
+  //     Hash: "",
+  //     contract: null,
+  //     buffer: null,
+  //     web3: null,
+  //     account: null,
+  //     file: null,
+  //     showHidebutton: false,
+  //   });
+  //   setBuffer("");
+  //   setSm([]);
+  //   mycomision.setItem("payed", 0);
+  // };
 
   useEffect(() => {
     (async () => {
       try {
         if (!init()) {
-          setInitialBc({
-            show: true,
-            success: false,
-            message:
-              "No cuentas con metamask,te estamos redireccionando al sitio oficial para que procedas con la descarga",
-          });
+          goToMetamask();
           setTimeout(() => {
             window.location.replace("https://metamask.io/download");
           }, 5000);
@@ -193,12 +255,14 @@ export default function Dashboard() {
         let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
         if (!tokenNetworkData) {
           // window.alert("Ese smartcontract no se desplego en esta red");
-          setShowModal({
-            ...initialBc,
-            show: true,
-            success: false,
-            message: "!Advertencia!  cambia de red",
-          });
+          // setShowModal({
+          //   ...initialBc,
+          //   show: true,
+          //   success: false,
+          //   message: "!Advertencia!  cambia de red",
+          // });
+
+          alertCahngeNetwork();
 
           return;
         }
@@ -210,112 +274,113 @@ export default function Dashboard() {
         setSm({ contr: contract, useraccount: useraccounts[0] });
       }
       mycomision.getItem("payed") == 1
-        ? setShowModal({
-            ...initialBc,
-            show: true,
-            success: true,
-            message: "Ya se pagó la comision. Seleccione un Documento",
-          })
+        ? payCommission()
         : console.log("false");
     })();
   }, []);
 
-  const Validar = async (event) => {
-    event.preventDefault();
 
-    ///browser detection
-    unhideCharge(true);
-    if (window.ethereum) {
-      window.web3 = new Web3(window.ethereum);
 
-      try {
-        //tratamos de cargar el documento que el usuario eligio
-        const file = event.target.files[0];
-        console.log(file);
-        if (file === undefined) {
-          window.location.reload();
-        }
+const Validar = async(e) =>{
+  return await valida(e,unhideCharge,Web3,wait,sameNetwork,initialBc,setInitialBc,addNetwork,ValidafySM,ipfs,setShowModal);
+}
 
-        if (!event.target.files) {
-          throw "no agrego ningun archivo";
-        }
+  // const Validar = async (event) => {
+  //   event.preventDefault();
 
-        //cambiar red
+  //   ///browser detection
+  //   unhideCharge(true);
+  //   if (window.ethereum) {
+  //     window.web3 = new Web3(window.ethereum);
 
-        const web3 = window.web3;
-        const networkId = await web3.eth.net.getId();
+  //     try {
+  //       //tratamos de cargar el documento que el usuario eligio
+  //       const file = event.target.files[0];
+  //       console.log(file);
+  //       if (file === undefined) {
+  //         window.location.reload();
+  //       }
 
-        if (!(await sameNetwork())) {
-          // window.alert('Error de red,Selecciona la red de BSC para seguir.')
+  //       if (!event.target.files) {
+  //         throw "no agrego ningun archivo";
+  //       }
 
-          setInitialBc({
-            ...initialBc,
-            show: true,
-            success: false,
-            message: "Selecciona la red e intentalo de nuevo",
-            disabled: true,
-          });
+  //       //cambiar red
 
-          //se sale del bucle hasta que la red the metamask y la llave network en localstorage son identicas
+  //       const web3 = window.web3;
+  //       const networkId = await web3.eth.net.getId();
 
-          while (!(await sameNetwork())) {
-            //espera 200 milisegundo para volver a llamar addNetwork evita que no se muestre el modal de metamask
-            wait(200);
-            await addNetwork(parseInt(localStorage.getItem("network"))).catch();
-          }
-          setInitialBc({
-            ...initialBc,
-            show: false,
-            showHideCharge: true,
-          });
-        }
-        //get the actual networkid or chainid
-        let ActualnetworkId = await window.ethereum.request({
-          method: "net_version",
-        });
-        // sm address
-        let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
-        //instantiate the contract object
-        let contract = new window.web3.eth.Contract(
-          ValidafySM.abi,
-          tokenNetworkData.address
-        );
+  //       if (!(await sameNetwork())) {
+  //         // window.alert('Error de red,Selecciona la red de BSC para seguir.')
 
-        //nos permite cargar el archivo
-        const reader = new window.FileReader();
-        reader.readAsArrayBuffer(file);
-        reader.onloadend = () => {
-          //obtener el hash de ipfs ,una vez que cargo el archivo
-          ipfs
-            .add(Buffer(reader.result), { onlyHash: true })
-            .then(async (result) => {
-              //comprobar si el hash se encuetra dentro de algun tokenuri
-              let ishashed = await contract.methods
-                .IsHashed(result[0].hash)
-                .call();
-              //console.log(result[0].hash);
-              let estado = "Documento no estampado";
-              if (ishashed) estado = "Documento Valido";
-              setShowModal({
-                ...initialBc,
-                show: true,
-                success: ishashed,
-                message: estado,
-              });
+  //         setInitialBc({
+  //           ...initialBc,
+  //           show: true,
+  //           success: false,
+  //           message: "Selecciona la red e intentalo de nuevo",
+  //           disabled: true,
+  //         });
 
-              setInitialBc({ ...initialBc, namepdf: file.name, showImg: true });
-            });
-        };
-      } catch (err) {
-        //   window.alert(err.message || err);
-        return;
-      }
-    } else {
-      //no tiene metamask lo mandamos a la pagina oficial de descarga
+  //         //se sale del bucle hasta que la red the metamask y la llave network en localstorage son identicas
 
-      window.open("https://metamask.io/download", "_blank");
-    }
-  };
+  //         while (!(await sameNetwork())) {
+  //           //espera 200 milisegundo para volver a llamar addNetwork evita que no se muestre el modal de metamask
+  //           wait(200);
+  //           await addNetwork(parseInt(localStorage.getItem("network"))).catch();
+  //         }
+  //         setInitialBc({
+  //           ...initialBc,
+  //           show: false,
+  //           showHideCharge: true,
+  //         });
+  //       }
+  //       //get the actual networkid or chainid
+  //       let ActualnetworkId = await window.ethereum.request({
+  //         method: "net_version",
+  //       });
+  //       // sm address
+  //       let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
+  //       //instantiate the contract object
+  //       let contract = new window.web3.eth.Contract(
+  //         ValidafySM.abi,
+  //         tokenNetworkData.address
+  //       );
+
+  //       //nos permite cargar el archivo
+  //       const reader = new window.FileReader();
+  //       reader.readAsArrayBuffer(file);
+  //       reader.onloadend = () => {
+  //         //obtener el hash de ipfs ,una vez que cargo el archivo
+  //         ipfs
+  //           .add(Buffer(reader.result), { onlyHash: true })
+  //           .then(async (result) => {
+  //             //comprobar si el hash se encuetra dentro de algun tokenuri
+  //             let ishashed = await contract.methods
+  //               .IsHashed(result[0].hash)
+  //               .call();
+  //             //console.log(result[0].hash);
+  //             let estado = "Documento no estampado";
+  //             if (ishashed) estado = "Documento Valido";
+  //             setShowModal({
+  //               ...initialBc,
+  //               show: true,
+  //               success: ishashed,
+  //               message: estado,
+  //             });
+
+  //             setInitialBc({ ...initialBc, namepdf: file.name, showImg: true });
+  //           });
+  //       };
+  //     } catch (err) {
+  //       //   window.alert(err.message || err);
+  //       return;
+  //     }
+  //   } else {
+  //     //no tiene metamask lo mandamos a la pagina oficial de descarga
+
+  //     window.open("https://metamask.io/download", "_blank");
+  //   }
+  // };
 
   const ValidarCaptura = async (event) => {
     event.preventDefault();

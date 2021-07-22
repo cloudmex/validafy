@@ -1,101 +1,53 @@
-import React, { useState, useEffect } from "react";
- 
+import React, {useEffect } from "react";
+ import GetStampedData from '../helpers/GetStampedData'
 
  import "../assets/css/pdfstyle.css";
- import { FillButton } from 'tailwind-react-ui'
- //Using the Pinata SDK with dokxo apikeys
-const pinataSDK = require("@pinata/sdk");
-const pinata = pinataSDK(
-  "8e2b2fe58bbbc6c45be1",
-  "440d5cf3f57689b93028a75c6d71a4ef82c83ba00926ae61674859564fa357a8"
-);
+ import { FillButton } from 'tailwind-react-ui';
+   
+  import  HookGetStampedData from "../Hooks/HookGetStampedData";
+
 
 
 export default function Preview (props) {
   
-  const [IpfsHash, setIpfsHash] = useState("");
-  const [TxHash, setTxHash] = useState("");
-  const [DateCreated, setDateCreated] = useState("");
-  const [Owner, setOwner] = useState("");
-  const [filename, setfilename] = useState("nombre");
-  const [tokenid, settokenid] = useState("");
-  const [explorer, setexplorer] = useState("");
+
+  const 
+  {
+    reset,
+    IpfsHash, setIpfsHash,
+    TxHash, setTxHash,
+    DateCreated, setDateCreated,
+    Owner, setOwner,
+    filename, setfilename,
+    tokenid, settokenid,
+    explorer, setexplorer
+  } 
+    = 
+    HookGetStampedData(
+      '',
+      '',
+      '',
+      '',
+      'nombre',
+      '',
+      '');
 
   const myhash = window.localStorage;
-  function reset (){
-    setIpfsHash("");
-    setTxHash("");
-    setDateCreated("");
-    setOwner("");
-    setfilename("");
-    settokenid("");
-    setexplorer("");
-  };
-  useEffect(async() => {
-    (async () => {
+  
 
- 
-    
-      try {
-        if(typeof window.orientation!=="undefined"){
-         document.getElementById('enlace').click();
-        }
-        console.log(props.match.params.id)
-        //Testing if Validafy is conected to Pinata.
-        pinata
-          .testAuthentication()
-          .then((result) => {
-            //handle successful authentication here
-            console.log(result);
-          })
-          .catch((err) => {
-            //handle error here
-            console.log(err);
-          });
-        /////
-  
-  
-  
-      // this
-      /*
-      result.rows[0].date_pinned
-      result.rows[0].metadata.name
-      result.rows[0].metadata.keyvalues.owner
-      result.rows[0].metadata.keyvalues.tokenid
-      result.rows[0].metadata.keyvalues.txHash
-  
-      */
-      reset();
-            const filters = {
-              hashContains:props.match.params.id,
-                status : 'pinned',
-                pageLimit: 10,
-                pageOffset: 0,
-                
-            };
-         await   pinata.pinList(filters).then((result) => {
-                //handle results here
-                console.log(result);
-                console.log(result.rows[0].metadata.keyvalues.tokenid);
-  
-                setIpfsHash(props.match.params.id);
-                setTxHash(result.rows[0].metadata.keyvalues.txHash);
-                setDateCreated(result.rows[0].date_pinned);
-                setOwner(result.rows[0].metadata.keyvalues.owner);
-                setfilename(result.rows[0].metadata.name);
-                settokenid(result.rows[0].metadata.keyvalues.tokenid);
-                setexplorer(result.rows[0].metadata.keyvalues.explorer);
-               
-            }).catch((err) => {
-                //handle error here
-                console.log(err);
-            });
-          
-      } catch (error) {
-        
-      }
-     
-    })();
+  useEffect(async() => {
+    (
+      GetStampedData(
+        reset,
+        setDateCreated,
+        setOwner,
+        setfilename,
+        settokenid,
+        setexplorer,
+        setIpfsHash,
+        setTxHash,
+        props)
+    )();
   }, []);
 
   function getlink(e) {
