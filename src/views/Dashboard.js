@@ -59,11 +59,16 @@ export default function Dashboard() {
     hideComponent,
     unhideCharge,
     hideFile,
-    hideProgresss,
     resetForm,
     goToMetamask,
-    payCommission,
-    alertCahngeNetwork
+    SelectNetworkTryAgain,
+    RemoveLoadImage,
+    ModalAlert,
+    ModalSucces,
+    FileName,
+    BufferUndefined,
+    showImgValidar,
+    Validado
   } = HookDashBoard(
     false,
     {
@@ -165,41 +170,6 @@ export default function Dashboard() {
     }
   }
 
-  // const hideComponent = (e) => {
-  //   return setInitialBc({ showHidebutton: e });
-  // };
-
-
-  // const unhideCharge = (e) => {
-  //   var neg = "";
-  //   if (e) {
-  //     neg = false;
-  //   } else {
-  //     neg = true;
-  //   }
-  //   return setInitialBc({ showHideCharge: e });
-  // };
-  // const hideFile = (e) => {
-  //   return setInitialBc({ showHideFile: e });
-  // };
-  // const hideProgresss = (e) => {
-  //   return setInitialBc({ showHideProgress: e });
-  // };
-
-  // const resetForm = () => {
-  //   setInitialBc({
-  //     Hash: "",
-  //     contract: null,
-  //     buffer: null,
-  //     web3: null,
-  //     account: null,
-  //     file: null,
-  //     showHidebutton: false,
-  //   });
-  //   setBuffer("");
-  //   setSm([]);
-  //   mycomision.setItem("payed", 0);
-  // };
 
   useEffect(() => {
     (async () => {
@@ -262,7 +232,7 @@ export default function Dashboard() {
           //   message: "!Advertencia!  cambia de red",
           // });
 
-          alertCahngeNetwork();
+          ModalAlert("!Advertencia!  cambia de red");
 
           return;
         }
@@ -274,7 +244,7 @@ export default function Dashboard() {
         setSm({ contr: contract, useraccount: useraccounts[0] });
       }
       mycomision.getItem("payed") == 1
-        ? payCommission()
+        ? ModalSucces("Ya se pagó la comision. Seleccione un Documento")
         : console.log("false");
     })();
   }, []);
@@ -284,103 +254,6 @@ export default function Dashboard() {
 const Validar = async(e) =>{
   return await valida(e,unhideCharge,Web3,wait,sameNetwork,initialBc,setInitialBc,addNetwork,ValidafySM,ipfs,setShowModal);
 }
-
-  // const Validar = async (event) => {
-  //   event.preventDefault();
-
-  //   ///browser detection
-  //   unhideCharge(true);
-  //   if (window.ethereum) {
-  //     window.web3 = new Web3(window.ethereum);
-
-  //     try {
-  //       //tratamos de cargar el documento que el usuario eligio
-  //       const file = event.target.files[0];
-  //       console.log(file);
-  //       if (file === undefined) {
-  //         window.location.reload();
-  //       }
-
-  //       if (!event.target.files) {
-  //         throw "no agrego ningun archivo";
-  //       }
-
-  //       //cambiar red
-
-  //       const web3 = window.web3;
-  //       const networkId = await web3.eth.net.getId();
-
-  //       if (!(await sameNetwork())) {
-  //         // window.alert('Error de red,Selecciona la red de BSC para seguir.')
-
-  //         setInitialBc({
-  //           ...initialBc,
-  //           show: true,
-  //           success: false,
-  //           message: "Selecciona la red e intentalo de nuevo",
-  //           disabled: true,
-  //         });
-
-  //         //se sale del bucle hasta que la red the metamask y la llave network en localstorage son identicas
-
-  //         while (!(await sameNetwork())) {
-  //           //espera 200 milisegundo para volver a llamar addNetwork evita que no se muestre el modal de metamask
-  //           wait(200);
-  //           await addNetwork(parseInt(localStorage.getItem("network"))).catch();
-  //         }
-  //         setInitialBc({
-  //           ...initialBc,
-  //           show: false,
-  //           showHideCharge: true,
-  //         });
-  //       }
-  //       //get the actual networkid or chainid
-  //       let ActualnetworkId = await window.ethereum.request({
-  //         method: "net_version",
-  //       });
-  //       // sm address
-  //       let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
-  //       //instantiate the contract object
-  //       let contract = new window.web3.eth.Contract(
-  //         ValidafySM.abi,
-  //         tokenNetworkData.address
-  //       );
-
-  //       //nos permite cargar el archivo
-  //       const reader = new window.FileReader();
-  //       reader.readAsArrayBuffer(file);
-  //       reader.onloadend = () => {
-  //         //obtener el hash de ipfs ,una vez que cargo el archivo
-  //         ipfs
-  //           .add(Buffer(reader.result), { onlyHash: true })
-  //           .then(async (result) => {
-  //             //comprobar si el hash se encuetra dentro de algun tokenuri
-  //             let ishashed = await contract.methods
-  //               .IsHashed(result[0].hash)
-  //               .call();
-  //             //console.log(result[0].hash);
-  //             let estado = "Documento no estampado";
-  //             if (ishashed) estado = "Documento Valido";
-  //             setShowModal({
-  //               ...initialBc,
-  //               show: true,
-  //               success: ishashed,
-  //               message: estado,
-  //             });
-
-  //             setInitialBc({ ...initialBc, namepdf: file.name, showImg: true });
-  //           });
-  //       };
-  //     } catch (err) {
-  //       //   window.alert(err.message || err);
-  //       return;
-  //     }
-  //   } else {
-  //     //no tiene metamask lo mandamos a la pagina oficial de descarga
-
-  //     window.open("https://metamask.io/download", "_blank");
-  //   }
-  // };
 
   const ValidarCaptura = async (event) => {
     event.preventDefault();
@@ -400,14 +273,7 @@ const Validar = async(e) =>{
         const web3 = window.web3;
         const networkId = await web3.eth.net.getId();
         if (!(await sameNetwork())) {
-          setInitialBc({
-            ...initialBc,
-            show: true,
-            success: false,
-            message: "Selecciona la red e intentalo de nuevo",
-            disabled: true,
-          });
-
+          SelectNetworkTryAgain();
           //se sale del bucle hasta que agregue la red
           let data = false;
           while (data != null) {
@@ -445,17 +311,8 @@ const Validar = async(e) =>{
                 .call();
               //console.log(result[0].hash);
               if (ishashed) {
-                setShowModal({
-                  ...initialBc,
-                  show: true,
-                  success: false,
-                  message: "!Error!.\nEl documento ya ha sido estampado",
-                });
-                setInitialBc({
-                  ...initialBc,
-                  namepdf: file.name,
-                  showImg: true,
-                });
+                ModalAlert("!Error!.\nEl documento ya ha sido estampado");
+                FileName(file.name);
                 // window.alert("El documento ya ha sido estampado");
                 unhideCharge(false);
                 hideFile(true);
@@ -512,17 +369,9 @@ const Validar = async(e) =>{
                     pinata.hashMetadata(result.ipfsHash, metadata).then((result) => {
                       //handle results here
                       console.log(result + " asqui");
-
-                      setShowModal({
-                        ...initialBc,
-                        show: true,
-                        success: true,
-                        message:
-                          "!Exito!. Se ha minado,el nuevo token esta en su cartera",
-                      });
-
+                      ModalSucces("!Exito!. Se ha minado,el nuevo token esta en su cartera");
                       //quitar la imagen de carga
-                      setInitialBc({ ...initialBc, showHideCharge: false });
+                      RemoveLoadImage();
                   }).catch((err) => {
                       //handle error here
                       console.log(err);
@@ -531,14 +380,8 @@ const Validar = async(e) =>{
                       })
                       .catch((err) => {
                         console.log(err);
-
-                        setShowModal({
-                          ...initialBc,
-                          show: true,
-                          success: false,
-                          message: err.stack,
-                        });
-                        setInitialBc({ ...initialBc, showHideCharge: false });
+                        ModalAlert(err.stack);
+                        RemoveLoadImage();
                       });
                     //
                   })
@@ -551,13 +394,8 @@ const Validar = async(e) =>{
         };
       } catch (err) {
         console.log(err);
-        setShowModal({
-          ...initialBc,
-          show: true,
-          success: false,
-          message: "!Hubo un error!.  ",
-        });
-        setInitialBc({ ...initialBc, showHideCharge: false });
+        ModalAlert("!Hubo un error!.  ");
+        RemoveLoadImage();
         // window.alert(err.message || err);
         return;
       }
@@ -599,7 +437,8 @@ const Validar = async(e) =>{
               //Se avanza el estado del estampado
               setprogress(100);
               setestadoProgress("Paso 6 de 6: Documento Estampado");
-              mycomision.setItem("payed", 0);
+              // mycomision
+              window.localStorage.setItem("payed", 0);
               //console.log(receipt);
               //console.log(result);
               resetForm();
@@ -609,13 +448,7 @@ const Validar = async(e) =>{
                 window.location.href = "/perfil";
               }, 8000);
               //window.location.href = "/perfil";
-              setShowModal({
-                ...initialBc,
-                show: true,
-                success: true,
-                message:
-                  "!Exito!. Se ha minado,el nuevo token esta en su cartera",
-              });
+              ModalSucces("!Exito!. Se ha minado,el nuevo token esta en su cartera");
               //se hizo correctamente la transaccion
               if (receipt.status) {
                 setIpfs(result[0].path);
@@ -623,13 +456,7 @@ const Validar = async(e) =>{
             })
             .catch((error) => {
               // window.alert("La trasacción ha sido cancelada");
-              setShowModal({
-                ...initialBc,
-                show: true,
-                success: false,
-                message:
-                  "!Error!. El estampado ha sido cancelado \n \n \npresione Estampar para continuar",
-              });
+              ModalAlert("!Error!. El estampado ha sido cancelado \n \n \npresione Estampar para continuar");
               hideComponent(true);
               window.onbeforeunload = function() {
                 return "¡No salir de esta ventana,se perderá la trasaccion!";
@@ -638,12 +465,7 @@ const Validar = async(e) =>{
             });
         })
         .catch((err) => {
-          setShowModal({
-            ...initialBc,
-            show: true,
-            success: false,
-            message: "!Error!. El estampado ha sido cancelado",
-          });
+          ModalAlert("!Error!. El estampado ha sido cancelado");
           window.alert("La trasacción ha sido cancelada");
           window.location.reload();
           console.log("err", err);
@@ -726,10 +548,7 @@ const Validar = async(e) =>{
                               onClick={(e) => {
                                 e.preventDefault();
                                 setOpenTab(1);
-                                setInitialBc({
-                                  ...initialBc,
-                                  buffer: undefined,
-                                });
+                                BufferUndefined();
                               }}
                               data-toggle="tab"
                               href="#link1"
@@ -750,10 +569,7 @@ const Validar = async(e) =>{
                               onClick={(e) => {
                                 e.preventDefault();
                                 setOpenTab(2);
-                                setInitialBc({
-                                  ...initialBc,
-                                  buffer: undefined,
-                                });
+                                BufferUndefined();
                               }}
                               role="tablist"
                             >
@@ -794,12 +610,7 @@ const Validar = async(e) =>{
                                         onChange={Validar}
                                         required
                                         onClick={() => {
-                                          setInitialBc({
-                                            ...initialBc,
-                                            Validado: "",
-                                            showImg: true,
-                                            Validar,
-                                          });
+                                          showImgValidar(Validar);
                                         }}
                                       />
                                     </label>
@@ -840,10 +651,7 @@ const Validar = async(e) =>{
                                       onChange={ValidarCaptura}
                                       required
                                       onClick={() => {
-                                        setInitialBc({
-                                          ...initialBc,
-                                          Validado: "",
-                                        });
+                                        Validado();
                                       }}
                                     />
                                   </label>

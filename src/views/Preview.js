@@ -37,7 +37,7 @@ export default function Preview (props) {
 
   useEffect(async() => {
     (
-      GetStampedData(
+      await GetStampedData(
         reset,
         setDateCreated,
         setOwner,

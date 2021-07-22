@@ -67,7 +67,7 @@ export default (
         // MY COMICION
         window.localStorage.setItem("payed", 0);
     }
-
+    
     const goToMetamask =() =>{
         setInitialBc({
             show: true,
@@ -77,22 +77,70 @@ export default (
         });
     }
 
-    const alertCahngeNetwork=() => {
+    const FileName = (file) =>{
+        setInitialBc({
+            ...initialBc,
+            namepdf: file,
+            showImg: true,
+          });
+    }
+
+
+    const ModalAlert = (menssage) =>{
         setShowModal({
             ...initialBc,
             show: true,
             success: false,
-            message: "!Advertencia!  cambia de red",
+            message: menssage,
         });
     }
-
-    const payCommission = () =>{
+    const ModalSucces = (menssage) =>{
         setShowModal({
             ...initialBc,
             show: true,
             success: true,
-            message: "Ya se pagó la comision. Seleccione un Documento",
+            message: menssage ///"Ya se pagó la comision. Seleccione un Documento",
         });
+    }
+
+
+
+    // NEW
+
+    const SelectNetworkTryAgain = () =>{
+        setInitialBc({
+            ...initialBc,
+            show: true,
+            success: false,
+            message: "Selecciona la red e intentalo de nuevo",
+            disabled: true,
+          });
+    }
+
+    const RemoveLoadImage = () =>{
+        setInitialBc({ ...initialBc, showHideCharge: false });
+    }
+    const BufferUndefined= () =>{
+        setInitialBc({
+            ...initialBc,
+            buffer: undefined,
+          });
+    }
+
+    const showImgValidar  = (Validar) => {
+        setInitialBc({
+            ...initialBc,
+            Validado: "",
+            showImg: true,
+            Validar,
+          })
+    }
+
+    const Validado = () =>{
+        setInitialBc({
+            ...initialBc,
+            Validado: "",
+          });
     }
 
 
@@ -128,8 +176,15 @@ export default (
         hideProgresss,
         resetForm,
         goToMetamask,
-        alertCahngeNetwork,
-        payCommission
+        SelectNetworkTryAgain,
+        RemoveLoadImage,
+
+        ModalAlert,
+        ModalSucces,
+        FileName,
+        BufferUndefined,
+        showImgValidar,
+        Validado
 
     }
 
