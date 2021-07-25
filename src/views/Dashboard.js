@@ -68,7 +68,10 @@ export default function Dashboard() {
     FileName,
     BufferUndefined,
     showImgValidar,
-    Validado
+    Validado,
+    AddInfoInitialBc,
+    AddInfoModal
+
   } = HookDashBoard(
     false,
     {
@@ -252,7 +255,7 @@ export default function Dashboard() {
 
 
 const Validar = async(e) =>{
-  return await valida(e,unhideCharge,Web3,wait,sameNetwork,initialBc,setInitialBc,addNetwork,ValidafySM,ipfs,setShowModal);
+  return await valida(e,unhideCharge,Web3,wait,sameNetwork,AddInfoInitialBc,AddInfoModal,addNetwork,ValidafySM,ipfs);
 }
 
   const ValidarCaptura = async (event) => {

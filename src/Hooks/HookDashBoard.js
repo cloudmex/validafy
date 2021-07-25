@@ -77,70 +77,94 @@ export default (
         });
     }
 
-    const FileName = (file) =>{
+    const AddInfoInitialBc = (obj = {}) => {
         setInitialBc({
             ...initialBc,
-            namepdf: file,
-            showImg: true,
+            ...obj
           });
     }
 
+    const AddInfoModal = (obj = {}) => {
+        setShowModal({
+            ...initialBc,
+            ...obj
+        });
+    }
+
+    const FileName = (file) =>{
+        AddInfoInitialBc(
+            {
+                namepdf: file,
+                showImg: true,
+            }
+        );
+    }
 
     const ModalAlert = (menssage) =>{
-        setShowModal({
-            ...initialBc,
-            show: true,
-            success: false,
-            message: menssage,
-        });
+        AddInfoModal(
+            {
+                show: true,
+                success: false,
+                message: menssage,
+            }
+        );
     }
     const ModalSucces = (menssage) =>{
-        setShowModal({
-            ...initialBc,
-            show: true,
-            success: true,
-            message: menssage ///"Ya se pagó la comision. Seleccione un Documento",
-        });
+        AddInfoModal(
+            {
+                show: true,
+                success: true,
+                message: menssage ///"Ya se pagó la comision. Seleccione un Documento",
+            }
+        );
     }
-
-
 
     // NEW
 
     const SelectNetworkTryAgain = () =>{
-        setInitialBc({
-            ...initialBc,
-            show: true,
-            success: false,
-            message: "Selecciona la red e intentalo de nuevo",
-            disabled: true,
-          });
+        AddInfoInitialBc(
+            {
+                show: true,
+                success: false,
+                message: "Selecciona la red e intentalo de nuevo",
+                disabled: true,
+            }
+        );
     }
 
     const RemoveLoadImage = () =>{
-        setInitialBc({ ...initialBc, showHideCharge: false });
+        AddInfoInitialBc(
+            {
+                showHideCharge: false 
+            }
+        );
+        
     }
     const BufferUndefined= () =>{
-        setInitialBc({
-            ...initialBc,
-            buffer: undefined,
-          });
+        AddInfoInitialBc(
+            {
+                buffer: undefined,
+            }
+        );
     }
 
     const showImgValidar  = (Validar) => {
-        setInitialBc({
-            ...initialBc,
-            Validado: "",
-            showImg: true,
-            Validar,
-          })
+        AddInfoInitialBc(
+            {
+                Validado: "",
+                showImg: true,
+                Validar
+            }
+        );
     }
 
     const Validado = () =>{
-        setInitialBc({
-            ...initialBc,
-            Validado: "",
-          });
+        AddInfoInitialBc(
+            {
+                Validado: "",
+            }
+        );
+
     }
 
 
@@ -184,7 +208,9 @@ export default (
         FileName,
         BufferUndefined,
         showImgValidar,
-        Validado
+        Validado,
+        AddInfoInitialBc,
+        AddInfoModal
 
     }
 

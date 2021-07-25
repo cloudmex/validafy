@@ -1,5 +1,5 @@
 import React, {useEffect } from "react";
- import GetStampedData from '../helpers/GetStampedData'
+ import {GetStampedData} from '../helpers/GetStampedData'
 
  import "../assets/css/pdfstyle.css";
  import { FillButton } from 'tailwind-react-ui';
@@ -36,9 +36,8 @@ export default function Preview (props) {
   
 
   useEffect(async() => {
-    (
-      await GetStampedData(
-        reset,
+    await GetStampedData(
+        reset, 
         setDateCreated,
         setOwner,
         setfilename,
@@ -47,7 +46,6 @@ export default function Preview (props) {
         setIpfsHash,
         setTxHash,
         props)
-    )();
   }, []);
 
   function getlink(e) {

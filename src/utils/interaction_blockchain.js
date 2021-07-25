@@ -47,16 +47,20 @@ export var nets;
  * @param {int} id es el chainid de la blockchain
  */
 
-export async function addNetwork(id) {
+export async function  addNetwork(id) {
   try {
      //obtener el arreglo con los datos de la red
   let networkData = nets[id];
-  if (!networkData) return "no existe esa red";
-  // agregar red o cambiar red
-  return window.ethereum.request({
-    method: "wallet_addEthereumChain",
-    params: networkData,
-  });
+  
+  if (!networkData) {
+    return "no existe esa red";
+  }else{
+    // agregar red o cambiar red
+    return window.ethereum.request({
+      method: "wallet_addEthereumChain",
+      params: networkData,
+    });
+  }
   } catch (error) {
     console.error(error);
   }
