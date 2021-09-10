@@ -424,7 +424,7 @@ export default function Dashboard() {
 
                     //Mint the Pinata Hash at the blockchain
                     sm.contr.methods
-                      .createItem(result.ipfsHash, `${new Date().getDate()}/${new Date().getMonth()+1}/${new Date().getFullYear()}`)
+                      .createItem(result.ipfsHash, `${new Date().getTime()}`)
                       .send({
                         from: sm.useraccount,
                         value: comision,

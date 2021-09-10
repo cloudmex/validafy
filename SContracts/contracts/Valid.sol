@@ -85,7 +85,7 @@ contract Valid is ERC721 {
         if (nTokens == 0) {
             return (new documentData[](nTokens));
         }
-        //arreglo con los documentos
+        //arreglo con los documentos 2
         documentData[] memory dochashes = new documentData[](nTokens);
         for (uint256 i = 0; i < nTokens; i++) {
             dochashes[i].hash = tokenURI(tokenOfOwnerByIndex(owner, i));
