@@ -90,7 +90,7 @@ contract Valid is ERC721 {
         for (uint256 i = 0; i < nTokens; i++) {
             dochashes[i].hash = tokenURI(tokenOfOwnerByIndex(owner, i));
             dochashes[i].tokenid = tokenOfOwnerByIndex(owner, i);
-            dochashes[i].data = metadata[i+1]._data;
+            dochashes[i].data = metadata[dochashes[i].tokenid]._data;
         }
         return (dochashes);
     }
