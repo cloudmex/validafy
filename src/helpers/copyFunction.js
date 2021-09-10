@@ -7,4 +7,3 @@
     document.execCommand('copy')
     textField.remove()
   }
-  v("euuu");

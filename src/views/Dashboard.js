@@ -424,13 +424,13 @@ export default function Dashboard() {
 
                     //Mint the Pinata Hash at the blockchain
                     sm.contr.methods
-                      .createItem(result.ipfsHash)
+                      .createItem(result.ipfsHash, `${new Date().getDate()}/${new Date().getMonth()+1}/${new Date().getFullYear()}`)
                       .send({
                         from: sm.useraccount,
                         value: comision,
                       })
                       .once("receipt", (receipt) => {
-                        console.log(receipt);
+                        console.log("resultado--> ",receipt);
 
                      
                         const metadata = {
@@ -438,12 +438,12 @@ export default function Dashboard() {
                           keyvalues: {
                             tokenid: receipt.events.Transfer.returnValues.tokenId,
                             owner: receipt.events.Transfer.returnValues.to,
-                            txHash:receipt.transactionHash,
+                            txHash: receipt.transactionHash,
                             explorer:getExplorerUrl()
                           }
                       };
                
-                   console.log(metadata);
+                   console.log("metadata--->  ",metadata);
                     pinata.hashMetadata(result.ipfsHash, metadata).then((result) => {
                       //handle results here
                       console.log(result + " asqui");

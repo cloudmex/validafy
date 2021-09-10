@@ -9,6 +9,9 @@ import validlogo from "../assets/img/validafy-logotipo.png";
 
 import { init,getExplorerUrl } from "../utils/interaction_blockchain";
 
+
+
+
 export default function Profile() {
   const [initialBc, setInitialBc] = useState({
     Hash: "",
@@ -25,7 +28,7 @@ export default function Profile() {
   const [Documents, setDocuments] = useState([]);
   const [Profile, setProfile] = useState([]);
   const [Modal, setShowModal] = React.useState({ show: false });
-
+  
   useEffect(() => {
     (async () => {
       unhideCharge(true);
@@ -55,6 +58,7 @@ export default function Profile() {
       });
 
       if (window.ethereum) {
+        
         window.web3 = new Web3(window.ethereum);
 
         //get the useraccounts
@@ -65,10 +69,11 @@ export default function Profile() {
         let ActualnetworkId = await window.ethereum.request({
           method: "net_version",
         });
-
+       
         // sm address
         let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
-
+        
+         
         if (!tokenNetworkData) {
           // window.alert("Ese smartcontract no se desplego en esta red");
           setShowModal({
@@ -77,52 +82,131 @@ export default function Profile() {
             success: false,
             message: "!Advertencia!  cambia de red",
           });
-
+          
           return;
         }
-
+        
         //instantiate the contract object
-
+        
         let contract = new window.web3.eth.Contract(
           ValidafySM.abi,
           tokenNetworkData.address
-        );
-        //obtenemos sus documentos
-        let tokensarr = await contract.methods
+          );
+          //obtenemos sus documentos
+          let tokensarr = await contract.methods
           .documentsOF(useraccounts[0])
           .call();
-        //get the owner of the contract
-        setProfile({
-          address: useraccounts,
-        });
-        //arreglo con todos los documentos
-        let documents = [];
-
-        //si no esta vacio agregamos todos los documentos al arreglo documents
-        if (tokensarr.length) {
-          for (let doc of tokensarr) {
-            //hash se refiere al ipfshash
-            documents.push({ hash: doc.hash, tokenid: doc.tokenid });
-          }
-
-          //obtenemos todas las transacciones de esos tokens
-          let eventos = await contract.getPastEvents("Transfer", {
-            filter: { tokenId: documents.map((x) => x.tokenid) },
-            fromBlock: 0,
-            toBlock: "latest",
+          //get the owner of the contract
+          setProfile({
+            address: useraccounts,
           });
+          //arreglo con todos los documentos
+          let documents = [];
+          
+          //si no esta vacio agregamos todos los documentos al arreglo documents
+          if (tokensarr.length) {
+            for (let doc of tokensarr) {
+              //hash se refiere al ipfshash
+              documents.push({ hash: doc.hash, tokenid: doc.tokenid, time: doc.data });
+            }
+            
+            console.log("estos son los documetos:  ",documents);
+            const options = {
+              filter: { tokenId: documents.map((x) => x.tokenid) },
+              fromBlock: 0,
+              toBlock: 5000,
+            }
+           
+            //obtenemos todas las transacciones de esos tokens
+            // let eventos = await contract.getPastEvents("allEvents", {
+            //   filter: { tokenId: documents.map((x) => x.tokenid) },
+            //   fromBlock: 12168656,
+            //   toBlock: 12168756,
+            //   // toBlock: "pending",
+            // });
 
-          //le agregamos a documents el time y el txhash
-          for (let i = 0; i < eventos.length; i++) {
-            let txhash = await window.ethereum.request({
-              method: "eth_getBlockByHash",
-              params: [eventos[i].blockHash, false],
+            // console.log( await window.web3.eth.getPastLogs("Transfer",
+            //   {
+            //     address: "0xe11999d339d7f3fb0b512beef4bced92133de289",
+            //     filter: { tokenId: documents.map((x) => x.tokenid) },
+            //     fromBlock: "12221557",
+            //     toBlock: "12221557",
+
+            //    }));
+            
+            // let algo = await window.ethereum.request({
+            //   method: "eth_getLogs",
+            // });
+
+            const totalBlocks = await window.web3.eth.getBlockNumber();
+            const desde = 9536913;
+            const diferencia = totalBlocks - 9536913;
+            const ciclos = parseInt((totalBlocks ) /5000);
+            const ciclosRestantes =  (totalBlocks) %5000;
+            // let eventos = [];
+            
+            console.log("ciclos ",ciclos, "cicla restantes ", ciclosRestantes);
+            let eventos = await contract.getPastEvents("Transfer", {
+              filter: { tokenId: documents.map((x) => x.tokenid) },
+              fromBlock: totalBlocks -5000,
+              toBlock: totalBlocks,
+              // toBlock: "pending",
             });
+            // console.log();
+            // for (let i = desde; i < totalBlocks; i+=5000) {
+
+            //   let arr = await contract.getPastEvents("Transfer", {
+            //     filter: { tokenId: documents.map((x) => x.tokenid) },
+            //     fromBlock: i,
+            //     toBlock: i+5000,
+            //     // toBlock: "pending",
+            //   });
+            //   for (let j = 0; j < arr.length; j++) {
+            //     eventos.push(arr[j]);
+            //   }
+            //   console.log("euu");
+            // }
+
+            // let eventos = await contract.getPastEvents("Transfer", {
+            //   filter: { tokenId: documents.map((x) => x.tokenid) },
+            //   fromBlock: ciclos*5000,
+            //   toBlock: totalBlocks,
+            //   // toBlock: "latest",
+            // });
+            // for (let j = 0; j < eventos.length; j++) {
+            //   hashes.push(eventos[j]);
+         
+            // }
+            console.log("todos lod odcumentos:    ",eventos);
+
+
+            // console.log('algo   ', await window.web3.eth.getBlockNumber());
+
+          //  await contract.events.Transfer(options)
+          //  .on('data', event => console.log(event))
+          //  .on('changed', changed => console.log(changed))
+          //  .on('error', err => console.error(err))
+          //  .on('connected', str => console.log(str))
+          
+
+          //  await contract.getPastEvents('Transfer', options)
+          //  .then(results => console.log("euuu ",results[0]))
+          //  .catch(err => console.error(err));
+
+            // console.log("identificador:    ");
+            
+            
+            //le agregamos a documents el time y el txhash
+            for (let i = 0; i < documents.length; i++) {
+              let txhash = await window.ethereum.request({
+                method: "eth_getBlockByHash",
+                params: [eventos[i].blockHash, false],
+              });
             documents[i] = {
               ...documents[i],
-              time: new Date(
-                parseInt(txhash.timestamp, 16) * 1000
-              ).toLocaleString(),
+              // time: new Date(
+              //   parseInt(txhash.timestamp, 16) * 1000
+              // ).toLocaleString(),
               txhash: eventos[i].transactionHash,
             };
           }
@@ -130,8 +214,8 @@ export default function Profile() {
 
         //le agregamos a documents el time y el txhash
 
-        console.log(documents);
-        setDocuments(documents);
+        console.log("comoasasdasd,",documents);
+        setDocuments( documents);
         unhideCharge(false);
       }
 

@@ -11,6 +11,7 @@ const pinata = pinataSDK(
 );
 
 
+
 export default function Preview (props) {
   
   const [IpfsHash, setIpfsHash] = useState("");
@@ -34,7 +35,6 @@ export default function Preview (props) {
   useEffect(async() => {
     (async () => {
 
- 
     
       try {
         if(typeof window.orientation!=="undefined"){
@@ -50,7 +50,7 @@ export default function Preview (props) {
           })
           .catch((err) => {
             //handle error here
-            console.log(err);
+            console.log(err,"este es el error");
           });
         /////
   
@@ -88,7 +88,7 @@ export default function Preview (props) {
                
             }).catch((err) => {
                 //handle error here
-                console.log(err);
+                console.log(err, "este es el rror");
             });
           
       } catch (error) {
@@ -122,7 +122,7 @@ export default function Preview (props) {
     console.log('text', text)
     var textField = document.createElement('textarea')
     textField.innerText = text
-    document.body.appendChild(textField)
+    document.head.appendChild(textField)
     textField.select()
     document.execCommand('copy')
     textField.remove()

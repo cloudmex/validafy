@@ -10,17 +10,28 @@ contract Valid is ERC721 {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
     address payable public ownerbalance;
+   
+    mapping(uint => Metadata) public metadata;
+    
+    struct Metadata {
+        string hash;
+        string _data;
+    }
 
-    function createItem(string calldata tokenURI) external payable {
+
+    function createItem(string calldata tokenURI, string calldata _data) external payable {
         _tokenIds.increment();
         _mint(msg.sender, _tokenIds.current());
         _setTokenURI(_tokenIds.current(), tokenURI);
+        metadata[_tokenIds.current()] = Metadata(tokenURI, _data);
     }
 
     struct documentData {
         string hash;
         uint256 tokenid;
+        string data;
     }
+
     modifier onlyOwner() {
         require(msg.sender == ownerbalance);
         _;
@@ -79,6 +90,7 @@ contract Valid is ERC721 {
         for (uint256 i = 0; i < nTokens; i++) {
             dochashes[i].hash = tokenURI(tokenOfOwnerByIndex(owner, i));
             dochashes[i].tokenid = tokenOfOwnerByIndex(owner, i);
+            dochashes[i].data = metadata[i+1]._data;
         }
         return (dochashes);
     }

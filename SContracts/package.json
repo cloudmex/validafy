@@ -10,7 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "@openzeppelin/contracts": "^3.4.0",
-    "@truffle/hdwallet-provider": "^1.2.2"
+    "@truffle/hdwallet-provider": "^1.2.2",
+    "eth-rpc-errors": "^4.0.3"
   },
   "devDependencies": {
     "hardhat": "^2.4.1"
