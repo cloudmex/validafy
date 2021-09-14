@@ -3,11 +3,15 @@ import ValidafySM from "../contracts/Valid.json";
 import Navbar from "../components/Navbar_landing_template";
 import Footer from "../components/Footer_landing_template";
 import {
+  init,
   addNetwork,
   isDeployed,
   wait,
   sameNetwork,
+  getExplorerUrl,
 } from "../utils/interaction_blockchain";
+
+import { acceptedFormats } from "../utils/constraints";
 
 export default function Landing() {
   /**
@@ -17,6 +21,7 @@ export default function Landing() {
     showImg: true,
     openTab: 1,
     show: false,
+    Validado: "",
   });
 
   /**
@@ -24,36 +29,49 @@ export default function Landing() {
    * @param {*} event tiene toda la informacion del input asociado
    * @returns  no regresa nada
    */
-
+  useEffect(() => {
+    //incializamos la app, si no tiene metamask lo mandamos a la pagina de descarga
+    if (!init()) {
+      setInitialBc({
+        show: true,
+        success: false,
+        message:
+          "No cuentas con metamask,te estamos redireccionando al sitio oficial para que procedas con la descarga",
+      });
+      setTimeout(() => {
+        window.location.replace("https://metamask.io/download");
+      }, 5000);
+    }
+  }, []);
   const Validar = async (event) => {
     ///browser detection
     event.preventDefault();
-    setInitialBc({ ...initialBc, showHideCharge: true });
+    setInitialBc({ ...initialBc, showHideCharge: true, showImg: false });
 
     try {
       //tratamos de cargar el documento que el usuario eligio
       const file = event.target.files[0];
-
+      if (file === undefined || !event.target.files) {
+        window.location.reload();
+      }
       //confirmamos que la red seleccionada y la
       if (!(await sameNetwork())) {
         setInitialBc({
           ...initialBc,
           show: true,
           success: false,
-          message: "Selecciona la red e intentalo de nuevo",
+          message: "Cambia de red",
           disabled: true,
         });
 
-        //se sale del bucle hasta que agregue la red
-        let data = false;
-        while (data != null) {
+        //se sale del bucle hasta que la red the metamask y la llave network en localstorage son identicas
+
+        while (!(await sameNetwork())) {
+          //espera 200 milisegundo para volver a llamar addNetwork evita que no se muestre el modal de metamask
           wait(200);
-          data = await addNetwork(
-            parseInt(localStorage.getItem("network"))
-          ).catch((err) => {
-            return err;
-          });
+          await addNetwork(parseInt(localStorage.getItem("network"))).catch();
         }
+
         setInitialBc({
           ...initialBc,
           show: false,
@@ -69,7 +87,6 @@ export default function Landing() {
         ValidafySM.abi,
         tokenNetworkData.address
       );
-
       //nos permite cargar el archivo
       const reader = new window.FileReader();
       reader.readAsArrayBuffer(file);
@@ -130,15 +147,13 @@ export default function Landing() {
               disabled: true,
             });
 
-            //se sale del bucle hasta que agregue la red
-            let data = false;
-            while (data != null) {
+            //se sale del bucle hasta que la red the metamask y la llave network en localstorage son identicas
+            while (!(await sameNetwork())) {
+              //espera 200 milisegundo para volver a llamar addNetwork evita que no se muestre el modal de metamask
               wait(200);
-              data = await addNetwork(
+              await addNetwork(
                 parseInt(localStorage.getItem("network"))
-              ).catch((err) => {
-                return err;
-              });
+              ).catch();
             }
 
             setInitialBc({
@@ -151,7 +166,7 @@ export default function Landing() {
 
             setTimeout(function() {
               window.location.href = "/dash";
-            }, 5000);
+            }, 3000);
           }
         } else {
           setInitialBc({
@@ -168,6 +183,7 @@ export default function Landing() {
       console.log("e");
     }
   }
+
   return (
     <>
       <Navbar transparent />
@@ -361,13 +377,15 @@ export default function Landing() {
                             <input
                               type="file"
                               className="hidden"
-                              accept=".pdf"
+                              accept={acceptedFormats}
                               onChange={Validar}
                               required
                               onClick={() => {
                                 setInitialBc({
                                   ...initialBc,
-                                  showImg: !initialBc.showImg,
+                                  Validado: "",
+                                  showImg: true,
+                                  Validar,
                                 });
                               }}
                             />

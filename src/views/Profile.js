@@ -1,11 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import Web3 from "web3";
-
 import Navbar from "../components/Navbar_landing_template";
 import Footer from "../components/Footer_landing_template";
 import ValidafySM from "../contracts/Valid.json";
 import Sidebar from "../components/Sidebar.js";
 import validlogo from "../assets/img/validafy-logotipo.png";
+
+import { init,getExplorerUrl } from "../utils/interaction_blockchain";
+
+
+
 
 export default function Profile() {
   const [initialBc, setInitialBc] = useState({
@@ -23,11 +27,26 @@ export default function Profile() {
   const [Documents, setDocuments] = useState([]);
   const [Profile, setProfile] = useState([]);
   const [Modal, setShowModal] = React.useState({ show: false });
-
+  
   useEffect(() => {
     (async () => {
       unhideCharge(true);
-
+     try {
+      if (!init()) {
+        setInitialBc({
+          show: true,
+          success: false,
+          message:
+            "No cuentas con metamask,te estamos redireccionando al sitio oficial para que procedas con la descarga",
+        });
+        setTimeout(() => {
+          window.location.replace("https://metamask.io/download");
+        }, 5000);
+      }
+     } catch (error) {
+       
+     }
+     try {
       window.ethereum._metamask.isUnlocked().then(function(value) {
         if (value) {
           console.log("Abierto");
@@ -38,6 +57,7 @@ export default function Profile() {
       });
 
       if (window.ethereum) {
+        
         window.web3 = new Web3(window.ethereum);
 
         //get the useraccounts
@@ -48,10 +68,11 @@ export default function Profile() {
         let ActualnetworkId = await window.ethereum.request({
           method: "net_version",
         });
-
+       
         // sm address
         let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
-
+        
+         
         if (!tokenNetworkData) {
           // window.alert("Ese smartcontract no se desplego en esta red");
           setShowModal({
@@ -60,66 +81,156 @@ export default function Profile() {
             success: false,
             message: "!Advertencia!  cambia de red",
           });
-
+          
           return;
         }
-
+        
         //instantiate the contract object
-
+        
         let contract = new window.web3.eth.Contract(
           ValidafySM.abi,
           tokenNetworkData.address
-        );
-        //obtenemos sus documentos
-        let tokensarr = await contract.methods
+          );
+          //obtenemos sus documentos
+          let tokensarr = await contract.methods
           .documentsOF(useraccounts[0])
           .call();
-        //get the owner of the contract
-        setProfile({
-          address: useraccounts,
-        });
-        //arreglo con todos los documentos
-        let documents = [];
-
-        //si no esta vacio agregamos todos los documentos al arreglo documents
-        if (tokensarr.length) {
-          for (let doc of tokensarr) {
-            //hash se refiere al ipfshash
-            documents.push({ hash: doc.hash, tokenid: doc.tokenid });
-          }
-
-          //obtenemos todas las transacciones de esos tokens
-          let eventos = await contract.getPastEvents("Transfer", {
-            filter: { tokenId: documents.map((x) => x.tokenid) },
-            fromBlock: 0,
-            toBlock: "latest",
+          //get the owner of the contract
+          setProfile({
+            address: useraccounts,
           });
+          //arreglo con todos los documentos
+          let documents = [];
+          
+          //si no esta vacio agregamos todos los documentos al arreglo documents
+          if (tokensarr.length) {
+            for (let doc of tokensarr) {
+              //hash se refiere al ipfshash
+              documents.push({ 
+                hash: doc.hash, 
+                tokenid: doc.tokenid, 
+                time: doc._date,
+                owner:doc._owner,
+                fileName:doc._fileName,
+                explorerUrl:doc._explorerUrl,
+                blockhash:doc._blockhash,
+                blocknumber:doc._blocknumber
+              });
+            }
+            
+            console.log("estos son los documetos:  ",documents);
+          
+           
+            //obtenemos todas las transacciones de esos tokens
+            
 
-          //le agregamos a documents el time y el txhash
-          for (let i = 0; i < eventos.length; i++) {
-            let txhash = await window.ethereum.request({
-              method: "eth_getBlockByHash",
-              params: [eventos[i].blockHash, false],
-            });
+
+            // const totalBlocks = await window.web3.eth.getBlockNumber();
+            // const desde = 9536913;
+            // const diferencia = totalBlocks - 9536913;
+            // const ciclos = parseInt((totalBlocks ) /5000);
+            // const ciclosRestantes =  (totalBlocks) %5000;
+            // let eventos = [];
+            
+            // console.log("ciclos ",ciclos, "cicla restantes ", ciclosRestantes);
+            // let eventos = await contract.getPastEvents("Transfer", {
+            //   filter: { tokenId: documents.map((x) => x.tokenid) },
+            //   fromBlock: totalBlocks -5000,
+            //   toBlock: totalBlocks,
+            //   // toBlock: "pending",
+            // });
+
+            // let eventos = await contract.getPastEvents("Transfer", {
+            //   filter: { tokenId: documents.map((x) => x.tokenid) },
+            //   fromBlock: 0,
+            //   toBlock: "latest",
+            // });
+
+            // console.log();
+            // let eventos = [];
+            // for (let i = desde; i < totalBlocks; i+=5000) {
+
+            //   let arr = await contract.getPastEvents("Transfer", {
+            //     filter: { tokenId: documents.map((x) => x.tokenid) },
+            //     fromBlock: i,
+            //     toBlock: i+5000,
+            //     // toBlock: "pending",
+            //   });
+            //   for (let j = 0; j < arr.length; j++) {
+            //     eventos.push(arr[j]);
+            //   }
+            //   console.log("euu");
+            // }
+
+            // let eventos = await contract.getPastEvents("Transfer", {
+            //   filter: { tokenId: documents.map((x) => x.tokenid) },
+            //   fromBlock: ciclos*5000,
+            //   toBlock: totalBlocks,
+            //   // toBlock: "latest",
+            // });
+            // for (let j = 0; j < eventos.length; j++) {
+            //   hashes.push(eventos[j]);
+         
+            // }
+            // console.log("todos lod odcumentos:    ",eventos);
+            const getDate = (num) =>{
+              const date = new Date(num*1000);
+              const normal = (v) =>{
+                return v < 10 ? `0${v}` : v;
+              }
+
+              const day = normal(date.getDate());
+              const month = normal(date.getMonth()+1);
+              const year = normal(date.getUTCFullYear());
+
+              const h = normal(date.getHours());
+              const m = normal(date.getMinutes());
+
+            return `${day}/${month}/${year} - ${h}:${m}`;
+
+            }
+
+
+            const filter = documents.map(x => x.tokenid);
+            const getPastEvents = (i) => {
+              
+                return contract.getPastEvents("Transfer", {
+                  filter: { tokenId: documents[i].tokenid },
+                  fromBlock: documents[i].blocknumber,
+                  toBlock: documents[i].blocknumber,
+                  // toBlock: "latest",
+                });
+            }
+
+
+          
+
+            //le agregamos a documents el time y el txhash
+            for (let i = 0; i < documents.length; i++) {
+              let event = await getPastEvents(i);
+              
             documents[i] = {
               ...documents[i],
-              time: new Date(
-                parseInt(txhash.timestamp, 16) * 1000
-              ).toLocaleString(),
-              txhash: eventos[i].transactionHash,
+              time: getDate(documents[i].time),
+              txhash: event[0].transactionHash
             };
           }
         }
 
         //le agregamos a documents el time y el txhash
 
-        console.log(documents);
-        setDocuments(documents);
+        console.log("comoasasdasd,",documents);
+        setDocuments( documents);
         unhideCharge(false);
       }
 
       console.log(window.ethereum);
-    })();
+  
+    } catch (error) {
+      console.log(error);
+    }
+    
+       })();
   }, []);
   /*
   var today = new Date(),
@@ -248,6 +359,7 @@ export default function Profile() {
                               <th className=" text-white  py-4"> IpfsHash</th>
                               <th className="text-white py-4">TxHash</th>
                               <th className="text-white  py-4">TimeStamp</th>
+                              <th className="text-white  py-4">Detalle</th>
                             </tr>
                           </thead>
                           <tbody className="text-base py-3 bg-pink-200">
@@ -266,16 +378,23 @@ export default function Profile() {
                                 <td className="">
                                   <a
                                     className="a-link "
-                                    href={
-                                      "https://testnet.bscscan.com/tx/" +
-                                      doc.txhash
-                                    }
+                                    href={getExplorerUrl() + doc.txhash}
                                     target="_blank"
                                   >
                                     {doc.txhash.substring(0, 25) + " ..."}
                                   </a>
                                 </td>
                                 <td className=" ">{doc.time}</td>
+                                <td>
+                                <a
+                                    className="a-link "
+                                    href={`./preview/${doc.hash}`}
+                                    target="_blank"
+                                     
+                                  >
+                                   <i className="fa fa-info-circle">  </i>
+                                  </a>
+                                </td>
                               </tr>
                             ))}
                           </tbody>

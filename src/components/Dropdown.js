@@ -1,6 +1,12 @@
 import React from "react";
 import { createPopper } from "@popperjs/core";
-import { addNetwork,isDeployed, wait, sameNetwork } from "../utils/interaction_blockchain";
+import {
+  addNetwork,
+  isDeployed,
+  getNetworkName,
+  sameNetwork,
+  wait,
+} from "../utils/interaction_blockchain";
 
 const Dropdown = ({ color }) => {
   // dropdown props
@@ -9,13 +15,23 @@ const Dropdown = ({ color }) => {
   const popoverDropdownRef = React.createRef();
   const openDropdownPopover = () => {
     createPopper(btnDropdownRef.current, popoverDropdownRef.current, {
-      placement: "top-end"
+      placement: "top-end",
     });
     setDropdownPopoverShow(true);
   };
   const closeDropdownPopover = () => {
     setDropdownPopoverShow(false);
   };
+  async function changeNet(id) {
+    //se sale del bucle hasta que la red the metamask y la llave network en localstorage son identicas
+    localStorage.setItem("network", id);
+    while (!(await sameNetwork())) {
+      //espera 200 milisegundo para volver a llamar addNetwork evita que no se muestre el modal de metamask
+      wait(200);
+      await addNetwork(id).catch();
+    }
+    window.location.reload();
+  }
   // bg colors
   let bgColor;
   color === "pink"
@@ -29,7 +45,7 @@ const Dropdown = ({ color }) => {
             <button
               className={
                 "text-white font-bold  uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg   focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 " +
-                bgColor 
+                bgColor
               }
               type="button"
               ref={btnDropdownRef}
@@ -39,36 +55,41 @@ const Dropdown = ({ color }) => {
                   : openDropdownPopover();
               }}
             >
-             <i className="fa fa-caret-down opacity-75 uppercase mr-2 text-md"></i>{" "}
+              {getNetworkName()}
+              <i className="fa fa-caret-down opacity-75 uppercase mr-2 text-md"></i>
             </button>
             <div
               ref={popoverDropdownRef}
               className={
                 (dropdownPopoverShow ? "block " : "hidden ") +
-                 
                 "text-base bg-pink-500 z-50 float-left py-2 list-none text-left rounded shadow-lg mb-1"
               }
               style={{ minWidth: "12rem" }}
             >
               <a
-                
                 className={
-                  "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-white"  
+                  "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-white"
                 }
-                onClick={() => {addNetwork(97);closeDropdownPopover(); console.log(isDeployed()); }}
+                onClick={async () => {
+                  await changeNet(97);
+                  closeDropdownPopover();
+                  console.log(isDeployed());
+                }}
               >
                 Binance Smart Chain -Testnet
               </a>
               <div className="h-0 my-2 border border-solid border-t-0 border-blueGray-800 opacity-25" />
               <a
-                
                 className={
                   "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap   " +
                   (color === "white" ? " text-blueGray-700" : "text-white")
                 }
-                onClick={() => {addNetwork(56);closeDropdownPopover();  }}
+                onClick={() => {
+                  changeNet(56);
+                  closeDropdownPopover();
+                }}
               >
-                 Binance Smart Chain -Mainnet
+                Binance Smart Chain -Mainnet
               </a>
               <div className="h-0 my-2 border border-solid border-t-0 border-blueGray-800 opacity-25" />
               <a
@@ -77,20 +98,15 @@ const Dropdown = ({ color }) => {
                   "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap   " +
                   (color === "white" ? " text-blueGray-700" : "text-white")
                 }
-                onClick={e => e.preventDefault()}
+                onClick={(e) => e.preventDefault()}
               >
                 NEAR-Mainnet (Soon)
               </a>
-             
-               
-            
             </div>
           </div>
         </div>
       </div>
     </>
   );
-}
- export default Dropdown;
-
- 
+};
+export default Dropdown;

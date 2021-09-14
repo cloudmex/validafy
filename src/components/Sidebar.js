@@ -2,11 +2,11 @@ import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import validlogo from "../assets/img/validafy.png";
 import NotificationDropdown from "./NotificationDropdown.js";
-import  Dropdown from "./Dropdown.js";
+import Dropdown from "./Dropdown.js";
 import UserDropdown from "./UserDropdown.js";
 import Web3 from "web3";
 import ValidafySM from "../contracts/Valid.json";
-import { addNetwork,isDeployed, wait, sameNetwork } from "../utils/interaction_blockchain";
+import { addNetwork, isDeployed } from "../utils/interaction_blockchain";
 
 export default function Sidebar() {
   const [collapseShow, setCollapseShow] = React.useState("hidden");
@@ -14,10 +14,13 @@ export default function Sidebar() {
   const [redtext, setRedtext] = React.useState();
 
   let ActualnetworkId;
-  let contract ;
+  let contract;
   useEffect(() => {
     (async () => {
-      console.log("is");
+       //instantiate the contract object
+   
+      try {
+        console.log("is");
       console.log(await isDeployed());
       //get the useraccounts
       let useraccounts = await window.ethereum.request({
@@ -31,33 +34,25 @@ export default function Sidebar() {
       // sm address
       let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
 
-      //instantiate the contract object
-     try {
       window.web3 = new Web3(window.ethereum);
        contract = new window.web3.eth.Contract(
         ValidafySM.abi,
-        tokenNetworkData.address
-      );
-     } catch (error) {
-       console.error(error)
-     }
+        tokenNetworkData.address);
+
+        setSidebar({
+          smOwner:
+            useraccounts[0] == (await contract.methods.ownerbalance.call().call())
+              ? true
+              : false,
+        });
+      } catch (error) {
+        console.error(error)
+      }
       
-try {
-  setSidebar({
-    smOwner:
-      useraccounts[0] == (await contract.methods.ownerbalance.call().call())
-        ? true
-        : false,
-  });
-} catch (error) {
-  console.error(error)
-}
-      
+   
 
     })();
   }, []);
-  
-  
   return (
     <>
       <nav className="md:left-0 md:block md:fixed md:top-0 md:bottom-0 md:overflow-y-auto md:flex-row md:flex-nowrap md:overflow-hidden shadow-xl bg-white flex flex-wrap items-center justify-between relative md:w-64 z-10 py-4 px-6">
@@ -147,9 +142,11 @@ try {
             <hr className="my-4 md:min-w-full" />
             <ul className=" inline-flex md:flex-col md:min-w-full   ">
               <li className="items-center">
-              <a  className="text-blueGray-700 hover:text-pink-600 text-md uppercase py-3 font-bold block"  >{redtext} </a>
-              <Dropdown color="pink" />
-              </li>        
+                <a className="text-blueGray-700 hover:text-pink-600 text-md uppercase py-3 font-bold block">
+                  {redtext}{" "}
+                </a>
+                <Dropdown color="pink" />
+              </li>
             </ul>
             {/* Heading */}
           </div>
