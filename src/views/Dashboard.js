@@ -417,22 +417,7 @@ export default function Dashboard() {
                   },
                 };
 
-                const getDate = (num) =>{
-                  const date = new Date(num);
-                  const normal = (v) =>{
-                    return v < 10 ? `0${v}` : v;
-                  }
-  
-                  const day = normal(date.getDate());
-                  const month = normal(date.getMonth()+1);
-                  const year = normal(date.getUTCFullYear());
-  
-                  const h = normal(date.getHours());
-                  const m = normal(date.getMinutes());
-  
-                return `${day}/${month}/${year} - ${h}:${m}`;
-  
-                }
+                
 
                 //Adds a hash to Pinata's pin queue to be pinned asynchronously
                 pinata

@@ -212,7 +212,6 @@ export default function Profile() {
             documents[i] = {
               ...documents[i],
               time: getDate(documents[i].time),
-             
               txhash: event[0].transactionHash
             };
           }
