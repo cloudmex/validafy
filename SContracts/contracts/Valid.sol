@@ -10,17 +10,46 @@ contract Valid is ERC721 {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
     address payable public ownerbalance;
+   
+    mapping(uint => Metadata) public metadata;
+    
+    struct Metadata {
+        string hash;
+        uint _date;
+        address _owner;
+        bytes32 _blockhash;
+        string _fileName;
+        string _explorerUrl;
+        uint _blocknumber;
+    }
 
-    function createItem(string calldata tokenURI) external payable {
+
+    function createItem(string calldata tokenURI, string calldata fileName, string calldata explorerUrl) external payable {
         _tokenIds.increment();
         _mint(msg.sender, _tokenIds.current());
         _setTokenURI(_tokenIds.current(), tokenURI);
+        metadata[_tokenIds.current()] = Metadata(
+            tokenURI, //hash
+            now, // time
+            ownerbalance, // owner
+            blockhash(0), 
+            fileName, 
+            explorerUrl, 
+            block.number
+            );
     }
 
     struct documentData {
         string hash;
         uint256 tokenid;
+        uint _date;
+        address _owner;
+        bytes32 _blockhash;
+        string _fileName;
+        string _explorerUrl;
+        uint _blocknumber;
     }
+
     modifier onlyOwner() {
         require(msg.sender == ownerbalance);
         _;
@@ -74,11 +103,18 @@ contract Valid is ERC721 {
         if (nTokens == 0) {
             return (new documentData[](nTokens));
         }
-        //arreglo con los documentos
+        //arreglo con los documentos 2
         documentData[] memory dochashes = new documentData[](nTokens);
         for (uint256 i = 0; i < nTokens; i++) {
             dochashes[i].hash = tokenURI(tokenOfOwnerByIndex(owner, i));
             dochashes[i].tokenid = tokenOfOwnerByIndex(owner, i);
+
+            dochashes[i]._date = metadata[dochashes[i].tokenid]._date;
+            dochashes[i]._owner = metadata[dochashes[i].tokenid]._owner;
+            dochashes[i]._fileName = metadata[dochashes[i].tokenid]._fileName;
+            dochashes[i]._explorerUrl = metadata[dochashes[i].tokenid]._explorerUrl;
+            dochashes[i]._blockhash = metadata[dochashes[i].tokenid]._blockhash;
+            dochashes[i]._blocknumber = metadata[dochashes[i].tokenid]._blocknumber;
         }
         return (dochashes);
     }

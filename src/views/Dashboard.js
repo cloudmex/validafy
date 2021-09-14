@@ -27,6 +27,7 @@ const pinata = pinataSDK(
 );
 
 export default function Dashboard() {
+  
   const [open, setOpen] = useState(false);
 
   const cancelButtonRef = useRef();
@@ -415,6 +416,9 @@ export default function Dashboard() {
                    
                   },
                 };
+
+                
+
                 //Adds a hash to Pinata's pin queue to be pinned asynchronously
                 pinata
                   .pinByHash(result[0].hash, options)
@@ -424,13 +428,17 @@ export default function Dashboard() {
 
                     //Mint the Pinata Hash at the blockchain
                     sm.contr.methods
-                      .createItem(result.ipfsHash)
+                      .createItem(
+                        result.ipfsHash, 
+                        file.name,
+                        getExplorerUrl()
+                        )
                       .send({
                         from: sm.useraccount,
                         value: comision,
                       })
                       .once("receipt", (receipt) => {
-                        console.log(receipt);
+                        console.log("resultado--> ",receipt);
 
                      
                         const metadata = {
@@ -438,12 +446,12 @@ export default function Dashboard() {
                           keyvalues: {
                             tokenid: receipt.events.Transfer.returnValues.tokenId,
                             owner: receipt.events.Transfer.returnValues.to,
-                            txHash:receipt.transactionHash,
+                            txHash: receipt.transactionHash,
                             explorer:getExplorerUrl()
                           }
                       };
                
-                   console.log(metadata);
+                   console.log("metadata--->  ",metadata);
                     pinata.hashMetadata(result.ipfsHash, metadata).then((result) => {
                       //handle results here
                       console.log(result + " asqui");
@@ -456,7 +464,7 @@ export default function Dashboard() {
                           "!Exito!. Se ha minado,el nuevo token esta en su cartera",
                       });
 
-                      //quitar la imagen de carga
+                  //     //quitar la imagen de carga
                       setInitialBc({ ...initialBc, showHideCharge: false });
                   }).catch((err) => {
                       //handle error here
