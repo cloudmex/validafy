@@ -27,6 +27,7 @@ const pinata = pinataSDK(
 );
 
 export default function Dashboard() {
+  
   const [open, setOpen] = useState(false);
 
   const cancelButtonRef = useRef();
@@ -415,6 +416,24 @@ export default function Dashboard() {
                    
                   },
                 };
+
+                const getDate = (num) =>{
+                  const date = new Date(num);
+                  const normal = (v) =>{
+                    return v < 10 ? `0${v}` : v;
+                  }
+  
+                  const day = normal(date.getDate());
+                  const month = normal(date.getMonth()+1);
+                  const year = normal(date.getUTCFullYear());
+  
+                  const h = normal(date.getHours());
+                  const m = normal(date.getMinutes());
+  
+                return `${day}/${month}/${year} - ${h}:${m}`;
+  
+                }
+
                 //Adds a hash to Pinata's pin queue to be pinned asynchronously
                 pinata
                   .pinByHash(result[0].hash, options)
@@ -424,7 +443,11 @@ export default function Dashboard() {
 
                     //Mint the Pinata Hash at the blockchain
                     sm.contr.methods
-                      .createItem(result.ipfsHash, `${new Date().getTime()}`)
+                      .createItem(
+                        result.ipfsHash, 
+                        file.name,
+                        getExplorerUrl()
+                        )
                       .send({
                         from: sm.useraccount,
                         value: comision,
@@ -456,7 +479,7 @@ export default function Dashboard() {
                           "!Exito!. Se ha minado,el nuevo token esta en su cartera",
                       });
 
-                      //quitar la imagen de carga
+                  //     //quitar la imagen de carga
                       setInitialBc({ ...initialBc, showHideCharge: false });
                   }).catch((err) => {
                       //handle error here

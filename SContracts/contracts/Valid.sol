@@ -15,21 +15,39 @@ contract Valid is ERC721 {
     
     struct Metadata {
         string hash;
-        string _data;
+        uint _date;
+        address _owner;
+        bytes32 _blockhash;
+        string _fileName;
+        string _explorerUrl;
+        uint _blocknumber;
     }
 
 
-    function createItem(string calldata tokenURI, string calldata _data) external payable {
+    function createItem(string calldata tokenURI, string calldata fileName, string calldata explorerUrl) external payable {
         _tokenIds.increment();
         _mint(msg.sender, _tokenIds.current());
         _setTokenURI(_tokenIds.current(), tokenURI);
-        metadata[_tokenIds.current()] = Metadata(tokenURI, _data);
+        metadata[_tokenIds.current()] = Metadata(
+            tokenURI, //hash
+            now, // time
+            ownerbalance, // owner
+            blockhash(0), 
+            fileName, 
+            explorerUrl, 
+            block.number
+            );
     }
 
     struct documentData {
         string hash;
         uint256 tokenid;
-        string data;
+        uint _date;
+        address _owner;
+        bytes32 _blockhash;
+        string _fileName;
+        string _explorerUrl;
+        uint _blocknumber;
     }
 
     modifier onlyOwner() {
@@ -90,7 +108,13 @@ contract Valid is ERC721 {
         for (uint256 i = 0; i < nTokens; i++) {
             dochashes[i].hash = tokenURI(tokenOfOwnerByIndex(owner, i));
             dochashes[i].tokenid = tokenOfOwnerByIndex(owner, i);
-            dochashes[i].data = metadata[dochashes[i].tokenid]._data;
+
+            dochashes[i]._date = metadata[dochashes[i].tokenid]._date;
+            dochashes[i]._owner = metadata[dochashes[i].tokenid]._owner;
+            dochashes[i]._fileName = metadata[dochashes[i].tokenid]._fileName;
+            dochashes[i]._explorerUrl = metadata[dochashes[i].tokenid]._explorerUrl;
+            dochashes[i]._blockhash = metadata[dochashes[i].tokenid]._blockhash;
+            dochashes[i]._blocknumber = metadata[dochashes[i].tokenid]._blocknumber;
         }
         return (dochashes);
     }

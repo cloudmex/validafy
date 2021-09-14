@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import Web3 from "web3";
-
 import Navbar from "../components/Navbar_landing_template";
 import Footer from "../components/Footer_landing_template";
 import ValidafySM from "../contracts/Valid.json";
@@ -107,52 +106,48 @@ export default function Profile() {
           if (tokensarr.length) {
             for (let doc of tokensarr) {
               //hash se refiere al ipfshash
-              documents.push({ hash: doc.hash, tokenid: doc.tokenid, time: doc.data });
+              documents.push({ 
+                hash: doc.hash, 
+                tokenid: doc.tokenid, 
+                time: doc._date,
+                owner:doc._owner,
+                fileName:doc._fileName,
+                explorerUrl:doc._explorerUrl,
+                blockhash:doc._blockhash,
+                blocknumber:doc._blocknumber
+              });
             }
             
             console.log("estos son los documetos:  ",documents);
-            const options = {
-              filter: { tokenId: documents.map((x) => x.tokenid) },
-              fromBlock: 0,
-              toBlock: 5000,
-            }
+          
            
             //obtenemos todas las transacciones de esos tokens
-            // let eventos = await contract.getPastEvents("allEvents", {
+            
+
+
+            // const totalBlocks = await window.web3.eth.getBlockNumber();
+            // const desde = 9536913;
+            // const diferencia = totalBlocks - 9536913;
+            // const ciclos = parseInt((totalBlocks ) /5000);
+            // const ciclosRestantes =  (totalBlocks) %5000;
+            // let eventos = [];
+            
+            // console.log("ciclos ",ciclos, "cicla restantes ", ciclosRestantes);
+            // let eventos = await contract.getPastEvents("Transfer", {
             //   filter: { tokenId: documents.map((x) => x.tokenid) },
-            //   fromBlock: 12168656,
-            //   toBlock: 12168756,
+            //   fromBlock: totalBlocks -5000,
+            //   toBlock: totalBlocks,
             //   // toBlock: "pending",
             // });
 
-            // console.log( await window.web3.eth.getPastLogs("Transfer",
-            //   {
-            //     address: "0xe11999d339d7f3fb0b512beef4bced92133de289",
-            //     filter: { tokenId: documents.map((x) => x.tokenid) },
-            //     fromBlock: "12221557",
-            //     toBlock: "12221557",
-
-            //    }));
-            
-            // let algo = await window.ethereum.request({
-            //   method: "eth_getLogs",
+            // let eventos = await contract.getPastEvents("Transfer", {
+            //   filter: { tokenId: documents.map((x) => x.tokenid) },
+            //   fromBlock: 0,
+            //   toBlock: "latest",
             // });
 
-            const totalBlocks = await window.web3.eth.getBlockNumber();
-            const desde = 9536913;
-            const diferencia = totalBlocks - 9536913;
-            const ciclos = parseInt((totalBlocks ) /5000);
-            const ciclosRestantes =  (totalBlocks) %5000;
-            // let eventos = [];
-            
-            console.log("ciclos ",ciclos, "cicla restantes ", ciclosRestantes);
-            let eventos = await contract.getPastEvents("Transfer", {
-              filter: { tokenId: documents.map((x) => x.tokenid) },
-              fromBlock: totalBlocks -5000,
-              toBlock: totalBlocks,
-              // toBlock: "pending",
-            });
             // console.log();
+            // let eventos = [];
             // for (let i = desde; i < totalBlocks; i+=5000) {
 
             //   let arr = await contract.getPastEvents("Transfer", {
@@ -177,37 +172,48 @@ export default function Profile() {
             //   hashes.push(eventos[j]);
          
             // }
-            console.log("todos lod odcumentos:    ",eventos);
+            // console.log("todos lod odcumentos:    ",eventos);
+            const getDate = (num) =>{
+              const date = new Date(num*1000);
+              const normal = (v) =>{
+                return v < 10 ? `0${v}` : v;
+              }
+
+              const day = normal(date.getDate());
+              const month = normal(date.getMonth()+1);
+              const year = normal(date.getUTCFullYear());
+
+              const h = normal(date.getHours());
+              const m = normal(date.getMinutes());
+
+            return `${day}/${month}/${year} - ${h}:${m}`;
+
+            }
 
 
-            // console.log('algo   ', await window.web3.eth.getBlockNumber());
+            const filter = documents.map(x => x.tokenid);
+            const getPastEvents = (i) => {
+              
+                return contract.getPastEvents("Transfer", {
+                  filter: { tokenId: documents[i].tokenid },
+                  fromBlock: documents[i].blocknumber,
+                  toBlock: documents[i].blocknumber,
+                  // toBlock: "latest",
+                });
+            }
 
-          //  await contract.events.Transfer(options)
-          //  .on('data', event => console.log(event))
-          //  .on('changed', changed => console.log(changed))
-          //  .on('error', err => console.error(err))
-          //  .on('connected', str => console.log(str))
+
           
 
-          //  await contract.getPastEvents('Transfer', options)
-          //  .then(results => console.log("euuu ",results[0]))
-          //  .catch(err => console.error(err));
-
-            // console.log("identificador:    ");
-            
-            
             //le agregamos a documents el time y el txhash
             for (let i = 0; i < documents.length; i++) {
-              let txhash = await window.ethereum.request({
-                method: "eth_getBlockByHash",
-                params: [eventos[i].blockHash, false],
-              });
+              let event = await getPastEvents(i);
+              
             documents[i] = {
               ...documents[i],
-              // time: new Date(
-              //   parseInt(txhash.timestamp, 16) * 1000
-              // ).toLocaleString(),
-              txhash: eventos[i].transactionHash,
+              time: getDate(documents[i].time),
+             
+              txhash: event[0].transactionHash
             };
           }
         }
