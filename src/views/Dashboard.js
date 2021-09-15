@@ -701,7 +701,7 @@ export default function Dashboard() {
                               role="tablist"
                             >
                               <i className="fas fa-link text-base mr-1"></i>
-                              Estampar
+                              Estampa
                             </a>
                           </li>
                         </ul>
