@@ -203,7 +203,7 @@ export default function Profile() {
             }
 
 
-          
+          console.log("getpast-> ", await getPastEvents(0));
 
             //le agregamos a documents el time y el txhash
             for (let i = 0; i < documents.length; i++) {
@@ -370,7 +370,7 @@ export default function Profile() {
                                   <a
                                     className="a-link"
                                     href={`https://gateway.pinata.cloud/ipfs/${doc.hash}`}
-                                    target="_blank"
+                                    
                                   >
                                     {doc.hash.substring(0, 25) + " ..."}
                                   </a>
@@ -392,7 +392,7 @@ export default function Profile() {
                                     target="_blank"
                                      
                                   >
-                                   <i className="fa fa-info-circle">  </i>
+                                   <i className="fa fa-info-circle ">  </i>
                                   </a>
                                 </td>
                               </tr>
