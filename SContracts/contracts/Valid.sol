@@ -1,6 +1,6 @@
 // contracts/GameItem.sol
 // SPDX-License-Identifier: MIT
-pragma solidity <0.9.0;
+pragma solidity  >=0.6.0 <0.8.0;
 pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
@@ -30,9 +30,9 @@ contract Valid is ERC721 {
         _setTokenURI(_tokenIds.current(), tokenURI);
         metadata[_tokenIds.current()] = Metadata(
             tokenURI, //hash
-            now, // time
+            block.timestamp, // time
             ownerbalance, // owner
-            blockhash(0), 
+            blockhash(this), 
             fileName, 
             explorerUrl, 
             block.number

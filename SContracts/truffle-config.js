@@ -75,12 +75,24 @@ module.exports = {
       gas: 5000000,
       gasPrice: 5000000000,
     },
+    auroraTestnet: {
+      provider: () =>
+        new HDWalletProvider(mnemonic, "https://testnet.aurora.dev"),
+      network_id: 0x4e454153,
+      gas: 10000000,
+    },
+    aurora: {
+      provider: () =>
+        new HDWalletProvider(mnemonic, "https://mainnet.aurora.dev"),
+      network_id: 0x4e454152,
+      gas: 10000000,
+    },
   },
   contracts_build_directory: path.join(__dirname, ".././src/contracts"),
 
   compilers: {
     solc: {
-      version: "0.6.12",
+      version: ">=0.6.0 <0.8.0",
     },
   },
 };

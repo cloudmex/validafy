@@ -24,6 +24,8 @@ export default function Landing() {
     Validado: "",
   });
 
+  const [docHash, setdocHash] = useState("");
+  const [Modal, setShowModal] = React.useState({ show: false });
   /**
    * podemos validar la existencia de un archivo con este metodo
    * @param {*} event tiene toda la informacion del input asociado
@@ -100,8 +102,15 @@ export default function Landing() {
               .IsHashed(result[0].hash)
               .call();
             //console.log(result[0].hash);
+            setdocHash(result[0].hash);
             let estado = "Documento no estampado";
             if (ishashed) estado = "Documento Valido";
+              setShowModal({
+                ...initialBc,
+                show: true,
+                success: ishashed,
+                message: estado,
+              });
             setInitialBc({
               ...initialBc,
               show: true,
@@ -182,6 +191,10 @@ export default function Landing() {
       // window.alertt(error)
       console.log("e");
     }
+  }
+
+  const isValidado = () =>{
+    return "Documento Valido" == Modal.message;
   }
 
   return (
@@ -316,7 +329,7 @@ export default function Landing() {
                     <li className="-mb-px mr-2 last:mr-0 flex-auto text-center">
                       <a
                         className={
-                          "text-xs font-bold uppercase px-5 py-3 shadow-lg rounded block leading-normal " +
+                          "text-xs font-bold btn-animate uppercase px-5 py-3 shadow-lg rounded block leading-normal " +
                           (initialBc.openTab === 1
                             ? "text-white bg-Pentatone"
                             : "text-pink-600 bg-white")
@@ -329,7 +342,7 @@ export default function Landing() {
                         role="tablist"
                       >
                         <i className="fas fa-clipboard-check text-base mr-1"></i>
-                        Validar
+                        click para Validar
                       </a>
                     </li>
                     <li
@@ -338,17 +351,17 @@ export default function Landing() {
                     >
                       <a
                         className={
-                          "text-xs font-bold uppercase px-5 py-3 shadow-lg rounded block leading-normal text-pink-600 bg-white"
+                          "text-xs font-bold btn-animate uppercase px-5 py-3 shadow-lg rounded block leading-normal text-pink-600 bg-white"
                         }
                         role="tablist"
                       >
                         <i className="fas fa-link text-base mr-1"></i>
-                        Estampar
+                        click para Estampar
                       </a>
                     </li>
                   </ul>
 
-                  <div className="relative flex flex-col min-w-0 break-words bg-white  mb-6  rounded">
+                  <div className="relative overflow-hidden flex flex-col min-w-0 break-words bg-white  mb-6  rounded">
                     <div className=" py-5 ">
                       <div>
                         <div
@@ -357,7 +370,7 @@ export default function Landing() {
                           }
                           id="link1"
                         >
-                          <label className="w-full flex flex-col items-center px-4 py-6 bg-white rounded-lg  tracking-wide uppercase  cursor-pointer ">
+                          <label className="w-full btn-animate flex flex-col items-center px-4 py-6 bg-white rounded-lg  tracking-wide uppercase  cursor-pointer ">
                             {initialBc.showImg && (
                               <svg
                                 className="w-8 h-8 text-pink-600"
@@ -541,68 +554,84 @@ export default function Landing() {
           </div>
         </section>
 
-        {initialBc.show ? (
-          <>
-            <div className="  justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none ">
-              <div className="w-full md:w-6/12 my-6 ">
-                {/*content*/}
-                <div className=" rounded-lg shadow-lg  flex flex-col  bg-white outline-none focus:outline-none">
-                  {/*header*/}
+        {Modal.show ? (
+            <>
+              <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+                <div className="relative w-full md:w-6/12 my-6 ">
+                  {/*content*/}
+                  <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                    {/*header*/}
 
-                  <div
-                    className={`${
-                      initialBc.success ? "bg-emerald-500" : "bg-red-500"
-                    }  flex items-start justify-center p-5 border-b border-solid border-blueGray-200 rounded-t`}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="w-16 h-16 text-white my-10"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      {initialBc.success ? (
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      ) : (
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      )}
-                    </svg>
-                  </div>
-                  <div className="relative p-6 flex flex-col space-y-4 justify-center ">
-                    <p className="flex-initial my-4 text-center text-2xl leading-relaxed">
-                      {initialBc.message}
-                    </p>
-                    <button
+                    <div
                       className={`${
-                        initialBc.success ? "bg-emerald-500" : "bg-red-500"
-                      } w-min  text-white active:${
-                        initialBc.success ? "bg-emerald-600" : "bg-red-600"
-                      } font-bold uppercase text-sm px-6 py-3 rounded-full shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
-                      type="button"
-                      disabled={initialBc.disabled}
-                      onClick={() => {
-                        setInitialBc({ ...initialBc, show: false });
-                      }}
+                        Modal.success ? "bg-emerald-500" : "bg-red-500"
+                      }  flex items-start justify-center p-5 border-b border-solid border-blueGray-200 rounded-t`}
                     >
-                      continuar
-                    </button>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-16 h-16 text-white my-10"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        {Modal.success ? (
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        ) : (
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        )}
+                      </svg>
+                    </div>
+                    <div className="relative p-6 flex flex-col space-y-4 justify-center ">
+                      
+                      <p className="flex-initial my-4 text-center text-2xl leading-relaxed">
+                        {Modal.message}
+                      </p>
+                      <div className="row space-between">
+                      <button
+                        className={`${
+                          Modal.success ? "bg-emerald-500" : "bg-red-500"
+                        } w-min  text-white active:${
+                          Modal.success ? "bg-emerald-600" : "bg-red-600"
+                        } font-bold ${isValidado() ? "col-9" : "col-12"} uppercase text-sm btn-animate px-6 py-3 rounded-full shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
+                        type="button"
+                        onClick={() => {
+                          setShowModal({ ...Modal, show: false });
+                        }}
+                      >
+                        continuar
+                      </button>
+                      <a
+                        href={`./preview/${docHash}`}
+                        target="_blank"
+                        className={`${
+                          Modal.success ? "bg-emerald-500" : "bg-red-500"
+                        } w-min  text-white active:${
+                          Modal.success ? "bg-emerald-600" : "bg-red-600"
+                        } font-bold ${isValidado() ? "col-3" : "display-none"} row justify-center uppercase text-sm btn-animate px-6 py-3 rounded-full ounded-full shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
+                      >
+                        <i className="fa fa-info-circle m-1">  </i>
+                        <p>ver</p>
+                      </a>
+                      </div>
+
+                      
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
-          </>
-        ) : null}
+              <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+            </>
+          ) : null}
       </main>
       <Footer />
     </>
