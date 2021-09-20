@@ -56,6 +56,7 @@ export default function Dashboard() {
   const [sm, setSm] = useState([]);
   const [progress, setprogress] = useState(0);
   const [Modal, setShowModal] = React.useState({ show: false });
+  const [docHash, setdocHash] = useState("");
 
   const mycomision = window.localStorage;
   const myfile = window.localStorage;
@@ -294,7 +295,8 @@ export default function Dashboard() {
               let ishashed = await contract.methods
                 .IsHashed(result[0].hash)
                 .call();
-              //console.log(result[0].hash);
+              // console.log(result[0].hash);
+              setdocHash(result[0].hash);
               let estado = "Documento no estampado";
               if (ishashed) estado = "Documento Valido";
               setShowModal({
@@ -370,7 +372,7 @@ export default function Dashboard() {
         //nos permite cargar el archivo
         const reader = new window.FileReader();
         reader.readAsArrayBuffer(file);
-        reader.onloadend = () => {
+        reader.onloadend = () => { 
           //obtener el hash de ipfs ,una vez que cargo el archivo
           ipfs
             .add(Buffer(reader.result), { onlyHash: true })
@@ -602,6 +604,10 @@ export default function Dashboard() {
   const { showHideCharge } = initialBc;
   const { showHideFile } = initialBc;
   const { showHideProgress } = initialBc;
+
+  const isValidado = () =>{
+    return "Documento Valido" == Modal.message;
+  }
   //TIMEOUT
 
   return (
@@ -661,7 +667,7 @@ export default function Dashboard() {
                           <li className="-mb-px mr-2 last:mr-0 flex-auto text-center">
                             <a
                               className={
-                                "text-xs font-bold uppercase px-5 py-3 shadow-lg rounded block leading-normal " +
+                                "text-xs font-bold btn-animate uppercase px-5 py-3 shadow-lg rounded block leading-normal " +
                                 (openTab === 1
                                   ? "text-white bg-pink-600"
                                   : "text-pink-600 bg-white")
@@ -679,13 +685,13 @@ export default function Dashboard() {
                               role="tablist"
                             >
                               <i className="fas fa-clipboard-check text-base mr-1"></i>
-                              Validar
+                              Click Para Validar
                             </a>
                           </li>
                           <li className="-mb-px mr-2 last:mr-0 flex-auto text-center">
                             <a
                               className={
-                                "text-xs font-bold uppercase px-5 py-3 shadow-lg rounded block leading-normal " +
+                                "text-xs font-bold btn-animate uppercase px-5 py-3 shadow-lg rounded block leading-normal " +
                                 (openTab === 2
                                   ? "text-white bg-pink-600"
                                   : "text-pink-600 bg-white")
@@ -701,7 +707,7 @@ export default function Dashboard() {
                               role="tablist"
                             >
                               <i className="fas fa-link text-base mr-1"></i>
-                              Estampar
+                              Click Para Estampa
                             </a>
                           </li>
                         </ul>
@@ -712,7 +718,7 @@ export default function Dashboard() {
                               <div id="link1">
                                 <div>
                                   {!showHideCharge ? (
-                                    <label className="w-full flex flex-col items-center px-4 py-6 bg-white rounded-lg  tracking-wide uppercase  cursor-pointew-full flex flex-col items-center px-4   mtbg-white rounded-lg  tracking-wide uppercase  cursor-pointer ">
+                                    <label className="w-full btn-animate flex flex-col items-center px-4 py-6 bg-white rounded-lg  tracking-wide uppercase  cursor-pointew-full flex flex-col items-center px-4   mtbg-white rounded-lg  tracking-wide uppercase  cursor-pointer ">
                                       {initialBc.showImg && (
                                         <svg
                                           className="w-8 h-8 text-pink-600"
@@ -725,12 +731,13 @@ export default function Dashboard() {
                                       )}
 
                                       {initialBc.showImg && (
-                                        <span className="mt-2 text-base leading-normal">
+                                        <span className="mt-2  text-base leading-normal">
                                           Selecciona un archivo
                                         </span>
                                       )}
 
                                       <input
+                                      
                                         type="file"
                                         className="hidden"
                                         accept={acceptedFormats}
@@ -763,7 +770,7 @@ export default function Dashboard() {
                             ) : (
                               <div id="link1" className="flex justify-center">
                                 {showHideFile && (
-                                  <label className="w-full flex flex-col items-center px-4 py-6 bg-white rounded-lg  tracking-wide uppercase  cursor-pointer ">
+                                  <label className="btn-animate w-full flex flex-col items-center px-4 py-6 bg-white rounded-lg  tracking-wide uppercase  cursor-pointer ">
                                     <svg
                                       className="w-8 h-8 text-pink-600"
                                       fill="currentColor"
@@ -772,7 +779,7 @@ export default function Dashboard() {
                                     >
                                       <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
                                     </svg>
-                                    <span className="mt-2 text-base leading-normal">
+                                    <span className="mt-2 text-base  leading-normal">
                                       Estampa un archivo
                                     </span>
 
@@ -869,15 +876,17 @@ export default function Dashboard() {
                       </svg>
                     </div>
                     <div className="relative p-6 flex flex-col space-y-4 justify-center ">
+                      
                       <p className="flex-initial my-4 text-center text-2xl leading-relaxed">
                         {Modal.message}
                       </p>
+                      <div className="row space-between">
                       <button
                         className={`${
                           Modal.success ? "bg-emerald-500" : "bg-red-500"
                         } w-min  text-white active:${
                           Modal.success ? "bg-emerald-600" : "bg-red-600"
-                        } font-bold uppercase text-sm px-6 py-3 rounded-full shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
+                        } font-bold ${isValidado() ? "col-9" : "col-12"} uppercase text-sm btn-animate px-6 py-3 rounded-full shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
                         type="button"
                         onClick={() => {
                           setShowModal({ ...Modal, show: false });
@@ -885,6 +894,21 @@ export default function Dashboard() {
                       >
                         continuar
                       </button>
+                      <a
+                        href={`./preview/${docHash}`}
+                        target="_blank"
+                        className={`${
+                          Modal.success ? "bg-emerald-500" : "bg-red-500"
+                        } w-min  text-white active:${
+                          Modal.success ? "bg-emerald-600" : "bg-red-600"
+                        } font-bold ${isValidado() ? "col-3" : "display-none"} row justify-center uppercase text-sm btn-animate px-6 py-3 rounded-full ounded-full shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
+                      >
+                        <i className="fa fa-info-circle m-1">  </i>
+                        <p>ver</p>
+                      </a>
+                      </div>
+
+                      
                     </div>
                   </div>
                 </div>

@@ -35,6 +35,40 @@ var nets = [
         },
       ],
     },
+    //Aurora near
+    {
+      chainId: 1313161555,
+      data: [
+        {
+          chainId: "0x4E454153",
+          chainName: "AURORA TESTNET",
+          rpcUrls: ["https://testnet.aurora.dev"],
+          nativeCurrency: {
+            name: "AURORA COIN",
+            symbol: "A-ETH",
+            decimals: 18,
+          },
+          blockExplorerUrls: ["https://testnet.bscscan.com/"],
+        },
+      ],
+    },
+    {
+      chainId: 1313161554,
+      data: [
+        {
+          chainId: "0x4e454152",
+          chainName: "AURORA",
+          rpcUrls: ["https://mainnet.aurora.dev"],
+          nativeCurrency: {
+            name: "AURORA COIN",
+            symbol: "A-ETH",
+            decimals: 18,
+          },
+          blockExplorerUrls: ["https://testnet.bscscan.com/"],
+        },
+      ],
+    },
+
   ],
   nets = Object.assign(
     ...nets.map(({ chainId, data }) => ({ [chainId]: data }))
@@ -49,13 +83,14 @@ export var nets;
 
 export async function addNetwork(id) {
   try {
-     //obtener el arreglo con los datos de la red
-  let networkData = nets[id];
+    //obtener el arreglo con los datos de la red
+    let networkData = nets[id];
+    console.log("red->> ",networkData);
   if (!networkData) return "no existe esa red";
   // agregar red o cambiar red
   return window.ethereum.request({
-    method: "wallet_addEthereumChain",
-    params: networkData,
+    method: "wallet_switchEthereumChain",
+    params: [{ chainId: networkData[0].chainId }],
   });
   } catch (error) {
     console.error(error);

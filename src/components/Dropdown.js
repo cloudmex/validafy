@@ -98,9 +98,28 @@ const Dropdown = ({ color }) => {
                   "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap   " +
                   (color === "white" ? " text-blueGray-700" : "text-white")
                 }
-                onClick={(e) => e.preventDefault()}
+                onClick={async () => {
+                  await changeNet(1313161554);
+                  closeDropdownPopover();
+                  console.log(isDeployed());
+                }}
               >
                 NEAR-Mainnet (Soon)
+              </a>
+              <div className="h-0 my-2 border border-solid border-t-0 border-blueGray-800 opacity-25" />
+              <a
+                href="#ComingSoon"
+                className={
+                  "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap   " +
+                  (color === "white" ? " text-blueGray-700" : "text-white")
+                }
+                onClick={async () => {
+                  await changeNet(1313161555);
+                  closeDropdownPopover();
+                  console.log(isDeployed());
+                }}
+              >
+                NEAR-Testnet (Soon)
               </a>
             </div>
           </div>

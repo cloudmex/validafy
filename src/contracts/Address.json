@@ -1,14 +1,16 @@
 {
   "contractName": "Address",
   "abi": [],
-  "metadata": "{\"compiler\":{\"version\":\"0.6.12+commit.27d51765\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"details\":\"Collection of functions related to the address type\",\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"@openzeppelin/contracts/utils/Address.sol\":\"Address\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/utils/Address.sol\":{\"keccak256\":\"0x28911e614500ae7c607a432a709d35da25f3bc5ddc8bd12b278b66358070c0ea\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://256c8c8af5eb072bc473226ab2b2187149b8fc04f5f4a4820db22527f5ce8e3c\",\"dweb:/ipfs/QmRvi5BhnL7Rxf85KrJhwM6RRhukm4tzoctRdgQEheNyiN\"]}},\"version\":1}",
-  "bytecode": "0x60566023600b82828239805160001a607314601657fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220aeba45e552a4fad8095b8658473f76fdd0093be5a657405e442c7075508b502364736f6c634300060c0033",
-  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220aeba45e552a4fad8095b8658473f76fdd0093be5a657405e442c7075508b502364736f6c634300060c0033",
+  "metadata": "{\"compiler\":{\"version\":\"0.7.6+commit.7338295f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"details\":\"Collection of functions related to the address type\",\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"@openzeppelin/contracts/utils/Address.sol\":\"Address\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/utils/Address.sol\":{\"keccak256\":\"0x28911e614500ae7c607a432a709d35da25f3bc5ddc8bd12b278b66358070c0ea\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://256c8c8af5eb072bc473226ab2b2187149b8fc04f5f4a4820db22527f5ce8e3c\",\"dweb:/ipfs/QmRvi5BhnL7Rxf85KrJhwM6RRhukm4tzoctRdgQEheNyiN\"]}},\"version\":1}",
+  "bytecode": "0x60566023600b82828239805160001a607314601657fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212207d72d881407f186b791539e56281a78442c822820be97773fc725e49b945006564736f6c63430007060033",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212207d72d881407f186b791539e56281a78442c822820be97773fc725e49b945006564736f6c63430007060033",
   "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
   "sourceMap": "134:7684:8:-:0;;;;;;;;;;;;;;;;;;;;;;;;;",
   "deployedSourceMap": "134:7684:8:-:0;;;;;;;;",
   "source": "// SPDX-License-Identifier: MIT\n\npragma solidity >=0.6.2 <0.8.0;\n\n/**\n * @dev Collection of functions related to the address type\n */\nlibrary Address {\n    /**\n     * @dev Returns true if `account` is a contract.\n     *\n     * [IMPORTANT]\n     * ====\n     * It is unsafe to assume that an address for which this function returns\n     * false is an externally-owned account (EOA) and not a contract.\n     *\n     * Among others, `isContract` will return false for the following\n     * types of addresses:\n     *\n     *  - an externally-owned account\n     *  - a contract in construction\n     *  - an address where a contract will be created\n     *  - an address where a contract lived, but was destroyed\n     * ====\n     */\n    function isContract(address account) internal view returns (bool) {\n        // This method relies on extcodesize, which returns 0 for contracts in\n        // construction, since the code is only stored at the end of the\n        // constructor execution.\n\n        uint256 size;\n        // solhint-disable-next-line no-inline-assembly\n        assembly { size := extcodesize(account) }\n        return size > 0;\n    }\n\n    /**\n     * @dev Replacement for Solidity's `transfer`: sends `amount` wei to\n     * `recipient`, forwarding all available gas and reverting on errors.\n     *\n     * https://eips.ethereum.org/EIPS/eip-1884[EIP1884] increases the gas cost\n     * of certain opcodes, possibly making contracts go over the 2300 gas limit\n     * imposed by `transfer`, making them unable to receive funds via\n     * `transfer`. {sendValue} removes this limitation.\n     *\n     * https://diligence.consensys.net/posts/2019/09/stop-using-soliditys-transfer-now/[Learn more].\n     *\n     * IMPORTANT: because control is transferred to `recipient`, care must be\n     * taken to not create reentrancy vulnerabilities. Consider using\n     * {ReentrancyGuard} or the\n     * https://solidity.readthedocs.io/en/v0.5.11/security-considerations.html#use-the-checks-effects-interactions-pattern[checks-effects-interactions pattern].\n     */\n    function sendValue(address payable recipient, uint256 amount) internal {\n        require(address(this).balance >= amount, \"Address: insufficient balance\");\n\n        // solhint-disable-next-line avoid-low-level-calls, avoid-call-value\n        (bool success, ) = recipient.call{ value: amount }(\"\");\n        require(success, \"Address: unable to send value, recipient may have reverted\");\n    }\n\n    /**\n     * @dev Performs a Solidity function call using a low level `call`. A\n     * plain`call` is an unsafe replacement for a function call: use this\n     * function instead.\n     *\n     * If `target` reverts with a revert reason, it is bubbled up by this\n     * function (like regular Solidity function calls).\n     *\n     * Returns the raw returned data. To convert to the expected return value,\n     * use https://solidity.readthedocs.io/en/latest/units-and-global-variables.html?highlight=abi.decode#abi-encoding-and-decoding-functions[`abi.decode`].\n     *\n     * Requirements:\n     *\n     * - `target` must be a contract.\n     * - calling `target` with `data` must not revert.\n     *\n     * _Available since v3.1._\n     */\n    function functionCall(address target, bytes memory data) internal returns (bytes memory) {\n      return functionCall(target, data, \"Address: low-level call failed\");\n    }\n\n    /**\n     * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`], but with\n     * `errorMessage` as a fallback revert reason when `target` reverts.\n     *\n     * _Available since v3.1._\n     */\n    function functionCall(address target, bytes memory data, string memory errorMessage) internal returns (bytes memory) {\n        return functionCallWithValue(target, data, 0, errorMessage);\n    }\n\n    /**\n     * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],\n     * but also transferring `value` wei to `target`.\n     *\n     * Requirements:\n     *\n     * - the calling contract must have an ETH balance of at least `value`.\n     * - the called Solidity function must be `payable`.\n     *\n     * _Available since v3.1._\n     */\n    function functionCallWithValue(address target, bytes memory data, uint256 value) internal returns (bytes memory) {\n        return functionCallWithValue(target, data, value, \"Address: low-level call with value failed\");\n    }\n\n    /**\n     * @dev Same as {xref-Address-functionCallWithValue-address-bytes-uint256-}[`functionCallWithValue`], but\n     * with `errorMessage` as a fallback revert reason when `target` reverts.\n     *\n     * _Available since v3.1._\n     */\n    function functionCallWithValue(address target, bytes memory data, uint256 value, string memory errorMessage) internal returns (bytes memory) {\n        require(address(this).balance >= value, \"Address: insufficient balance for call\");\n        require(isContract(target), \"Address: call to non-contract\");\n\n        // solhint-disable-next-line avoid-low-level-calls\n        (bool success, bytes memory returndata) = target.call{ value: value }(data);\n        return _verifyCallResult(success, returndata, errorMessage);\n    }\n\n    /**\n     * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],\n     * but performing a static call.\n     *\n     * _Available since v3.3._\n     */\n    function functionStaticCall(address target, bytes memory data) internal view returns (bytes memory) {\n        return functionStaticCall(target, data, \"Address: low-level static call failed\");\n    }\n\n    /**\n     * @dev Same as {xref-Address-functionCall-address-bytes-string-}[`functionCall`],\n     * but performing a static call.\n     *\n     * _Available since v3.3._\n     */\n    function functionStaticCall(address target, bytes memory data, string memory errorMessage) internal view returns (bytes memory) {\n        require(isContract(target), \"Address: static call to non-contract\");\n\n        // solhint-disable-next-line avoid-low-level-calls\n        (bool success, bytes memory returndata) = target.staticcall(data);\n        return _verifyCallResult(success, returndata, errorMessage);\n    }\n\n    /**\n     * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],\n     * but performing a delegate call.\n     *\n     * _Available since v3.4._\n     */\n    function functionDelegateCall(address target, bytes memory data) internal returns (bytes memory) {\n        return functionDelegateCall(target, data, \"Address: low-level delegate call failed\");\n    }\n\n    /**\n     * @dev Same as {xref-Address-functionCall-address-bytes-string-}[`functionCall`],\n     * but performing a delegate call.\n     *\n     * _Available since v3.4._\n     */\n    function functionDelegateCall(address target, bytes memory data, string memory errorMessage) internal returns (bytes memory) {\n        require(isContract(target), \"Address: delegate call to non-contract\");\n\n        // solhint-disable-next-line avoid-low-level-calls\n        (bool success, bytes memory returndata) = target.delegatecall(data);\n        return _verifyCallResult(success, returndata, errorMessage);\n    }\n\n    function _verifyCallResult(bool success, bytes memory returndata, string memory errorMessage) private pure returns(bytes memory) {\n        if (success) {\n            return returndata;\n        } else {\n            // Look for revert reason and bubble it up if present\n            if (returndata.length > 0) {\n                // The easiest way to bubble the revert reason is using memory via assembly\n\n                // solhint-disable-next-line no-inline-assembly\n                assembly {\n                    let returndata_size := mload(returndata)\n                    revert(add(32, returndata), returndata_size)\n                }\n            } else {\n                revert(errorMessage);\n            }\n        }\n    }\n}\n",
-  "sourcePath": "@openzeppelin\\contracts\\utils\\Address.sol",
+  "sourcePath": "@openzeppelin/contracts/utils/Address.sol",
   "ast": {
     "absolutePath": "@openzeppelin/contracts/utils/Address.sol",
     "exportedSymbols": {
@@ -70,7 +72,6 @@
                       "mutability": "mutable",
                       "name": "size",
                       "nodeType": "VariableDeclaration",
-                      "overrides": null,
                       "scope": 1577,
                       "src": "989:12:8",
                       "stateVariable": false,
@@ -89,12 +90,10 @@
                           "typeString": "uint256"
                         }
                       },
-                      "value": null,
                       "visibility": "internal"
                     }
                   ],
                   "id": 1571,
-                  "initialValue": null,
                   "nodeType": "VariableDeclarationStatement",
                   "src": "989:12:8"
                 },
@@ -155,7 +154,6 @@
                 },
                 {
                   "expression": {
-                    "argumentTypes": null,
                     "commonType": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -166,7 +164,6 @@
                     "isPure": false,
                     "lValueRequested": false,
                     "leftExpression": {
-                      "argumentTypes": null,
                       "id": 1573,
                       "name": "size",
                       "nodeType": "Identifier",
@@ -181,7 +178,6 @@
                     "nodeType": "BinaryOperation",
                     "operator": ">",
                     "rightExpression": {
-                      "argumentTypes": null,
                       "hexValue": "30",
                       "id": 1574,
                       "isConstant": false,
@@ -191,7 +187,6 @@
                       "lValueRequested": false,
                       "nodeType": "Literal",
                       "src": "1131:1:8",
-                      "subdenomination": null,
                       "typeDescriptions": {
                         "typeIdentifier": "t_rational_0_by_1",
                         "typeString": "int_const 0"
@@ -223,7 +218,6 @@
             "modifiers": [],
             "name": "isContract",
             "nodeType": "FunctionDefinition",
-            "overrides": null,
             "parameters": {
               "id": 1565,
               "nodeType": "ParameterList",
@@ -234,7 +228,6 @@
                   "mutability": "mutable",
                   "name": "account",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1578,
                   "src": "746:15:8",
                   "stateVariable": false,
@@ -254,7 +247,6 @@
                       "typeString": "address"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 }
               ],
@@ -270,7 +262,6 @@
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1578,
                   "src": "786:4:8",
                   "stateVariable": false,
@@ -289,7 +280,6 @@
                       "typeString": "bool"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 }
               ],
@@ -309,10 +299,8 @@
               "statements": [
                 {
                   "expression": {
-                    "argumentTypes": null,
                     "arguments": [
                       {
-                        "argumentTypes": null,
                         "commonType": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -323,17 +311,14 @@
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
-                          "argumentTypes": null,
                           "expression": {
-                            "argumentTypes": null,
                             "arguments": [
                               {
-                                "argumentTypes": null,
                                 "id": 1589,
                                 "name": "this",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": -28,
+                                "referencedDeclaration": 4294967268,
                                 "src": "2153:4:8",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_contract$_Address_$1854",
@@ -364,10 +349,7 @@
                                 "name": "address",
                                 "nodeType": "ElementaryTypeName",
                                 "src": "2145:7:8",
-                                "typeDescriptions": {
-                                  "typeIdentifier": null,
-                                  "typeString": null
-                                }
+                                "typeDescriptions": {}
                               }
                             },
                             "id": 1590,
@@ -392,7 +374,6 @@
                           "lValueRequested": false,
                           "memberName": "balance",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": null,
                           "src": "2145:21:8",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
@@ -402,7 +383,6 @@
                         "nodeType": "BinaryOperation",
                         "operator": ">=",
                         "rightExpression": {
-                          "argumentTypes": null,
                           "id": 1592,
                           "name": "amount",
                           "nodeType": "Identifier",
@@ -421,7 +401,6 @@
                         }
                       },
                       {
-                        "argumentTypes": null,
                         "hexValue": "416464726573733a20696e73756666696369656e742062616c616e6365",
                         "id": 1594,
                         "isConstant": false,
@@ -431,7 +410,6 @@
                         "lValueRequested": false,
                         "nodeType": "Literal",
                         "src": "2178:31:8",
-                        "subdenomination": null,
                         "typeDescriptions": {
                           "typeIdentifier": "t_stringliteral_5597a22abd0ef5332f8053862eb236db7590f17e2b93a53f63a103becfb561f9",
                           "typeString": "literal_string \"Address: insufficient balance\""
@@ -454,10 +432,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        -18,
-                        -18
+                        4294967278,
+                        4294967278
                       ],
-                      "referencedDeclaration": -18,
+                      "referencedDeclaration": 4294967278,
                       "src": "2137:7:8",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -495,7 +473,6 @@
                       "mutability": "mutable",
                       "name": "success",
                       "nodeType": "VariableDeclaration",
-                      "overrides": null,
                       "scope": 1611,
                       "src": "2299:12:8",
                       "stateVariable": false,
@@ -514,17 +491,14 @@
                           "typeString": "bool"
                         }
                       },
-                      "value": null,
                       "visibility": "internal"
                     },
                     null
                   ],
                   "id": 1605,
                   "initialValue": {
-                    "argumentTypes": null,
                     "arguments": [
                       {
-                        "argumentTypes": null,
                         "hexValue": "",
                         "id": 1603,
                         "isConstant": false,
@@ -534,7 +508,6 @@
                         "lValueRequested": false,
                         "nodeType": "Literal",
                         "src": "2349:2:8",
-                        "subdenomination": null,
                         "typeDescriptions": {
                           "typeIdentifier": "t_stringliteral_c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470",
                           "typeString": "literal_string \"\""
@@ -557,7 +530,6 @@
                           }
                         ],
                         "expression": {
-                          "argumentTypes": null,
                           "id": 1599,
                           "name": "recipient",
                           "nodeType": "Identifier",
@@ -576,7 +548,6 @@
                         "lValueRequested": false,
                         "memberName": "call",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": null,
                         "src": "2317:14:8",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_barecall_payable$_t_bytes_memory_ptr_$returns$_t_bool_$_t_bytes_memory_ptr_$",
@@ -594,7 +565,6 @@
                       "nodeType": "FunctionCallOptions",
                       "options": [
                         {
-                          "argumentTypes": null,
                           "id": 1601,
                           "name": "amount",
                           "nodeType": "Identifier",
@@ -633,10 +603,8 @@
                 },
                 {
                   "expression": {
-                    "argumentTypes": null,
                     "arguments": [
                       {
-                        "argumentTypes": null,
                         "id": 1607,
                         "name": "success",
                         "nodeType": "Identifier",
@@ -649,7 +617,6 @@
                         }
                       },
                       {
-                        "argumentTypes": null,
                         "hexValue": "416464726573733a20756e61626c6520746f2073656e642076616c75652c20726563697069656e74206d61792068617665207265766572746564",
                         "id": 1608,
                         "isConstant": false,
@@ -659,7 +626,6 @@
                         "lValueRequested": false,
                         "nodeType": "Literal",
                         "src": "2379:60:8",
-                        "subdenomination": null,
                         "typeDescriptions": {
                           "typeIdentifier": "t_stringliteral_51ddaa38748c0a1144620fb5bfe8edab31ea437571ad591a7734bbfd0429aeae",
                           "typeString": "literal_string \"Address: unable to send value, recipient may have reverted\""
@@ -682,10 +648,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        -18,
-                        -18
+                        4294967278,
+                        4294967278
                       ],
-                      "referencedDeclaration": -18,
+                      "referencedDeclaration": 4294967278,
                       "src": "2362:7:8",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -725,7 +691,6 @@
             "modifiers": [],
             "name": "sendValue",
             "nodeType": "FunctionDefinition",
-            "overrides": null,
             "parameters": {
               "id": 1584,
               "nodeType": "ParameterList",
@@ -736,7 +701,6 @@
                   "mutability": "mutable",
                   "name": "recipient",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1612,
                   "src": "2075:25:8",
                   "stateVariable": false,
@@ -756,7 +720,6 @@
                       "typeString": "address payable"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 },
                 {
@@ -765,7 +728,6 @@
                   "mutability": "mutable",
                   "name": "amount",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1612,
                   "src": "2102:14:8",
                   "stateVariable": false,
@@ -784,7 +746,6 @@
                       "typeString": "uint256"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 }
               ],
@@ -810,10 +771,8 @@
               "statements": [
                 {
                   "expression": {
-                    "argumentTypes": null,
                     "arguments": [
                       {
-                        "argumentTypes": null,
                         "id": 1623,
                         "name": "target",
                         "nodeType": "Identifier",
@@ -826,7 +785,6 @@
                         }
                       },
                       {
-                        "argumentTypes": null,
                         "id": 1624,
                         "name": "data",
                         "nodeType": "Identifier",
@@ -839,7 +797,6 @@
                         }
                       },
                       {
-                        "argumentTypes": null,
                         "hexValue": "416464726573733a206c6f772d6c6576656c2063616c6c206661696c6564",
                         "id": 1625,
                         "isConstant": false,
@@ -849,7 +806,6 @@
                         "lValueRequested": false,
                         "nodeType": "Literal",
                         "src": "3319:32:8",
-                        "subdenomination": null,
                         "typeDescriptions": {
                           "typeIdentifier": "t_stringliteral_24d7ab5d382116e64324f19950ca9340b8af1ddeb09a8d026e0a3c6a01dcc9df",
                           "typeString": "literal_string \"Address: low-level call failed\""
@@ -920,7 +876,6 @@
             "modifiers": [],
             "name": "functionCall",
             "nodeType": "FunctionDefinition",
-            "overrides": null,
             "parameters": {
               "id": 1618,
               "nodeType": "ParameterList",
@@ -931,7 +886,6 @@
                   "mutability": "mutable",
                   "name": "target",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1629,
                   "src": "3210:14:8",
                   "stateVariable": false,
@@ -951,7 +905,6 @@
                       "typeString": "address"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 },
                 {
@@ -960,7 +913,6 @@
                   "mutability": "mutable",
                   "name": "data",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1629,
                   "src": "3226:17:8",
                   "stateVariable": false,
@@ -979,7 +931,6 @@
                       "typeString": "bytes"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 }
               ],
@@ -995,7 +946,6 @@
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1629,
                   "src": "3263:12:8",
                   "stateVariable": false,
@@ -1014,7 +964,6 @@
                       "typeString": "bytes"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 }
               ],
@@ -1034,10 +983,8 @@
               "statements": [
                 {
                   "expression": {
-                    "argumentTypes": null,
                     "arguments": [
                       {
-                        "argumentTypes": null,
                         "id": 1642,
                         "name": "target",
                         "nodeType": "Identifier",
@@ -1050,7 +997,6 @@
                         }
                       },
                       {
-                        "argumentTypes": null,
                         "id": 1643,
                         "name": "data",
                         "nodeType": "Identifier",
@@ -1063,7 +1009,6 @@
                         }
                       },
                       {
-                        "argumentTypes": null,
                         "hexValue": "30",
                         "id": 1644,
                         "isConstant": false,
@@ -1073,7 +1018,6 @@
                         "lValueRequested": false,
                         "nodeType": "Literal",
                         "src": "3751:1:8",
-                        "subdenomination": null,
                         "typeDescriptions": {
                           "typeIdentifier": "t_rational_0_by_1",
                           "typeString": "int_const 0"
@@ -1081,7 +1025,6 @@
                         "value": "0"
                       },
                       {
-                        "argumentTypes": null,
                         "id": 1645,
                         "name": "errorMessage",
                         "nodeType": "Identifier",
@@ -1161,7 +1104,6 @@
             "modifiers": [],
             "name": "functionCall",
             "nodeType": "FunctionDefinition",
-            "overrides": null,
             "parameters": {
               "id": 1637,
               "nodeType": "ParameterList",
@@ -1172,7 +1114,6 @@
                   "mutability": "mutable",
                   "name": "target",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1649,
                   "src": "3603:14:8",
                   "stateVariable": false,
@@ -1192,7 +1133,6 @@
                       "typeString": "address"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 },
                 {
@@ -1201,7 +1141,6 @@
                   "mutability": "mutable",
                   "name": "data",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1649,
                   "src": "3619:17:8",
                   "stateVariable": false,
@@ -1220,7 +1159,6 @@
                       "typeString": "bytes"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 },
                 {
@@ -1229,7 +1167,6 @@
                   "mutability": "mutable",
                   "name": "errorMessage",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1649,
                   "src": "3638:26:8",
                   "stateVariable": false,
@@ -1248,7 +1185,6 @@
                       "typeString": "string"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 }
               ],
@@ -1264,7 +1200,6 @@
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1649,
                   "src": "3684:12:8",
                   "stateVariable": false,
@@ -1283,7 +1218,6 @@
                       "typeString": "bytes"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 }
               ],
@@ -1303,10 +1237,8 @@
               "statements": [
                 {
                   "expression": {
-                    "argumentTypes": null,
                     "arguments": [
                       {
-                        "argumentTypes": null,
                         "id": 1662,
                         "name": "target",
                         "nodeType": "Identifier",
@@ -1319,7 +1251,6 @@
                         }
                       },
                       {
-                        "argumentTypes": null,
                         "id": 1663,
                         "name": "data",
                         "nodeType": "Identifier",
@@ -1332,7 +1263,6 @@
                         }
                       },
                       {
-                        "argumentTypes": null,
                         "id": 1664,
                         "name": "value",
                         "nodeType": "Identifier",
@@ -1345,7 +1275,6 @@
                         }
                       },
                       {
-                        "argumentTypes": null,
                         "hexValue": "416464726573733a206c6f772d6c6576656c2063616c6c20776974682076616c7565206661696c6564",
                         "id": 1665,
                         "isConstant": false,
@@ -1355,7 +1284,6 @@
                         "lValueRequested": false,
                         "nodeType": "Literal",
                         "src": "4309:43:8",
-                        "subdenomination": null,
                         "typeDescriptions": {
                           "typeIdentifier": "t_stringliteral_88a4a0b5e975840320a0475d4027005235904fdb5ece94df156f3d717cb2dbfc",
                           "typeString": "literal_string \"Address: low-level call with value failed\""
@@ -1430,7 +1358,6 @@
             "modifiers": [],
             "name": "functionCallWithValue",
             "nodeType": "FunctionDefinition",
-            "overrides": null,
             "parameters": {
               "id": 1657,
               "nodeType": "ParameterList",
@@ -1441,7 +1368,6 @@
                   "mutability": "mutable",
                   "name": "target",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1669,
                   "src": "4167:14:8",
                   "stateVariable": false,
@@ -1461,7 +1387,6 @@
                       "typeString": "address"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 },
                 {
@@ -1470,7 +1395,6 @@
                   "mutability": "mutable",
                   "name": "data",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1669,
                   "src": "4183:17:8",
                   "stateVariable": false,
@@ -1489,7 +1413,6 @@
                       "typeString": "bytes"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 },
                 {
@@ -1498,7 +1421,6 @@
                   "mutability": "mutable",
                   "name": "value",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1669,
                   "src": "4202:13:8",
                   "stateVariable": false,
@@ -1517,7 +1439,6 @@
                       "typeString": "uint256"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 }
               ],
@@ -1533,7 +1454,6 @@
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1669,
                   "src": "4235:12:8",
                   "stateVariable": false,
@@ -1552,7 +1472,6 @@
                       "typeString": "bytes"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 }
               ],
@@ -1572,10 +1491,8 @@
               "statements": [
                 {
                   "expression": {
-                    "argumentTypes": null,
                     "arguments": [
                       {
-                        "argumentTypes": null,
                         "commonType": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -1586,17 +1503,14 @@
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
-                          "argumentTypes": null,
                           "expression": {
-                            "argumentTypes": null,
                             "arguments": [
                               {
-                                "argumentTypes": null,
                                 "id": 1686,
                                 "name": "this",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": -28,
+                                "referencedDeclaration": 4294967268,
                                 "src": "4775:4:8",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_contract$_Address_$1854",
@@ -1627,10 +1541,7 @@
                                 "name": "address",
                                 "nodeType": "ElementaryTypeName",
                                 "src": "4767:7:8",
-                                "typeDescriptions": {
-                                  "typeIdentifier": null,
-                                  "typeString": null
-                                }
+                                "typeDescriptions": {}
                               }
                             },
                             "id": 1687,
@@ -1655,7 +1566,6 @@
                           "lValueRequested": false,
                           "memberName": "balance",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": null,
                           "src": "4767:21:8",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
@@ -1665,7 +1575,6 @@
                         "nodeType": "BinaryOperation",
                         "operator": ">=",
                         "rightExpression": {
-                          "argumentTypes": null,
                           "id": 1689,
                           "name": "value",
                           "nodeType": "Identifier",
@@ -1684,7 +1593,6 @@
                         }
                       },
                       {
-                        "argumentTypes": null,
                         "hexValue": "416464726573733a20696e73756666696369656e742062616c616e636520666f722063616c6c",
                         "id": 1691,
                         "isConstant": false,
@@ -1694,7 +1602,6 @@
                         "lValueRequested": false,
                         "nodeType": "Literal",
                         "src": "4799:40:8",
-                        "subdenomination": null,
                         "typeDescriptions": {
                           "typeIdentifier": "t_stringliteral_565f1a77334fc4792800921178c71e4521acffab18ff9e7885b49377ee80ab4c",
                           "typeString": "literal_string \"Address: insufficient balance for call\""
@@ -1717,10 +1624,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        -18,
-                        -18
+                        4294967278,
+                        4294967278
                       ],
-                      "referencedDeclaration": -18,
+                      "referencedDeclaration": 4294967278,
                       "src": "4759:7:8",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -1748,13 +1655,10 @@
                 },
                 {
                   "expression": {
-                    "argumentTypes": null,
                     "arguments": [
                       {
-                        "argumentTypes": null,
                         "arguments": [
                           {
-                            "argumentTypes": null,
                             "id": 1696,
                             "name": "target",
                             "nodeType": "Identifier",
@@ -1801,7 +1705,6 @@
                         }
                       },
                       {
-                        "argumentTypes": null,
                         "hexValue": "416464726573733a2063616c6c20746f206e6f6e2d636f6e7472616374",
                         "id": 1698,
                         "isConstant": false,
@@ -1811,7 +1714,6 @@
                         "lValueRequested": false,
                         "nodeType": "Literal",
                         "src": "4878:31:8",
-                        "subdenomination": null,
                         "typeDescriptions": {
                           "typeIdentifier": "t_stringliteral_cc2e4e38850b7c0a3e942cfed89b71c77302df25bcb2ec297a0c4ff9ff6b90ad",
                           "typeString": "literal_string \"Address: call to non-contract\""
@@ -1834,10 +1736,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        -18,
-                        -18
+                        4294967278,
+                        4294967278
                       ],
-                      "referencedDeclaration": -18,
+                      "referencedDeclaration": 4294967278,
                       "src": "4850:7:8",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -1875,7 +1777,6 @@
                       "mutability": "mutable",
                       "name": "success",
                       "nodeType": "VariableDeclaration",
-                      "overrides": null,
                       "scope": 1718,
                       "src": "4981:12:8",
                       "stateVariable": false,
@@ -1894,7 +1795,6 @@
                           "typeString": "bool"
                         }
                       },
-                      "value": null,
                       "visibility": "internal"
                     },
                     {
@@ -1903,7 +1803,6 @@
                       "mutability": "mutable",
                       "name": "returndata",
                       "nodeType": "VariableDeclaration",
-                      "overrides": null,
                       "scope": 1718,
                       "src": "4995:23:8",
                       "stateVariable": false,
@@ -1922,16 +1821,13 @@
                           "typeString": "bytes"
                         }
                       },
-                      "value": null,
                       "visibility": "internal"
                     }
                   ],
                   "id": 1711,
                   "initialValue": {
-                    "argumentTypes": null,
                     "arguments": [
                       {
-                        "argumentTypes": null,
                         "id": 1709,
                         "name": "data",
                         "nodeType": "Identifier",
@@ -1959,7 +1855,6 @@
                           }
                         ],
                         "expression": {
-                          "argumentTypes": null,
                           "id": 1705,
                           "name": "target",
                           "nodeType": "Identifier",
@@ -1978,7 +1873,6 @@
                         "lValueRequested": false,
                         "memberName": "call",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": null,
                         "src": "5022:11:8",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_barecall_payable$_t_bytes_memory_ptr_$returns$_t_bool_$_t_bytes_memory_ptr_$",
@@ -1996,7 +1890,6 @@
                       "nodeType": "FunctionCallOptions",
                       "options": [
                         {
-                          "argumentTypes": null,
                           "id": 1707,
                           "name": "value",
                           "nodeType": "Identifier",
@@ -2035,10 +1928,8 @@
                 },
                 {
                   "expression": {
-                    "argumentTypes": null,
                     "arguments": [
                       {
-                        "argumentTypes": null,
                         "id": 1713,
                         "name": "success",
                         "nodeType": "Identifier",
@@ -2051,7 +1942,6 @@
                         }
                       },
                       {
-                        "argumentTypes": null,
                         "id": 1714,
                         "name": "returndata",
                         "nodeType": "Identifier",
@@ -2064,7 +1954,6 @@
                         }
                       },
                       {
-                        "argumentTypes": null,
                         "id": 1715,
                         "name": "errorMessage",
                         "nodeType": "Identifier",
@@ -2137,7 +2026,6 @@
             "modifiers": [],
             "name": "functionCallWithValue",
             "nodeType": "FunctionDefinition",
-            "overrides": null,
             "parameters": {
               "id": 1679,
               "nodeType": "ParameterList",
@@ -2148,7 +2036,6 @@
                   "mutability": "mutable",
                   "name": "target",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1719,
                   "src": "4639:14:8",
                   "stateVariable": false,
@@ -2168,7 +2055,6 @@
                       "typeString": "address"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 },
                 {
@@ -2177,7 +2063,6 @@
                   "mutability": "mutable",
                   "name": "data",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1719,
                   "src": "4655:17:8",
                   "stateVariable": false,
@@ -2196,7 +2081,6 @@
                       "typeString": "bytes"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 },
                 {
@@ -2205,7 +2089,6 @@
                   "mutability": "mutable",
                   "name": "value",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1719,
                   "src": "4674:13:8",
                   "stateVariable": false,
@@ -2224,7 +2107,6 @@
                       "typeString": "uint256"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 },
                 {
@@ -2233,7 +2115,6 @@
                   "mutability": "mutable",
                   "name": "errorMessage",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1719,
                   "src": "4689:26:8",
                   "stateVariable": false,
@@ -2252,7 +2133,6 @@
                       "typeString": "string"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 }
               ],
@@ -2268,7 +2148,6 @@
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1719,
                   "src": "4735:12:8",
                   "stateVariable": false,
@@ -2287,7 +2166,6 @@
                       "typeString": "bytes"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 }
               ],
@@ -2307,10 +2185,8 @@
               "statements": [
                 {
                   "expression": {
-                    "argumentTypes": null,
                     "arguments": [
                       {
-                        "argumentTypes": null,
                         "id": 1730,
                         "name": "target",
                         "nodeType": "Identifier",
@@ -2323,7 +2199,6 @@
                         }
                       },
                       {
-                        "argumentTypes": null,
                         "id": 1731,
                         "name": "data",
                         "nodeType": "Identifier",
@@ -2336,7 +2211,6 @@
                         }
                       },
                       {
-                        "argumentTypes": null,
                         "hexValue": "416464726573733a206c6f772d6c6576656c207374617469632063616c6c206661696c6564",
                         "id": 1732,
                         "isConstant": false,
@@ -2346,7 +2220,6 @@
                         "lValueRequested": false,
                         "nodeType": "Literal",
                         "src": "5458:39:8",
-                        "subdenomination": null,
                         "typeDescriptions": {
                           "typeIdentifier": "t_stringliteral_90ec82aa826a536a4cbfae44ecfa384680faa9a4b77344bce96aa761ad904df0",
                           "typeString": "literal_string \"Address: low-level static call failed\""
@@ -2417,7 +2290,6 @@
             "modifiers": [],
             "name": "functionStaticCall",
             "nodeType": "FunctionDefinition",
-            "overrides": null,
             "parameters": {
               "id": 1725,
               "nodeType": "ParameterList",
@@ -2428,7 +2300,6 @@
                   "mutability": "mutable",
                   "name": "target",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1736,
                   "src": "5336:14:8",
                   "stateVariable": false,
@@ -2448,7 +2319,6 @@
                       "typeString": "address"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 },
                 {
@@ -2457,7 +2327,6 @@
                   "mutability": "mutable",
                   "name": "data",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1736,
                   "src": "5352:17:8",
                   "stateVariable": false,
@@ -2476,7 +2345,6 @@
                       "typeString": "bytes"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 }
               ],
@@ -2492,7 +2360,6 @@
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1736,
                   "src": "5394:12:8",
                   "stateVariable": false,
@@ -2511,7 +2378,6 @@
                       "typeString": "bytes"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 }
               ],
@@ -2531,13 +2397,10 @@
               "statements": [
                 {
                   "expression": {
-                    "argumentTypes": null,
                     "arguments": [
                       {
-                        "argumentTypes": null,
                         "arguments": [
                           {
-                            "argumentTypes": null,
                             "id": 1750,
                             "name": "target",
                             "nodeType": "Identifier",
@@ -2584,7 +2447,6 @@
                         }
                       },
                       {
-                        "argumentTypes": null,
                         "hexValue": "416464726573733a207374617469632063616c6c20746f206e6f6e2d636f6e7472616374",
                         "id": 1752,
                         "isConstant": false,
@@ -2594,7 +2456,6 @@
                         "lValueRequested": false,
                         "nodeType": "Literal",
                         "src": "5855:38:8",
-                        "subdenomination": null,
                         "typeDescriptions": {
                           "typeIdentifier": "t_stringliteral_c79cc78e4f16ce3933a42b84c73868f93bb4a59c031a0acf576679de98c608a9",
                           "typeString": "literal_string \"Address: static call to non-contract\""
@@ -2617,10 +2478,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        -18,
-                        -18
+                        4294967278,
+                        4294967278
                       ],
-                      "referencedDeclaration": -18,
+                      "referencedDeclaration": 4294967278,
                       "src": "5827:7:8",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -2658,7 +2519,6 @@
                       "mutability": "mutable",
                       "name": "success",
                       "nodeType": "VariableDeclaration",
-                      "overrides": null,
                       "scope": 1770,
                       "src": "5965:12:8",
                       "stateVariable": false,
@@ -2677,7 +2537,6 @@
                           "typeString": "bool"
                         }
                       },
-                      "value": null,
                       "visibility": "internal"
                     },
                     {
@@ -2686,7 +2545,6 @@
                       "mutability": "mutable",
                       "name": "returndata",
                       "nodeType": "VariableDeclaration",
-                      "overrides": null,
                       "scope": 1770,
                       "src": "5979:23:8",
                       "stateVariable": false,
@@ -2705,16 +2563,13 @@
                           "typeString": "bytes"
                         }
                       },
-                      "value": null,
                       "visibility": "internal"
                     }
                   ],
                   "id": 1763,
                   "initialValue": {
-                    "argumentTypes": null,
                     "arguments": [
                       {
-                        "argumentTypes": null,
                         "id": 1761,
                         "name": "data",
                         "nodeType": "Identifier",
@@ -2735,7 +2590,6 @@
                         }
                       ],
                       "expression": {
-                        "argumentTypes": null,
                         "id": 1759,
                         "name": "target",
                         "nodeType": "Identifier",
@@ -2754,7 +2608,6 @@
                       "lValueRequested": false,
                       "memberName": "staticcall",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": null,
                       "src": "6006:17:8",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_barestaticcall_view$_t_bytes_memory_ptr_$returns$_t_bool_$_t_bytes_memory_ptr_$",
@@ -2781,10 +2634,8 @@
                 },
                 {
                   "expression": {
-                    "argumentTypes": null,
                     "arguments": [
                       {
-                        "argumentTypes": null,
                         "id": 1765,
                         "name": "success",
                         "nodeType": "Identifier",
@@ -2797,7 +2648,6 @@
                         }
                       },
                       {
-                        "argumentTypes": null,
                         "id": 1766,
                         "name": "returndata",
                         "nodeType": "Identifier",
@@ -2810,7 +2660,6 @@
                         }
                       },
                       {
-                        "argumentTypes": null,
                         "id": 1767,
                         "name": "errorMessage",
                         "nodeType": "Identifier",
@@ -2883,7 +2732,6 @@
             "modifiers": [],
             "name": "functionStaticCall",
             "nodeType": "FunctionDefinition",
-            "overrides": null,
             "parameters": {
               "id": 1744,
               "nodeType": "ParameterList",
@@ -2894,7 +2742,6 @@
                   "mutability": "mutable",
                   "name": "target",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1771,
                   "src": "5717:14:8",
                   "stateVariable": false,
@@ -2914,7 +2761,6 @@
                       "typeString": "address"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 },
                 {
@@ -2923,7 +2769,6 @@
                   "mutability": "mutable",
                   "name": "data",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1771,
                   "src": "5733:17:8",
                   "stateVariable": false,
@@ -2942,7 +2787,6 @@
                       "typeString": "bytes"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 },
                 {
@@ -2951,7 +2795,6 @@
                   "mutability": "mutable",
                   "name": "errorMessage",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1771,
                   "src": "5752:26:8",
                   "stateVariable": false,
@@ -2970,7 +2813,6 @@
                       "typeString": "string"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 }
               ],
@@ -2986,7 +2828,6 @@
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1771,
                   "src": "5803:12:8",
                   "stateVariable": false,
@@ -3005,7 +2846,6 @@
                       "typeString": "bytes"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 }
               ],
@@ -3025,10 +2865,8 @@
               "statements": [
                 {
                   "expression": {
-                    "argumentTypes": null,
                     "arguments": [
                       {
-                        "argumentTypes": null,
                         "id": 1782,
                         "name": "target",
                         "nodeType": "Identifier",
@@ -3041,7 +2879,6 @@
                         }
                       },
                       {
-                        "argumentTypes": null,
                         "id": 1783,
                         "name": "data",
                         "nodeType": "Identifier",
@@ -3054,7 +2891,6 @@
                         }
                       },
                       {
-                        "argumentTypes": null,
                         "hexValue": "416464726573733a206c6f772d6c6576656c2064656c65676174652063616c6c206661696c6564",
                         "id": 1784,
                         "isConstant": false,
@@ -3064,7 +2900,6 @@
                         "lValueRequested": false,
                         "nodeType": "Literal",
                         "src": "6433:41:8",
-                        "subdenomination": null,
                         "typeDescriptions": {
                           "typeIdentifier": "t_stringliteral_9fdcd12e4b726339b32a442b0a448365d5d85c96b2d2cff917b4f66c63110398",
                           "typeString": "literal_string \"Address: low-level delegate call failed\""
@@ -3135,7 +2970,6 @@
             "modifiers": [],
             "name": "functionDelegateCall",
             "nodeType": "FunctionDefinition",
-            "overrides": null,
             "parameters": {
               "id": 1777,
               "nodeType": "ParameterList",
@@ -3146,7 +2980,6 @@
                   "mutability": "mutable",
                   "name": "target",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1788,
                   "src": "6314:14:8",
                   "stateVariable": false,
@@ -3166,7 +2999,6 @@
                       "typeString": "address"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 },
                 {
@@ -3175,7 +3007,6 @@
                   "mutability": "mutable",
                   "name": "data",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1788,
                   "src": "6330:17:8",
                   "stateVariable": false,
@@ -3194,7 +3025,6 @@
                       "typeString": "bytes"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 }
               ],
@@ -3210,7 +3040,6 @@
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1788,
                   "src": "6367:12:8",
                   "stateVariable": false,
@@ -3229,7 +3058,6 @@
                       "typeString": "bytes"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 }
               ],
@@ -3249,13 +3077,10 @@
               "statements": [
                 {
                   "expression": {
-                    "argumentTypes": null,
                     "arguments": [
                       {
-                        "argumentTypes": null,
                         "arguments": [
                           {
-                            "argumentTypes": null,
                             "id": 1802,
                             "name": "target",
                             "nodeType": "Identifier",
@@ -3302,7 +3127,6 @@
                         }
                       },
                       {
-                        "argumentTypes": null,
                         "hexValue": "416464726573733a2064656c65676174652063616c6c20746f206e6f6e2d636f6e7472616374",
                         "id": 1804,
                         "isConstant": false,
@@ -3312,7 +3136,6 @@
                         "lValueRequested": false,
                         "nodeType": "Literal",
                         "src": "6831:40:8",
-                        "subdenomination": null,
                         "typeDescriptions": {
                           "typeIdentifier": "t_stringliteral_b94ded0918034cf8f896e19fa3cfdef1188cd569c577264a3622e49152f88520",
                           "typeString": "literal_string \"Address: delegate call to non-contract\""
@@ -3335,10 +3158,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        -18,
-                        -18
+                        4294967278,
+                        4294967278
                       ],
-                      "referencedDeclaration": -18,
+                      "referencedDeclaration": 4294967278,
                       "src": "6803:7:8",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -3376,7 +3199,6 @@
                       "mutability": "mutable",
                       "name": "success",
                       "nodeType": "VariableDeclaration",
-                      "overrides": null,
                       "scope": 1822,
                       "src": "6943:12:8",
                       "stateVariable": false,
@@ -3395,7 +3217,6 @@
                           "typeString": "bool"
                         }
                       },
-                      "value": null,
                       "visibility": "internal"
                     },
                     {
@@ -3404,7 +3225,6 @@
                       "mutability": "mutable",
                       "name": "returndata",
                       "nodeType": "VariableDeclaration",
-                      "overrides": null,
                       "scope": 1822,
                       "src": "6957:23:8",
                       "stateVariable": false,
@@ -3423,16 +3243,13 @@
                           "typeString": "bytes"
                         }
                       },
-                      "value": null,
                       "visibility": "internal"
                     }
                   ],
                   "id": 1815,
                   "initialValue": {
-                    "argumentTypes": null,
                     "arguments": [
                       {
-                        "argumentTypes": null,
                         "id": 1813,
                         "name": "data",
                         "nodeType": "Identifier",
@@ -3453,7 +3270,6 @@
                         }
                       ],
                       "expression": {
-                        "argumentTypes": null,
                         "id": 1811,
                         "name": "target",
                         "nodeType": "Identifier",
@@ -3472,7 +3288,6 @@
                       "lValueRequested": false,
                       "memberName": "delegatecall",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": null,
                       "src": "6984:19:8",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_baredelegatecall_nonpayable$_t_bytes_memory_ptr_$returns$_t_bool_$_t_bytes_memory_ptr_$",
@@ -3499,10 +3314,8 @@
                 },
                 {
                   "expression": {
-                    "argumentTypes": null,
                     "arguments": [
                       {
-                        "argumentTypes": null,
                         "id": 1817,
                         "name": "success",
                         "nodeType": "Identifier",
@@ -3515,7 +3328,6 @@
                         }
                       },
                       {
-                        "argumentTypes": null,
                         "id": 1818,
                         "name": "returndata",
                         "nodeType": "Identifier",
@@ -3528,7 +3340,6 @@
                         }
                       },
                       {
-                        "argumentTypes": null,
                         "id": 1819,
                         "name": "errorMessage",
                         "nodeType": "Identifier",
@@ -3601,7 +3412,6 @@
             "modifiers": [],
             "name": "functionDelegateCall",
             "nodeType": "FunctionDefinition",
-            "overrides": null,
             "parameters": {
               "id": 1796,
               "nodeType": "ParameterList",
@@ -3612,7 +3422,6 @@
                   "mutability": "mutable",
                   "name": "target",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1823,
                   "src": "6698:14:8",
                   "stateVariable": false,
@@ -3632,7 +3441,6 @@
                       "typeString": "address"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 },
                 {
@@ -3641,7 +3449,6 @@
                   "mutability": "mutable",
                   "name": "data",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1823,
                   "src": "6714:17:8",
                   "stateVariable": false,
@@ -3660,7 +3467,6 @@
                       "typeString": "bytes"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 },
                 {
@@ -3669,7 +3475,6 @@
                   "mutability": "mutable",
                   "name": "errorMessage",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1823,
                   "src": "6733:26:8",
                   "stateVariable": false,
@@ -3688,7 +3493,6 @@
                       "typeString": "string"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 }
               ],
@@ -3704,7 +3508,6 @@
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1823,
                   "src": "6779:12:8",
                   "stateVariable": false,
@@ -3723,7 +3526,6 @@
                       "typeString": "bytes"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 }
               ],
@@ -3743,7 +3545,6 @@
               "statements": [
                 {
                   "condition": {
-                    "argumentTypes": null,
                     "id": 1834,
                     "name": "success",
                     "nodeType": "Identifier",
@@ -3762,7 +3563,6 @@
                     "statements": [
                       {
                         "condition": {
-                          "argumentTypes": null,
                           "commonType": {
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
@@ -3773,9 +3573,7 @@
                           "isPure": false,
                           "lValueRequested": false,
                           "leftExpression": {
-                            "argumentTypes": null,
                             "expression": {
-                              "argumentTypes": null,
                               "id": 1838,
                               "name": "returndata",
                               "nodeType": "Identifier",
@@ -3794,7 +3592,6 @@
                             "lValueRequested": false,
                             "memberName": "length",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": null,
                             "src": "7375:17:8",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
@@ -3804,7 +3601,6 @@
                           "nodeType": "BinaryOperation",
                           "operator": ">",
                           "rightExpression": {
-                            "argumentTypes": null,
                             "hexValue": "30",
                             "id": 1840,
                             "isConstant": false,
@@ -3814,7 +3610,6 @@
                             "lValueRequested": false,
                             "nodeType": "Literal",
                             "src": "7395:1:8",
-                            "subdenomination": null,
                             "typeDescriptions": {
                               "typeIdentifier": "t_rational_0_by_1",
                               "typeString": "int_const 0"
@@ -3834,10 +3629,8 @@
                           "statements": [
                             {
                               "expression": {
-                                "argumentTypes": null,
                                 "arguments": [
                                   {
-                                    "argumentTypes": null,
                                     "id": 1845,
                                     "name": "errorMessage",
                                     "nodeType": "Identifier",
@@ -3861,10 +3654,10 @@
                                   "name": "revert",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [
-                                    -19,
-                                    -19
+                                    4294967277,
+                                    4294967277
                                   ],
-                                  "referencedDeclaration": -19,
+                                  "referencedDeclaration": 4294967277,
                                   "src": "7765:6:8",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_function_revert_pure$_t_string_memory_ptr_$returns$__$",
@@ -4014,7 +3807,6 @@
                     "statements": [
                       {
                         "expression": {
-                          "argumentTypes": null,
                           "id": 1835,
                           "name": "returndata",
                           "nodeType": "Identifier",
@@ -4036,14 +3828,12 @@
                 }
               ]
             },
-            "documentation": null,
             "id": 1853,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "_verifyCallResult",
             "nodeType": "FunctionDefinition",
-            "overrides": null,
             "parameters": {
               "id": 1830,
               "nodeType": "ParameterList",
@@ -4054,7 +3844,6 @@
                   "mutability": "mutable",
                   "name": "success",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1853,
                   "src": "7118:12:8",
                   "stateVariable": false,
@@ -4073,7 +3862,6 @@
                       "typeString": "bool"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 },
                 {
@@ -4082,7 +3870,6 @@
                   "mutability": "mutable",
                   "name": "returndata",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1853,
                   "src": "7132:23:8",
                   "stateVariable": false,
@@ -4101,7 +3888,6 @@
                       "typeString": "bytes"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 },
                 {
@@ -4110,7 +3896,6 @@
                   "mutability": "mutable",
                   "name": "errorMessage",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1853,
                   "src": "7157:26:8",
                   "stateVariable": false,
@@ -4129,7 +3914,6 @@
                       "typeString": "string"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 }
               ],
@@ -4145,7 +3929,6 @@
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "overrides": null,
                   "scope": 1853,
                   "src": "7206:12:8",
                   "stateVariable": false,
@@ -4164,7 +3947,6 @@
                       "typeString": "bytes"
                     }
                   },
-                  "value": null,
                   "visibility": "internal"
                 }
               ],
@@ -4245,7 +4027,6 @@
                 null
               ],
               "name": "isContract",
-              "overrides": null,
               "scope": 1854,
               "stateMutability": "view",
               "virtual": false,
@@ -4267,12 +4048,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "account",
-                      "overrides": null,
                       "scope": 1578,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "address",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -4303,12 +4082,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "",
-                      "overrides": null,
                       "scope": 1578,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "bool",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -4337,8 +4114,7 @@
                     "attributes": {
                       "assignments": [
                         1570
-                      ],
-                      "initialValue": null
+                      ]
                     },
                     "children": [
                       {
@@ -4346,12 +4122,10 @@
                           "constant": false,
                           "mutability": "mutable",
                           "name": "size",
-                          "overrides": null,
                           "scope": 1577,
                           "stateVariable": false,
                           "storageLocation": "default",
                           "type": "uint256",
-                          "value": null,
                           "visibility": "internal"
                         },
                         "children": [
@@ -4407,7 +4181,6 @@
                     "children": [
                       {
                         "attributes": {
-                          "argumentTypes": null,
                           "commonType": {
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
@@ -4422,7 +4195,6 @@
                         "children": [
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "overloadedDeclarations": [
                                 null
                               ],
@@ -4436,13 +4208,11 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "hexvalue": "30",
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
                               "lValueRequested": false,
-                              "subdenomination": null,
                               "token": "number",
                               "type": "int_const 0",
                               "value": "0"
@@ -4480,7 +4250,6 @@
                 null
               ],
               "name": "sendValue",
-              "overrides": null,
               "scope": 1854,
               "stateMutability": "nonpayable",
               "virtual": false,
@@ -4502,12 +4271,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "recipient",
-                      "overrides": null,
                       "scope": 1612,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "address payable",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -4531,12 +4298,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "amount",
-                      "overrides": null,
                       "scope": 1612,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "uint256",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -4576,7 +4341,6 @@
                     "children": [
                       {
                         "attributes": {
-                          "argumentTypes": null,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -4603,10 +4367,10 @@
                                 }
                               ],
                               "overloadedDeclarations": [
-                                -18,
-                                -18
+                                4294967278,
+                                4294967278
                               ],
-                              "referencedDeclaration": -18,
+                              "referencedDeclaration": 4294967278,
                               "type": "function (bool,string memory) pure",
                               "value": "require"
                             },
@@ -4616,7 +4380,6 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "commonType": {
                                 "typeIdentifier": "t_uint256",
                                 "typeString": "uint256"
@@ -4631,19 +4394,16 @@
                             "children": [
                               {
                                 "attributes": {
-                                  "argumentTypes": null,
                                   "isConstant": false,
                                   "isLValue": false,
                                   "isPure": false,
                                   "lValueRequested": false,
                                   "member_name": "balance",
-                                  "referencedDeclaration": null,
                                   "type": "uint256"
                                 },
                                 "children": [
                                   {
                                     "attributes": {
-                                      "argumentTypes": null,
                                       "isConstant": false,
                                       "isLValue": false,
                                       "isPure": false,
@@ -4674,8 +4434,7 @@
                                         "children": [
                                           {
                                             "attributes": {
-                                              "name": "address",
-                                              "type": null
+                                              "name": "address"
                                             },
                                             "id": 1587,
                                             "name": "ElementaryTypeName",
@@ -4688,11 +4447,10 @@
                                       },
                                       {
                                         "attributes": {
-                                          "argumentTypes": null,
                                           "overloadedDeclarations": [
                                             null
                                           ],
-                                          "referencedDeclaration": -28,
+                                          "referencedDeclaration": 4294967268,
                                           "type": "library Address",
                                           "value": "this"
                                         },
@@ -4712,7 +4470,6 @@
                               },
                               {
                                 "attributes": {
-                                  "argumentTypes": null,
                                   "overloadedDeclarations": [
                                     null
                                   ],
@@ -4731,13 +4488,11 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "hexvalue": "416464726573733a20696e73756666696369656e742062616c616e6365",
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
                               "lValueRequested": false,
-                              "subdenomination": null,
                               "token": "string",
                               "type": "literal_string \"Address: insufficient balance\"",
                               "value": "Address: insufficient balance"
@@ -4769,12 +4524,10 @@
                           "constant": false,
                           "mutability": "mutable",
                           "name": "success",
-                          "overrides": null,
                           "scope": 1611,
                           "stateVariable": false,
                           "storageLocation": "default",
                           "type": "bool",
-                          "value": null,
                           "visibility": "internal"
                         },
                         "children": [
@@ -4794,7 +4547,6 @@
                       },
                       {
                         "attributes": {
-                          "argumentTypes": null,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -4839,13 +4591,11 @@
                                   "isPure": false,
                                   "lValueRequested": false,
                                   "member_name": "call",
-                                  "referencedDeclaration": null,
                                   "type": "function (bytes memory) payable returns (bool,bytes memory)"
                                 },
                                 "children": [
                                   {
                                     "attributes": {
-                                      "argumentTypes": null,
                                       "overloadedDeclarations": [
                                         null
                                       ],
@@ -4864,7 +4614,6 @@
                               },
                               {
                                 "attributes": {
-                                  "argumentTypes": null,
                                   "overloadedDeclarations": [
                                     null
                                   ],
@@ -4883,13 +4632,11 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "hexvalue": "",
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
                               "lValueRequested": false,
-                              "subdenomination": null,
                               "token": "string",
                               "type": "literal_string \"\"",
                               "value": ""
@@ -4912,7 +4659,6 @@
                     "children": [
                       {
                         "attributes": {
-                          "argumentTypes": null,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -4939,10 +4685,10 @@
                                 }
                               ],
                               "overloadedDeclarations": [
-                                -18,
-                                -18
+                                4294967278,
+                                4294967278
                               ],
-                              "referencedDeclaration": -18,
+                              "referencedDeclaration": 4294967278,
                               "type": "function (bool,string memory) pure",
                               "value": "require"
                             },
@@ -4952,7 +4698,6 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "overloadedDeclarations": [
                                 null
                               ],
@@ -4966,13 +4711,11 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "hexvalue": "416464726573733a20756e61626c6520746f2073656e642076616c75652c20726563697069656e74206d61792068617665207265766572746564",
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
                               "lValueRequested": false,
-                              "subdenomination": null,
                               "token": "string",
                               "type": "literal_string \"Address: unable to send value, recipient may have reverted\"",
                               "value": "Address: unable to send value, recipient may have reverted"
@@ -5010,7 +4753,6 @@
                 null
               ],
               "name": "functionCall",
-              "overrides": null,
               "scope": 1854,
               "stateMutability": "nonpayable",
               "virtual": false,
@@ -5032,12 +4774,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "target",
-                      "overrides": null,
                       "scope": 1629,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "address",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -5061,12 +4801,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "data",
-                      "overrides": null,
                       "scope": 1629,
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "type": "bytes",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -5096,12 +4834,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "",
-                      "overrides": null,
                       "scope": 1629,
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "type": "bytes",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -5133,7 +4869,6 @@
                     "children": [
                       {
                         "attributes": {
-                          "argumentTypes": null,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -5177,7 +4912,6 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "overloadedDeclarations": [
                                 null
                               ],
@@ -5191,7 +4925,6 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "overloadedDeclarations": [
                                 null
                               ],
@@ -5205,13 +4938,11 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "hexvalue": "416464726573733a206c6f772d6c6576656c2063616c6c206661696c6564",
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
                               "lValueRequested": false,
-                              "subdenomination": null,
                               "token": "string",
                               "type": "literal_string \"Address: low-level call failed\"",
                               "value": "Address: low-level call failed"
@@ -5249,7 +4980,6 @@
                 null
               ],
               "name": "functionCall",
-              "overrides": null,
               "scope": 1854,
               "stateMutability": "nonpayable",
               "virtual": false,
@@ -5271,12 +5001,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "target",
-                      "overrides": null,
                       "scope": 1649,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "address",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -5300,12 +5028,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "data",
-                      "overrides": null,
                       "scope": 1649,
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "type": "bytes",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -5328,12 +5054,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "errorMessage",
-                      "overrides": null,
                       "scope": 1649,
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "type": "string",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -5363,12 +5087,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "",
-                      "overrides": null,
                       "scope": 1649,
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "type": "bytes",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -5400,7 +5122,6 @@
                     "children": [
                       {
                         "attributes": {
-                          "argumentTypes": null,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -5448,7 +5169,6 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "overloadedDeclarations": [
                                 null
                               ],
@@ -5462,7 +5182,6 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "overloadedDeclarations": [
                                 null
                               ],
@@ -5476,13 +5195,11 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "hexvalue": "30",
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
                               "lValueRequested": false,
-                              "subdenomination": null,
                               "token": "number",
                               "type": "int_const 0",
                               "value": "0"
@@ -5493,7 +5210,6 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "overloadedDeclarations": [
                                 null
                               ],
@@ -5534,7 +5250,6 @@
                 null
               ],
               "name": "functionCallWithValue",
-              "overrides": null,
               "scope": 1854,
               "stateMutability": "nonpayable",
               "virtual": false,
@@ -5556,12 +5271,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "target",
-                      "overrides": null,
                       "scope": 1669,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "address",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -5585,12 +5298,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "data",
-                      "overrides": null,
                       "scope": 1669,
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "type": "bytes",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -5613,12 +5324,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "value",
-                      "overrides": null,
                       "scope": 1669,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "uint256",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -5648,12 +5357,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "",
-                      "overrides": null,
                       "scope": 1669,
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "type": "bytes",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -5685,7 +5392,6 @@
                     "children": [
                       {
                         "attributes": {
-                          "argumentTypes": null,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -5733,7 +5439,6 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "overloadedDeclarations": [
                                 null
                               ],
@@ -5747,7 +5452,6 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "overloadedDeclarations": [
                                 null
                               ],
@@ -5761,7 +5465,6 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "overloadedDeclarations": [
                                 null
                               ],
@@ -5775,13 +5478,11 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "hexvalue": "416464726573733a206c6f772d6c6576656c2063616c6c20776974682076616c7565206661696c6564",
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
                               "lValueRequested": false,
-                              "subdenomination": null,
                               "token": "string",
                               "type": "literal_string \"Address: low-level call with value failed\"",
                               "value": "Address: low-level call with value failed"
@@ -5819,7 +5520,6 @@
                 null
               ],
               "name": "functionCallWithValue",
-              "overrides": null,
               "scope": 1854,
               "stateMutability": "nonpayable",
               "virtual": false,
@@ -5841,12 +5541,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "target",
-                      "overrides": null,
                       "scope": 1719,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "address",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -5870,12 +5568,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "data",
-                      "overrides": null,
                       "scope": 1719,
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "type": "bytes",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -5898,12 +5594,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "value",
-                      "overrides": null,
                       "scope": 1719,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "uint256",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -5926,12 +5620,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "errorMessage",
-                      "overrides": null,
                       "scope": 1719,
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "type": "string",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -5961,12 +5653,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "",
-                      "overrides": null,
                       "scope": 1719,
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "type": "bytes",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -5995,7 +5685,6 @@
                     "children": [
                       {
                         "attributes": {
-                          "argumentTypes": null,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -6022,10 +5711,10 @@
                                 }
                               ],
                               "overloadedDeclarations": [
-                                -18,
-                                -18
+                                4294967278,
+                                4294967278
                               ],
-                              "referencedDeclaration": -18,
+                              "referencedDeclaration": 4294967278,
                               "type": "function (bool,string memory) pure",
                               "value": "require"
                             },
@@ -6035,7 +5724,6 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "commonType": {
                                 "typeIdentifier": "t_uint256",
                                 "typeString": "uint256"
@@ -6050,19 +5738,16 @@
                             "children": [
                               {
                                 "attributes": {
-                                  "argumentTypes": null,
                                   "isConstant": false,
                                   "isLValue": false,
                                   "isPure": false,
                                   "lValueRequested": false,
                                   "member_name": "balance",
-                                  "referencedDeclaration": null,
                                   "type": "uint256"
                                 },
                                 "children": [
                                   {
                                     "attributes": {
-                                      "argumentTypes": null,
                                       "isConstant": false,
                                       "isLValue": false,
                                       "isPure": false,
@@ -6093,8 +5778,7 @@
                                         "children": [
                                           {
                                             "attributes": {
-                                              "name": "address",
-                                              "type": null
+                                              "name": "address"
                                             },
                                             "id": 1684,
                                             "name": "ElementaryTypeName",
@@ -6107,11 +5791,10 @@
                                       },
                                       {
                                         "attributes": {
-                                          "argumentTypes": null,
                                           "overloadedDeclarations": [
                                             null
                                           ],
-                                          "referencedDeclaration": -28,
+                                          "referencedDeclaration": 4294967268,
                                           "type": "library Address",
                                           "value": "this"
                                         },
@@ -6131,7 +5814,6 @@
                               },
                               {
                                 "attributes": {
-                                  "argumentTypes": null,
                                   "overloadedDeclarations": [
                                     null
                                   ],
@@ -6150,13 +5832,11 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "hexvalue": "416464726573733a20696e73756666696369656e742062616c616e636520666f722063616c6c",
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
                               "lValueRequested": false,
-                              "subdenomination": null,
                               "token": "string",
                               "type": "literal_string \"Address: insufficient balance for call\"",
                               "value": "Address: insufficient balance for call"
@@ -6179,7 +5859,6 @@
                     "children": [
                       {
                         "attributes": {
-                          "argumentTypes": null,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -6206,10 +5885,10 @@
                                 }
                               ],
                               "overloadedDeclarations": [
-                                -18,
-                                -18
+                                4294967278,
+                                4294967278
                               ],
-                              "referencedDeclaration": -18,
+                              "referencedDeclaration": 4294967278,
                               "type": "function (bool,string memory) pure",
                               "value": "require"
                             },
@@ -6219,7 +5898,6 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
@@ -6254,7 +5932,6 @@
                               },
                               {
                                 "attributes": {
-                                  "argumentTypes": null,
                                   "overloadedDeclarations": [
                                     null
                                   ],
@@ -6273,13 +5950,11 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "hexvalue": "416464726573733a2063616c6c20746f206e6f6e2d636f6e7472616374",
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
                               "lValueRequested": false,
-                              "subdenomination": null,
                               "token": "string",
                               "type": "literal_string \"Address: call to non-contract\"",
                               "value": "Address: call to non-contract"
@@ -6311,12 +5986,10 @@
                           "constant": false,
                           "mutability": "mutable",
                           "name": "success",
-                          "overrides": null,
                           "scope": 1718,
                           "stateVariable": false,
                           "storageLocation": "default",
                           "type": "bool",
-                          "value": null,
                           "visibility": "internal"
                         },
                         "children": [
@@ -6339,12 +6012,10 @@
                           "constant": false,
                           "mutability": "mutable",
                           "name": "returndata",
-                          "overrides": null,
                           "scope": 1718,
                           "stateVariable": false,
                           "storageLocation": "memory",
                           "type": "bytes",
-                          "value": null,
                           "visibility": "internal"
                         },
                         "children": [
@@ -6364,7 +6035,6 @@
                       },
                       {
                         "attributes": {
-                          "argumentTypes": null,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -6409,13 +6079,11 @@
                                   "isPure": false,
                                   "lValueRequested": false,
                                   "member_name": "call",
-                                  "referencedDeclaration": null,
                                   "type": "function (bytes memory) payable returns (bool,bytes memory)"
                                 },
                                 "children": [
                                   {
                                     "attributes": {
-                                      "argumentTypes": null,
                                       "overloadedDeclarations": [
                                         null
                                       ],
@@ -6434,7 +6102,6 @@
                               },
                               {
                                 "attributes": {
-                                  "argumentTypes": null,
                                   "overloadedDeclarations": [
                                     null
                                   ],
@@ -6453,7 +6120,6 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "overloadedDeclarations": [
                                 null
                               ],
@@ -6482,7 +6148,6 @@
                     "children": [
                       {
                         "attributes": {
-                          "argumentTypes": null,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -6525,7 +6190,6 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "overloadedDeclarations": [
                                 null
                               ],
@@ -6539,7 +6203,6 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "overloadedDeclarations": [
                                 null
                               ],
@@ -6553,7 +6216,6 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "overloadedDeclarations": [
                                 null
                               ],
@@ -6594,7 +6256,6 @@
                 null
               ],
               "name": "functionStaticCall",
-              "overrides": null,
               "scope": 1854,
               "stateMutability": "view",
               "virtual": false,
@@ -6616,12 +6277,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "target",
-                      "overrides": null,
                       "scope": 1736,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "address",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -6645,12 +6304,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "data",
-                      "overrides": null,
                       "scope": 1736,
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "type": "bytes",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -6680,12 +6337,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "",
-                      "overrides": null,
                       "scope": 1736,
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "type": "bytes",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -6717,7 +6372,6 @@
                     "children": [
                       {
                         "attributes": {
-                          "argumentTypes": null,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -6761,7 +6415,6 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "overloadedDeclarations": [
                                 null
                               ],
@@ -6775,7 +6428,6 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "overloadedDeclarations": [
                                 null
                               ],
@@ -6789,13 +6441,11 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "hexvalue": "416464726573733a206c6f772d6c6576656c207374617469632063616c6c206661696c6564",
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
                               "lValueRequested": false,
-                              "subdenomination": null,
                               "token": "string",
                               "type": "literal_string \"Address: low-level static call failed\"",
                               "value": "Address: low-level static call failed"
@@ -6833,7 +6483,6 @@
                 null
               ],
               "name": "functionStaticCall",
-              "overrides": null,
               "scope": 1854,
               "stateMutability": "view",
               "virtual": false,
@@ -6855,12 +6504,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "target",
-                      "overrides": null,
                       "scope": 1771,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "address",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -6884,12 +6531,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "data",
-                      "overrides": null,
                       "scope": 1771,
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "type": "bytes",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -6912,12 +6557,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "errorMessage",
-                      "overrides": null,
                       "scope": 1771,
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "type": "string",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -6947,12 +6590,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "",
-                      "overrides": null,
                       "scope": 1771,
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "type": "bytes",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -6981,7 +6622,6 @@
                     "children": [
                       {
                         "attributes": {
-                          "argumentTypes": null,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -7008,10 +6648,10 @@
                                 }
                               ],
                               "overloadedDeclarations": [
-                                -18,
-                                -18
+                                4294967278,
+                                4294967278
                               ],
-                              "referencedDeclaration": -18,
+                              "referencedDeclaration": 4294967278,
                               "type": "function (bool,string memory) pure",
                               "value": "require"
                             },
@@ -7021,7 +6661,6 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
@@ -7056,7 +6695,6 @@
                               },
                               {
                                 "attributes": {
-                                  "argumentTypes": null,
                                   "overloadedDeclarations": [
                                     null
                                   ],
@@ -7075,13 +6713,11 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "hexvalue": "416464726573733a207374617469632063616c6c20746f206e6f6e2d636f6e7472616374",
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
                               "lValueRequested": false,
-                              "subdenomination": null,
                               "token": "string",
                               "type": "literal_string \"Address: static call to non-contract\"",
                               "value": "Address: static call to non-contract"
@@ -7113,12 +6749,10 @@
                           "constant": false,
                           "mutability": "mutable",
                           "name": "success",
-                          "overrides": null,
                           "scope": 1770,
                           "stateVariable": false,
                           "storageLocation": "default",
                           "type": "bool",
-                          "value": null,
                           "visibility": "internal"
                         },
                         "children": [
@@ -7141,12 +6775,10 @@
                           "constant": false,
                           "mutability": "mutable",
                           "name": "returndata",
-                          "overrides": null,
                           "scope": 1770,
                           "stateVariable": false,
                           "storageLocation": "memory",
                           "type": "bytes",
-                          "value": null,
                           "visibility": "internal"
                         },
                         "children": [
@@ -7166,7 +6798,6 @@
                       },
                       {
                         "attributes": {
-                          "argumentTypes": null,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -7193,13 +6824,11 @@
                               "isPure": false,
                               "lValueRequested": false,
                               "member_name": "staticcall",
-                              "referencedDeclaration": null,
                               "type": "function (bytes memory) view returns (bool,bytes memory)"
                             },
                             "children": [
                               {
                                 "attributes": {
-                                  "argumentTypes": null,
                                   "overloadedDeclarations": [
                                     null
                                   ],
@@ -7218,7 +6847,6 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "overloadedDeclarations": [
                                 null
                               ],
@@ -7247,7 +6875,6 @@
                     "children": [
                       {
                         "attributes": {
-                          "argumentTypes": null,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -7290,7 +6917,6 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "overloadedDeclarations": [
                                 null
                               ],
@@ -7304,7 +6930,6 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "overloadedDeclarations": [
                                 null
                               ],
@@ -7318,7 +6943,6 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "overloadedDeclarations": [
                                 null
                               ],
@@ -7359,7 +6983,6 @@
                 null
               ],
               "name": "functionDelegateCall",
-              "overrides": null,
               "scope": 1854,
               "stateMutability": "nonpayable",
               "virtual": false,
@@ -7381,12 +7004,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "target",
-                      "overrides": null,
                       "scope": 1788,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "address",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -7410,12 +7031,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "data",
-                      "overrides": null,
                       "scope": 1788,
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "type": "bytes",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -7445,12 +7064,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "",
-                      "overrides": null,
                       "scope": 1788,
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "type": "bytes",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -7482,7 +7099,6 @@
                     "children": [
                       {
                         "attributes": {
-                          "argumentTypes": null,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -7526,7 +7142,6 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "overloadedDeclarations": [
                                 null
                               ],
@@ -7540,7 +7155,6 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "overloadedDeclarations": [
                                 null
                               ],
@@ -7554,13 +7168,11 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "hexvalue": "416464726573733a206c6f772d6c6576656c2064656c65676174652063616c6c206661696c6564",
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
                               "lValueRequested": false,
-                              "subdenomination": null,
                               "token": "string",
                               "type": "literal_string \"Address: low-level delegate call failed\"",
                               "value": "Address: low-level delegate call failed"
@@ -7598,7 +7210,6 @@
                 null
               ],
               "name": "functionDelegateCall",
-              "overrides": null,
               "scope": 1854,
               "stateMutability": "nonpayable",
               "virtual": false,
@@ -7620,12 +7231,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "target",
-                      "overrides": null,
                       "scope": 1823,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "address",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -7649,12 +7258,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "data",
-                      "overrides": null,
                       "scope": 1823,
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "type": "bytes",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -7677,12 +7284,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "errorMessage",
-                      "overrides": null,
                       "scope": 1823,
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "type": "string",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -7712,12 +7317,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "",
-                      "overrides": null,
                       "scope": 1823,
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "type": "bytes",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -7746,7 +7349,6 @@
                     "children": [
                       {
                         "attributes": {
-                          "argumentTypes": null,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -7773,10 +7375,10 @@
                                 }
                               ],
                               "overloadedDeclarations": [
-                                -18,
-                                -18
+                                4294967278,
+                                4294967278
                               ],
-                              "referencedDeclaration": -18,
+                              "referencedDeclaration": 4294967278,
                               "type": "function (bool,string memory) pure",
                               "value": "require"
                             },
@@ -7786,7 +7388,6 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
@@ -7821,7 +7422,6 @@
                               },
                               {
                                 "attributes": {
-                                  "argumentTypes": null,
                                   "overloadedDeclarations": [
                                     null
                                   ],
@@ -7840,13 +7440,11 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "hexvalue": "416464726573733a2064656c65676174652063616c6c20746f206e6f6e2d636f6e7472616374",
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
                               "lValueRequested": false,
-                              "subdenomination": null,
                               "token": "string",
                               "type": "literal_string \"Address: delegate call to non-contract\"",
                               "value": "Address: delegate call to non-contract"
@@ -7878,12 +7476,10 @@
                           "constant": false,
                           "mutability": "mutable",
                           "name": "success",
-                          "overrides": null,
                           "scope": 1822,
                           "stateVariable": false,
                           "storageLocation": "default",
                           "type": "bool",
-                          "value": null,
                           "visibility": "internal"
                         },
                         "children": [
@@ -7906,12 +7502,10 @@
                           "constant": false,
                           "mutability": "mutable",
                           "name": "returndata",
-                          "overrides": null,
                           "scope": 1822,
                           "stateVariable": false,
                           "storageLocation": "memory",
                           "type": "bytes",
-                          "value": null,
                           "visibility": "internal"
                         },
                         "children": [
@@ -7931,7 +7525,6 @@
                       },
                       {
                         "attributes": {
-                          "argumentTypes": null,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -7958,13 +7551,11 @@
                               "isPure": false,
                               "lValueRequested": false,
                               "member_name": "delegatecall",
-                              "referencedDeclaration": null,
                               "type": "function (bytes memory) returns (bool,bytes memory)"
                             },
                             "children": [
                               {
                                 "attributes": {
-                                  "argumentTypes": null,
                                   "overloadedDeclarations": [
                                     null
                                   ],
@@ -7983,7 +7574,6 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "overloadedDeclarations": [
                                 null
                               ],
@@ -8012,7 +7602,6 @@
                     "children": [
                       {
                         "attributes": {
-                          "argumentTypes": null,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -8055,7 +7644,6 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "overloadedDeclarations": [
                                 null
                               ],
@@ -8069,7 +7657,6 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "overloadedDeclarations": [
                                 null
                               ],
@@ -8083,7 +7670,6 @@
                           },
                           {
                             "attributes": {
-                              "argumentTypes": null,
                               "overloadedDeclarations": [
                                 null
                               ],
@@ -8117,7 +7703,6 @@
           },
           {
             "attributes": {
-              "documentation": null,
               "implemented": true,
               "isConstructor": false,
               "kind": "function",
@@ -8125,7 +7710,6 @@
                 null
               ],
               "name": "_verifyCallResult",
-              "overrides": null,
               "scope": 1854,
               "stateMutability": "pure",
               "virtual": false,
@@ -8139,12 +7723,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "success",
-                      "overrides": null,
                       "scope": 1853,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "bool",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -8167,12 +7749,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "returndata",
-                      "overrides": null,
                       "scope": 1853,
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "type": "bytes",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -8195,12 +7775,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "errorMessage",
-                      "overrides": null,
                       "scope": 1853,
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "type": "string",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -8230,12 +7808,10 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "",
-                      "overrides": null,
                       "scope": 1853,
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "type": "bytes",
-                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -8264,7 +7840,6 @@
                     "children": [
                       {
                         "attributes": {
-                          "argumentTypes": null,
                           "overloadedDeclarations": [
                             null
                           ],
@@ -8285,7 +7860,6 @@
                             "children": [
                               {
                                 "attributes": {
-                                  "argumentTypes": null,
                                   "overloadedDeclarations": [
                                     null
                                   ],
@@ -8313,7 +7887,6 @@
                             "children": [
                               {
                                 "attributes": {
-                                  "argumentTypes": null,
                                   "commonType": {
                                     "typeIdentifier": "t_uint256",
                                     "typeString": "uint256"
@@ -8328,19 +7901,16 @@
                                 "children": [
                                   {
                                     "attributes": {
-                                      "argumentTypes": null,
                                       "isConstant": false,
                                       "isLValue": false,
                                       "isPure": false,
                                       "lValueRequested": false,
                                       "member_name": "length",
-                                      "referencedDeclaration": null,
                                       "type": "uint256"
                                     },
                                     "children": [
                                       {
                                         "attributes": {
-                                          "argumentTypes": null,
                                           "overloadedDeclarations": [
                                             null
                                           ],
@@ -8359,13 +7929,11 @@
                                   },
                                   {
                                     "attributes": {
-                                      "argumentTypes": null,
                                       "hexvalue": "30",
                                       "isConstant": false,
                                       "isLValue": false,
                                       "isPure": true,
                                       "lValueRequested": false,
-                                      "subdenomination": null,
                                       "token": "number",
                                       "type": "int_const 0",
                                       "value": "0"
@@ -8418,7 +7986,6 @@
                                     "children": [
                                       {
                                         "attributes": {
-                                          "argumentTypes": null,
                                           "isConstant": false,
                                           "isLValue": false,
                                           "isPure": false,
@@ -8441,10 +8008,10 @@
                                                 }
                                               ],
                                               "overloadedDeclarations": [
-                                                -19,
-                                                -19
+                                                4294967277,
+                                                4294967277
                                               ],
-                                              "referencedDeclaration": -19,
+                                              "referencedDeclaration": 4294967277,
                                               "type": "function (string memory) pure",
                                               "value": "revert"
                                             },
@@ -8454,7 +8021,6 @@
                                           },
                                           {
                                             "attributes": {
-                                              "argumentTypes": null,
                                               "overloadedDeclarations": [
                                                 null
                                               ],
@@ -8518,11 +8084,11 @@
   },
   "compiler": {
     "name": "solc",
-    "version": "0.6.12+commit.27d51765.Emscripten.clang"
+    "version": "0.7.6+commit.7338295f.Emscripten.clang"
   },
   "networks": {},
   "schemaVersion": "3.4.3",
-  "updatedAt": "2021-09-10T00:43:40.933Z",
+  "updatedAt": "2021-09-20T16:54:58.848Z",
   "devdoc": {
     "details": "Collection of functions related to the address type",
     "kind": "dev",

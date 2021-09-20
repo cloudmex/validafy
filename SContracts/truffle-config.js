@@ -65,22 +65,34 @@ module.exports = {
       provider: () =>
         new HDWalletProvider(mnemonic, `https://bsc-dataseed1.defibit.io/`),
       network_id: 56,
-      confirmations: 7,
+      confirmations: 2,
 
       networkCheckTimeout: 1000000000,
     
       timeoutBlocks: 200000, 
       skipDryRun: true,
-      from:"0x2028E4e42fFBb4C2134c4981ee75995F7845FD95",
-      gas: 5000000,
-      gasPrice: 5000000000,
+      from:"0xaee92B5A09052d1eeFEe20c508CF0a7B861642A2",
+      //gas: 5000000,
+      //gasPrice: 5000000000,
+    },
+    auroraTestnet: {
+      provider: () =>
+        new HDWalletProvider(mnemonic, "https://testnet.aurora.dev"),
+      network_id: 0x4e454153,
+      gas: 10000000,
+    },
+    aurora: {
+      provider: () =>
+        new HDWalletProvider(mnemonic, "https://mainnet.aurora.dev"),
+      network_id: 0x4e454152,
+      gas: 10000000,
     },
   },
   contracts_build_directory: path.join(__dirname, ".././src/contracts"),
 
   compilers: {
     solc: {
-      version: "0.6.12",
+      version: ">=0.6.0 <0.8.0",
     },
   },
 };

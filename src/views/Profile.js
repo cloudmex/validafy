@@ -193,22 +193,24 @@ export default function Profile() {
 
             const filter = documents.map(x => x.tokenid);
             const getPastEvents = (i) => {
-              
+              // console.log(documents[i].blocknumber);
                 return contract.getPastEvents("Transfer", {
                   filter: { tokenId: documents[i].tokenid },
-                  fromBlock: documents[i].blocknumber,
+                  fromBlock: documents[i].blocknumber -1,
                   toBlock: documents[i].blocknumber,
+                  // formBlock:0,
                   // toBlock: "latest",
                 });
             }
 
 
-          
+          console.log("getpast-> ", await getPastEvents(0));
 
             //le agregamos a documents el time y el txhash
             for (let i = 0; i < documents.length; i++) {
               let event = await getPastEvents(i);
               
+
             documents[i] = {
               ...documents[i],
               time: getDate(documents[i].time),
@@ -370,7 +372,7 @@ export default function Profile() {
                                   <a
                                     className="a-link"
                                     href={`https://gateway.pinata.cloud/ipfs/${doc.hash}`}
-                                    target="_blank"
+                                    
                                   >
                                     {doc.hash.substring(0, 25) + " ..."}
                                   </a>
@@ -392,7 +394,7 @@ export default function Profile() {
                                     target="_blank"
                                      
                                   >
-                                   <i className="fa fa-info-circle">  </i>
+                                   <i className="fa fa-info-circle ">  </i>
                                   </a>
                                 </td>
                               </tr>
