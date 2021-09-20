@@ -68,7 +68,7 @@ const Dropdown = ({ color }) => {
             >
               <a
                 className={
-                  "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-white"
+                  "text-sm py-2 px-4 font-normal btn-animate block w-full whitespace-nowrap bg-transparent text-white"
                 }
                 onClick={async () => {
                   await changeNet(97);
@@ -77,12 +77,12 @@ const Dropdown = ({ color }) => {
                 }}
               >
                 Binance Smart Chain -Testnet
-              </a>
-              <div className="h-0 my-2 border border-solid border-t-0 border-blueGray-800 opacity-25" />
+              </a> 
+              <div className="h-0 my-2 border border-solid border-t-0 border-blueGray-800 opacity-25" /> 
               <a
                 className={
-                  "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap   " +
-                  (color === "white" ? " text-blueGray-700" : "text-white")
+                  "text-sm py-2 px-4 btn-animate font-normal block w-full whitespace-nowrap   " +
+                  (color === "white" ? "  text-blueGray-700" : "text-white")
                 }
                 onClick={() => {
                   changeNet(56);
@@ -91,12 +91,12 @@ const Dropdown = ({ color }) => {
               >
                 Binance Smart Chain -Mainnet
               </a>
-              <div className="h-0 my-2 border border-solid border-t-0 border-blueGray-800 opacity-25" />
-              <a
+              {/* <div className="h-0 my-2 border border-solid border-t-0 border-blueGray-800 opacity-25" /> */}
+              {/* <a
                 href="#ComingSoon"
                 className={
-                  "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap   " +
-                  (color === "white" ? " text-blueGray-700" : "text-white")
+                  "text-sm py-2 px-4 font-normal btn-animate block w-full whitespace-nowrap   " +
+                  (color === "white" ? "  text-blueGray-700" : "text-white")
                 }
                 onClick={async () => {
                   await changeNet(1313161554);
@@ -105,9 +105,9 @@ const Dropdown = ({ color }) => {
                 }}
               >
                 NEAR-Mainnet (Soon)
-              </a>
-              <div className="h-0 my-2 border border-solid border-t-0 border-blueGray-800 opacity-25" />
-              <a
+              </a> */}
+              {/* <div className="h-0 my-2 border border-solid border-t-0 border-blueGray-800 opacity-25" /> */}
+              {/* <a
                 href="#ComingSoon"
                 className={
                   "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap   " +
@@ -120,7 +120,7 @@ const Dropdown = ({ color }) => {
                 }}
               >
                 NEAR-Testnet (Soon)
-              </a>
+              </a> */}
             </div>
           </div>
         </div>
