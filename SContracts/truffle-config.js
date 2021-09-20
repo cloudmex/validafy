@@ -65,15 +65,15 @@ module.exports = {
       provider: () =>
         new HDWalletProvider(mnemonic, `https://bsc-dataseed1.defibit.io/`),
       network_id: 56,
-      confirmations: 7,
+      confirmations: 2,
 
       networkCheckTimeout: 1000000000,
     
       timeoutBlocks: 200000, 
       skipDryRun: true,
-      from:"0x2028E4e42fFBb4C2134c4981ee75995F7845FD95",
-      gas: 5000000,
-      gasPrice: 5000000000,
+      from:"0xaee92B5A09052d1eeFEe20c508CF0a7B861642A2",
+      //gas: 5000000,
+      //gasPrice: 5000000000,
     },
     auroraTestnet: {
       provider: () =>
