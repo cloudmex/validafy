@@ -32,7 +32,7 @@ contract Valid is ERC721 {
             tokenURI, //hash
             block.timestamp, // time
             ownerbalance, // owner
-            blockhash(this), 
+            blockhash(0), 
             fileName, 
             explorerUrl, 
             block.number

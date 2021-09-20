@@ -193,11 +193,12 @@ export default function Profile() {
 
             const filter = documents.map(x => x.tokenid);
             const getPastEvents = (i) => {
-              
+              // console.log(documents[i].blocknumber);
                 return contract.getPastEvents("Transfer", {
                   filter: { tokenId: documents[i].tokenid },
-                  fromBlock: documents[i].blocknumber,
+                  fromBlock: documents[i].blocknumber -1,
                   toBlock: documents[i].blocknumber,
+                  // formBlock:0,
                   // toBlock: "latest",
                 });
             }
@@ -209,6 +210,7 @@ export default function Profile() {
             for (let i = 0; i < documents.length; i++) {
               let event = await getPastEvents(i);
               
+
             documents[i] = {
               ...documents[i],
               time: getDate(documents[i].time),
