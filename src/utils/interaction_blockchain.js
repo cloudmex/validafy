@@ -8,7 +8,7 @@ var nets = [
       data: [
         {
           chainId: "0x38",
-          chainName: "BSCMAINET",
+          chainName: "BSCMAINNET",
           rpcUrls: ["https://bsc-dataseed1.binance.org"],
           nativeCurrency: {
             name: "BINANCE COIN",
