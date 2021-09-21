@@ -66,7 +66,7 @@ const Dropdown = ({ color }) => {
               }
               style={{ minWidth: "12rem" }}
             >
-              <a
+              {/* <a
                 className={
                   "text-sm py-2 px-4 font-normal btn-animate block w-full whitespace-nowrap bg-transparent text-white"
                 }
@@ -78,7 +78,7 @@ const Dropdown = ({ color }) => {
               >
                 Binance Smart Chain -Testnet
               </a> 
-              <div className="h-0 my-2 border border-solid border-t-0 border-blueGray-800 opacity-25" /> 
+              <div className="h-0 my-2 border border-solid border-t-0 border-blueGray-800 opacity-25" />  */}
               <a
                 className={
                   "text-sm py-2 px-4 btn-animate font-normal block w-full whitespace-nowrap   " +
