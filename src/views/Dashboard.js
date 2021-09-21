@@ -407,7 +407,7 @@ export default function Dashboard() {
               //si no se encuentra el hash dentro de algun tokenuri los estampamos
 
               //comision
-              const comision = window.web3.utils.toWei("0.00022", "ether");
+              const comision = window.web3.utils.toWei("0.003", "ether");
 
               //guardar el archivo a ipfs
               ipfs.add(Buffer(reader.result)).then((result) => {
