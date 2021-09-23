@@ -110,7 +110,7 @@ export function init() {
         port: 5001,
         protocol: "https",
       });
-      if (!localStorage.getItem("network")) localStorage.setItem("network", 97);
+      if (!localStorage.getItem("network")) localStorage.setItem("network", 56);//97);
 
       return true;
     } else {

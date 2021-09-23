@@ -30,7 +30,7 @@ export default function Sidebar() {
        ActualnetworkId = await window.ethereum.request({
         method: "net_version",
       });
-      setRedtext (ActualnetworkId === "97" ? "BSC -Testnet" : "BSC -Mainnet")
+      setRedtext (ActualnetworkId === "56" ? "BSC -Testnet" : "BSC -Mainnet")
       // sm address
       let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
 
