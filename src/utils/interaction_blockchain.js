@@ -24,7 +24,7 @@ var nets = [
       data: [
         {
           chainId: "0x61",
-          chainName: "BSCTESTNET",
+          chainName: "BSCMAINNET",//"BSCTESTNET",
           rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
           nativeCurrency: {
             name: "BINANCE COIN",
