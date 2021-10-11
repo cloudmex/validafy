@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import ValidafySM from "../contracts/Valid.json";
 import Navbar from "../components/Navbar_landing_template";
 import Footer from "../components/Footer_landing_template";
+import {init as ini} from "../utils/trustwallet";
 import {
   init,
   addNetwork,
@@ -31,9 +32,11 @@ export default function Landing() {
    * @param {*} event tiene toda la informacion del input asociado
    * @returns  no regresa nada
    */
+  ini(); 
   useEffect(() => {
     //incializamos la app, si no tiene metamask lo mandamos a la pagina de descarga
     if (!init()) {
+      
       setInitialBc({
         show: true,
         success: false,
