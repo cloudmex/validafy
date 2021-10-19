@@ -2,19 +2,27 @@ import React, { useState, useEffect } from "react";
 import ValidafySM from "../contracts/Valid.json";
 import Navbar from "../components/Navbar_landing_template";
 import Footer from "../components/Footer_landing_template";
-import {init as ini} from "../utils/trustwallet";
 import {
   init,
   addNetwork,
-  isDeployed,
   wait,
   sameNetwork,
-  getExplorerUrl,
-} from "../utils/interaction_blockchain";
+  getExplorerUrl
+} from "../utils/trustwallet";
+// import {connector} from "../utils/als";
+// import {
+//   // init,
+//   // addNetwork,
+//   isDeployed,
+//   // wait,
+//   // sameNetwork,
+//   getExplorerUrl,
+// } from "../utils/interaction_blockchain";
 
 import { acceptedFormats } from "../utils/constraints";
 
 export default function Landing() {
+  
   /**
    * @type estado que guarda los datos mas relevantes de el componente
    */
@@ -32,22 +40,22 @@ export default function Landing() {
    * @param {*} event tiene toda la informacion del input asociado
    * @returns  no regresa nada
    */
-  ini(); 
-  useEffect(() => {
-    //incializamos la app, si no tiene metamask lo mandamos a la pagina de descarga
-    if (!init()) {
+  
+  // useEffect(async() => {
+  //   //incializamos la app, si no tiene metamask lo mandamos a la pagina de descarga
+  //   if (!await init()) {
       
-      setInitialBc({
-        show: true,
-        success: false,
-        message:
-          "No cuentas con metamask,te estamos redireccionando al sitio oficial para que procedas con la descarga",
-      });
-      setTimeout(() => {
-        window.location.replace("https://metamask.io/download");
-      }, 5000);
-    }
-  }, []);
+  //     setInitialBc({
+  //       show: true,
+  //       success: false,
+  //       message:
+  //         "No cuentas con metamask,te estamos redireccionando al sitio oficial para que procedas con la descarga",
+  //     });
+  //     setTimeout(() => {
+  //       window.location.replace("https://metamask.io/download");
+  //     }, 5000);
+  //   }
+  // }, []);
   const Validar = async (event) => {
     ///browser detection
     event.preventDefault();
@@ -134,9 +142,10 @@ export default function Landing() {
   async function see() {
     const web3 = window.web3;
     const networkId = await web3.eth.net.getId();
+    console.log(networkId);
     try {
-      window.ethereum._metamask.isUnlocked().then(async function(value) {
-        if (value) {
+      
+        // if (value) {
           console.log(networkId);
 
           if (await sameNetwork()) {
@@ -180,16 +189,16 @@ export default function Landing() {
               window.location.href = "/dash";
             }, 3000);
           }
-        } else {
-          setInitialBc({
-            ...initialBc,
-            show: true,
-            success: false,
-            message: "!Advertencia !.\nPrimero logeate",
-          });
-          window.location.href = "/login";
-        }
-      });
+        // } else {
+        //   setInitialBc({
+        //     ...initialBc,
+        //     show: true,
+        //     success: false,
+        //     message: "!Advertencia !.\nPrimero logeate",
+        //   });
+        //   window.location.href = "/login";
+        // }
+      
     } catch (error) {
       // window.alertt(error)
       console.log("e");
@@ -339,6 +348,7 @@ export default function Landing() {
                         }
                         onClick={(e) => {
                           e.preventDefault();
+                          // Validar(e);
                         }}
                         data-toggle="tab"
                         href="#link1"

@@ -3,12 +3,18 @@ import logo from "../assets/img/metamask.png";
 import validlogo from "../assets/img/validafy.png";
 
 import Web3 from "web3";
+// import {
+//   addNetwork,
+//   isDeployed,
+//   wait,
+//   sameNetwork,
+// } from "../utils/interaction_blockchain";
 import {
   addNetwork,
   isDeployed,
   wait,
   sameNetwork,
-} from "../utils/interaction_blockchain";
+} from "../utils/trustwallet";
 export default function Navbar(props) {
   const [initialBc, setInitialBc] = useState({
     Hash: "",

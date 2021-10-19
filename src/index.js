@@ -5,6 +5,21 @@ import AuthProvider from "./Context/AuthContext";
 import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
+import {
+  init
+} from "./utils/trustwallet";
+
+(async () => {
+  console.log("llego");
+  try {
+      await init();
+  } catch (error) {
+    console.error(error);
+  }
+})();
+
+// console.log("una vez");
+// awaitStarted();
 
 ReactDOM.render(
   <AuthProvider>

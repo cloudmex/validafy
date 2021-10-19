@@ -6,7 +6,8 @@ import ValidafySM from "../contracts/Valid.json";
 import Sidebar from "../components/Sidebar.js";
 import validlogo from "../assets/img/validafy-logotipo.png";
 
-import { init,getExplorerUrl } from "../utils/interaction_blockchain";
+// import { init,getExplorerUrl } from "../utils/interaction_blockchain";
+import { init,getExplorerUrl } from "../utils/trustwallet";
 
 
 
@@ -31,43 +32,39 @@ export default function Profile() {
   useEffect(() => {
     (async () => {
       unhideCharge(true);
-     try {
-      if (!init()) {
-        setInitialBc({
-          show: true,
-          success: false,
-          message:
-            "No cuentas con metamask,te estamos redireccionando al sitio oficial para que procedas con la descarga",
-        });
-        setTimeout(() => {
-          window.location.replace("https://metamask.io/download");
-        }, 5000);
-      }
-     } catch (error) {
+    //  try {
+    //   if (!await init()) {
+    //     setInitialBc({
+    //       show: true,
+    //       success: false,
+    //       message:
+    //         "No cuentas con metamask,te estamos redireccionando al sitio oficial para que procedas con la descarga",
+    //     });
+    //     setTimeout(() => {
+    //       window.location.replace("https://metamask.io/download");
+    //     }, 5000);
+    //   }
+    //  } catch (error) {
        
-     }
+    //  }
      try {
-      window.ethereum._metamask.isUnlocked().then(function(value) {
-        if (value) {
-          console.log("Abierto");
-        } else {
-          console.log("Cerrado");
-          window.location.href = "/";
-        }
-      });
+      // window.ethereum._metamask.isUnlocked().then(function(value) {
+      //   if (value) {
+      //     console.log("Abierto");
+      //   } else {
+      //     console.log("Cerrado");
+      //     window.location.href = "/";
+      //   }
+      // });
 
-      if (window.ethereum) {
+      if (window.web3) {
         
-        window.web3 = new Web3(window.ethereum);
+        // window.web3 = new Web3(window.ethereum);
 
         //get the useraccounts
-        let useraccounts = await window.ethereum.request({
-          method: "eth_requestAccounts",
-        });
+        let useraccounts = await window.web3.eth.getAccounts();
         //get the actual networkid or chainid
-        let ActualnetworkId = await window.ethereum.request({
-          method: "net_version",
-        });
+        let ActualnetworkId = await window.web3.eth.getChainId();
        
         // sm address
         let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
@@ -191,7 +188,7 @@ export default function Profile() {
             }
 
 
-            const filter = documents.map(x => x.tokenid);
+            // const filter = documents.map(x => x.tokenid);
             const getPastEvents = (i) => {
               // console.log(documents[i].blocknumber);
                 return contract.getPastEvents("Transfer", {
@@ -226,7 +223,7 @@ export default function Profile() {
         unhideCharge(false);
       }
 
-      console.log(window.ethereum);
+      // console.log(window.ethereum);
   
     } catch (error) {
       console.log(error);

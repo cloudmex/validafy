@@ -86,7 +86,7 @@ export async function addNetwork(id) {
     //obtener el arreglo con los datos de la red
     let networkData = nets[id];
     console.log("red->> ",networkData);
-  if (!networkData) return "no existe esa red";
+  if (!networkData)   return "no existe esa red";
   // agregar red o cambiar red
   return window.ethereum.request({
     method: "wallet_switchEthereumChain",
@@ -110,7 +110,7 @@ export function init() {
         port: 5001,
         protocol: "https",
       });
-      if (!localStorage.getItem("network")) localStorage.setItem("network", 97);
+      if (!localStorage.getItem("network")) localStorage.setItem("network", 56);
 
       return true;
     } else {

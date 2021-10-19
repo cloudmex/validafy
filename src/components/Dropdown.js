@@ -1,12 +1,19 @@
 import React from "react";
 import { createPopper } from "@popperjs/core";
+// import {
+//   addNetwork,
+//   isDeployed,
+//   getNetworkName,
+//   sameNetwork,
+//   wait,
+// } from "../utils/interaction_blockchain";
 import {
   addNetwork,
   isDeployed,
   getNetworkName,
   sameNetwork,
   wait,
-} from "../utils/interaction_blockchain";
+} from "../utils/trustwallet";
 
 const Dropdown = ({ color }) => {
   // dropdown props

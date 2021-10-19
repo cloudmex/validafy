@@ -12,9 +12,7 @@ export default function Profile() {
   const [Modal, setShowModal] = React.useState({ show: false });
 
   const Retirar = async () => {
-    let useraccounts = await window.ethereum.request({
-      method: "eth_requestAccounts",
-    });
+    let useraccounts = await window.web3.eth.getAccounts();
     console.log(
       useraccounts[0] ==
         (await withdraw.contr.methods.ownerbalance.call().call())
@@ -32,11 +30,9 @@ export default function Profile() {
 
   useEffect(() => {
     (async () => {
-      window.web3 = new Web3(window.ethereum);
+      // window.web3 = new Web3(window.ethereum);
       //get the actual networkid or chainid
-      let ActualnetworkId = await window.ethereum.request({
-        method: "net_version",
-      });
+      // let ActualnetworkId = await window.web3.eth.getChainId();
 
       // sm address
       let tokenNetworkData =
@@ -61,10 +57,8 @@ export default function Profile() {
       );
 
       //get the balance of the sm
-      let smBalance = await window.ethereum.request({
-        method: "eth_getBalance",
-        params: [tokenNetworkData.address],
-      });
+      
+      let smBalance = await window.web3.eth.getBalance(tokenNetworkData.address);
 
       setwithdraw({
         smBalance: window.web3.utils.fromWei(smBalance),
