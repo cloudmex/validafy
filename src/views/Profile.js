@@ -7,7 +7,7 @@ import Sidebar from "../components/Sidebar.js";
 import validlogo from "../assets/img/validafy-logotipo.png";
 
 // import { init,getExplorerUrl } from "../utils/interaction_blockchain";
-import { init,getExplorerUrl } from "../utils/trustwallet";
+import { init,getExplorerUrl, getAccounts,getChainId, Contract } from "../utils/trustwallet";
 
 
 
@@ -62,9 +62,9 @@ export default function Profile() {
         // window.web3 = new Web3(window.ethereum);
 
         //get the useraccounts
-        let useraccounts = await window.web3.eth.getAccounts();
+        let useraccounts = await getAccounts();
         //get the actual networkid or chainid
-        let ActualnetworkId = await window.web3.eth.getChainId();
+        let ActualnetworkId = await getChainId();
        
         // sm address
         let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
@@ -84,7 +84,7 @@ export default function Profile() {
         
         //instantiate the contract object
         
-        let contract = new window.web3.eth.Contract(
+        let contract = new Contract(
           ValidafySM.abi,
           tokenNetworkData.address
           );

@@ -11,7 +11,10 @@ import {
   addNetwork,
   wait,
   sameNetwork,
-  getExplorerUrl
+  getExplorerUrl,
+  Contract,
+  getChainId,
+  getAccounts
 } from "../utils/trustwallet";
 // import { Dialog, Transition } from "@headlessui/react";
 import { acceptedFormats } from "../utils/constraints";
@@ -188,9 +191,9 @@ export default function Dashboard() {
         // window.web3 = new Web3(window.ethereum);
 
         //get the useraccounts
-        let useraccounts = await window.web3.eth.getAccounts();
+        let useraccounts = await getAccounts();
         //get the actual networkid or chainid
-        let ActualnetworkId = await window.web3.eth.getChainId();// localStorage.getItem("network");
+        let ActualnetworkId = await getChainId();// localStorage.getItem("network");
 
         // sm address
         let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
@@ -206,7 +209,7 @@ export default function Dashboard() {
           return;
         }
         //instantiate the contract object
-        let contract =  new window.web3.eth.Contract(
+        let contract =  new Contract(
           ValidafySM.abi,
           tokenNetworkData.address
         );
@@ -274,11 +277,11 @@ export default function Dashboard() {
         }
         console.log("hasta aqui")
         //get the actual networkid or chainid
-        let ActualnetworkId = await window.web3.eth.getChainId();
+        let ActualnetworkId = await getChainId();
         // sm address
         let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
         //instantiate the contract object
-        let contract = new window.web3.eth.Contract(
+        let contract =  Contract(
           ValidafySM.abi,
           tokenNetworkData.address
         );
@@ -358,11 +361,11 @@ export default function Dashboard() {
           }
         }
         //get the actual networkid or chainid
-        let ActualnetworkId = await window.web3.eth.getChainId();
+        let ActualnetworkId = await getChainId();
         // sm address
         let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
         //instantiate the contract object
-        let contract = new window.web3.eth.Contract(
+        let contract = new Contract(
           ValidafySM.abi,
           tokenNetworkData.address
         );
@@ -437,7 +440,7 @@ export default function Dashboard() {
                         from: sm.useraccount,
                         value: comision,
                       })
-                      .on("receipt", (receipt) => {
+                      .once("receipt", (receipt) => {
                         console.log("resultado--> ",receipt);
 
                      
@@ -452,9 +455,9 @@ export default function Dashboard() {
                       };
                
                    console.log("metadata--->  ",metadata);
-                    // window.pinata.hashMetadata(result.ipfsHash, metadata).then((result) => {
-                    //   //handle results here
-                    //   console.log(result + " asqui");
+                    window.pinata.hashMetadata(result.ipfsHash, metadata).then((result) => {
+                      //handle results here
+                      console.log(result + " asqui");
 
                       setShowModal({
                         ...initialBc,
@@ -466,10 +469,10 @@ export default function Dashboard() {
 
                   //     //quitar la imagen de carga
                       setInitialBc({ ...initialBc, showHideCharge: false });
-                  // }).catch((err) => {
-                  //     //handle error here
-                  //     console.log(err);
-                  // });
+                  }).catch((err) => {
+                      //handle error here
+                      console.log(err);
+                  });
  
                       })
                       .catch((err) => {

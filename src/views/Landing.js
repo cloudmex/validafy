@@ -7,7 +7,8 @@ import {
   addNetwork,
   wait,
   sameNetwork,
-  getExplorerUrl
+  getExplorerUrl,
+  Contract
 } from "../utils/trustwallet";
 // import {connector} from "../utils/als";
 // import {
@@ -96,7 +97,7 @@ export default function Landing() {
       let tokenNetworkData =
         ValidafySM.networks[localStorage.getItem("network")];
       //instantiate the contract object
-      let contract = new window.web3.eth.Contract(
+      let contract = new Contract(
         ValidafySM.abi,
         tokenNetworkData.address
       );

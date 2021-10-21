@@ -6,13 +6,15 @@ import Footer from "../components/Footer_landing_template";
 import ValidafySM from "../contracts/Valid.json";
 import Sidebar from "../components/Sidebar.js";
 import validlogo from "../assets/img/validafy-logotipo.png";
+import {Contract, getAccounts, getBalance} from "../utils/trustwallet"
+
 
 export default function Profile() {
   const [withdraw, setwithdraw] = useState({ showHideCharge: false });
   const [Modal, setShowModal] = React.useState({ show: false });
 
   const Retirar = async () => {
-    let useraccounts = await window.web3.eth.getAccounts();
+    let useraccounts = await getAccounts();
     console.log(
       useraccounts[0] ==
         (await withdraw.contr.methods.ownerbalance.call().call())
@@ -51,14 +53,14 @@ export default function Profile() {
 
       //instantiate the contract object
 
-      let contract = new window.web3.eth.Contract(
+      let contract = new Contract(
         ValidafySM.abi,
         tokenNetworkData.address
       );
 
       //get the balance of the sm
       
-      let smBalance = await window.web3.eth.getBalance(tokenNetworkData.address);
+      let smBalance = await getBalance();
 
       setwithdraw({
         smBalance: window.web3.utils.fromWei(smBalance),

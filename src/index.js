@@ -6,9 +6,10 @@ import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import {
-  init
+  init,
+  WalletModal
 } from "./utils/trustwallet";
-
+// import WalletModal from './components/WalletModal'
 (async () => {
   console.log("llego");
   try {
@@ -24,6 +25,7 @@ import {
 ReactDOM.render(
   <AuthProvider>
     <App />
+    <WalletModal/>
   </AuthProvider>,
   document.getElementById("root")
 );

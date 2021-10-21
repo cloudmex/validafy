@@ -7,7 +7,7 @@ import Dropdown from "./Dropdown.js";
 // import Web3 from "web3";
 import ValidafySM from "../contracts/Valid.json";
 // import {  isDeployed } from "../utils/interaction_blockchain";
-import {  isDeployed } from "../utils/trustwallet";
+import {  Contract, getAccounts, getChainId, isDeployed } from "../utils/trustwallet";
 
 export default function Sidebar() {
   const [collapseShow, setCollapseShow] = React.useState("hidden");
@@ -24,15 +24,15 @@ export default function Sidebar() {
         console.log("is");
       console.log(await isDeployed());
       //get the useraccounts
-      let useraccounts = await window.web3.eth.getAccounts();
+      let useraccounts = await getAccounts();
       //get the actual networkid or chainid
-       ActualnetworkId = await window.web3.eth.getChainId();
-      setRedtext (ActualnetworkId === "97" ? "BSC -Testnet" : "BSC -Mainnet")
+       ActualnetworkId = await getChainId();
+      setRedtext (ActualnetworkId === 97 ? "BSC -Testnet" : "BSC -Mainnet")
       // sm address
       let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
 
       // window.web3 = new Web3(window.ethereum);
-       contract = new window.web3.eth.Contract(
+       contract = new Contract(
         ValidafySM.abi,
         tokenNetworkData.address);
 

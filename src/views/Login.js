@@ -11,7 +11,7 @@ export default function Login() {
   async function loadWeb3() {
     try {
       if (window.web3) {
-        // window.web3 = new Web3(window.web3.currentProvider);
+        window.web3 = new Web3(window.web3.currentProvider);
       } else {
         window.alert(
           "No se ha detectado un navegador compatible con ethereum,prueba instalando la extension de MetaMask!"
