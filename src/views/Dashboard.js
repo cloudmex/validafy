@@ -14,7 +14,8 @@ import {
   getExplorerUrl,
   Contract,
   getChainId,
-  getAccounts
+  getAccounts,
+  init
 } from "../utils/trustwallet";
 // import { Dialog, Transition } from "@headlessui/react";
 import { acceptedFormats } from "../utils/constraints";
@@ -187,7 +188,7 @@ export default function Dashboard() {
       // } catch (error) {
       //   console.log("e" + error);
       // }
-      if (window.web3) {
+      if (await init()) {
         // window.web3 = new Web3(window.ethereum);
 
         //get the useraccounts
@@ -209,7 +210,7 @@ export default function Dashboard() {
           return;
         }
         //instantiate the contract object
-        let contract =  new Contract(
+        let contract =   Contract(
           ValidafySM.abi,
           tokenNetworkData.address
         );
@@ -227,24 +228,25 @@ export default function Dashboard() {
   }, []);
 
   const Validar = async (event) => {
+    // console.log("el evento ->> ",event.target.files)
+    const file = event.target.files[0];
     event.preventDefault();
 
     ///browser detection
     unhideCharge(true);
-    if (window.web3) {
+    if (await init()) {
       // window.web3 = new Web3(window.ethereum);
 
       try {
         //tratamos de cargar el documento que el usuario eligio
-        const file = event.target.files[0];
         console.log("el archivo ",file);
         if (file === undefined) {
           window.location.reload();
         }
         
-        if (!event.target.files) {
-          throw "no agrego ningun archivo";
-        }
+        // if (!event.target.files) {
+        //   throw "no agrego ningun archivo";
+        // }
         
         //cambiar red
         
@@ -313,7 +315,7 @@ export default function Dashboard() {
             });
         };
       } catch (err) {
-        //   window.alert(err.message || err);
+          window.alert(err.message || err);
         return;
       }
     } else {
@@ -324,19 +326,23 @@ export default function Dashboard() {
   };
 
   const ValidarCaptura = async (event) => {
+    const file = event.target.files[0];
     event.preventDefault();
     unhideCharge(true);
     ///browser detection
-    if (window.web3) {
+    if (await init()) {
       // window.web3 = new Web3(window.ethereum);
 
       try {
         //tratamos de cargar el documento que el usuario eligio
-        const file = event.target.files[0];
 
-        if (!event.target.files) {
-          throw "no agrego ningun archivo";
+        if (file === undefined) {
+          window.location.reload();
         }
+        
+        // if (!event.target.files) {
+        //   throw "no agrego ningun archivo";
+        // }
         //cambiar red
         // const web3 = window.web3;
         // const networkId = await window.web3.eth.net.getId();

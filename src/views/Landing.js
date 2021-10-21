@@ -8,7 +8,8 @@ import {
   wait,
   sameNetwork,
   getExplorerUrl,
-  Contract
+  Contract,
+  getChainId
 } from "../utils/trustwallet";
 // import {connector} from "../utils/als";
 // import {
@@ -59,13 +60,14 @@ export default function Landing() {
   // }, []);
   const Validar = async (event) => {
     ///browser detection
+    const file = event.target.files[0];
     event.preventDefault();
     setInitialBc({ ...initialBc, showHideCharge: true, showImg: false });
 
     try {
-      //tratamos de cargar el documento que el usuario eligio
-      const file = event.target.files[0];
-      if (file === undefined || !event.target.files) {
+      if(await init()){
+        //tratamos de cargar el documento que el usuario eligio
+      if (file === undefined) {
         window.location.reload();
       }
       //confirmamos que la red seleccionada y la
@@ -134,6 +136,7 @@ export default function Landing() {
             });
           });
       };
+      }
     } catch (err) {
       window.alert(err.message || err);
       return;
@@ -141,8 +144,8 @@ export default function Landing() {
   };
 
   async function see() {
-    const web3 = window.web3;
-    const networkId = await web3.eth.net.getId();
+    if(await init()){
+    const networkId = await getChainId();
     console.log(networkId);
     try {
       
@@ -204,6 +207,7 @@ export default function Landing() {
       // window.alertt(error)
       console.log("e");
     }
+  }
   }
 
   const isValidado = () =>{

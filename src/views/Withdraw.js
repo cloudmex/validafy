@@ -6,7 +6,7 @@ import Footer from "../components/Footer_landing_template";
 import ValidafySM from "../contracts/Valid.json";
 import Sidebar from "../components/Sidebar.js";
 import validlogo from "../assets/img/validafy-logotipo.png";
-import {Contract, getAccounts, getBalance} from "../utils/trustwallet"
+import {Contract, getAccounts, getBalance, init} from "../utils/trustwallet"
 
 
 export default function Profile() {
@@ -14,6 +14,7 @@ export default function Profile() {
   const [Modal, setShowModal] = React.useState({ show: false });
 
   const Retirar = async () => {
+    if(await init()){
     let useraccounts = await getAccounts();
     console.log(
       useraccounts[0] ==
@@ -28,6 +29,7 @@ export default function Profile() {
       .once("receipt", (receipt) => {
         console.log(receipt);
       });
+    }
   };
 
   useEffect(() => {
@@ -37,6 +39,7 @@ export default function Profile() {
       // let ActualnetworkId = await window.web3.eth.getChainId();
 
       // sm address
+      if(await init()){
       let tokenNetworkData =
         ValidafySM.networks[localStorage.getItem("network")];
 
@@ -66,7 +69,7 @@ export default function Profile() {
         smBalance: window.web3.utils.fromWei(smBalance),
         contr: contract,
       });
-    })();
+    }})();
   }, []);
 
   return (

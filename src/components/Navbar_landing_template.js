@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import logo from "../assets/img/metamask.png";
 import validlogo from "../assets/img/validafy.png";
-
+import {AuthContext} from '../Context/AuthContext'
 import Web3 from "web3";
 // import {
 //   addNetwork,
@@ -26,71 +26,76 @@ export default function Navbar(props) {
   const [account, setAccount] = useState("");
   const [buttontxt, setbuttontxt] = useState("Ingresar");
   const [Modal, setShowModal] = React.useState({ show: false });
+  
+  const {Modalw,setModalw} =useContext(AuthContext);
+
 
   async function see() {
-    const web3 = window.web3;
-    const networkId = await web3.eth.net.getId();
-    try {
-      window.ethereum._metamask.isUnlocked().then(async function(value) {
-        if (value) {
-          console.log(networkId);
+    setModalw(false);
+    console.log(Modalw)
+    // const web3 = window.web3;
+    // const networkId = await web3.eth.net.getId();
+    // try {
+    //   window.ethereum._metamask.isUnlocked().then(async function(value) {
+    //     if (value) {
+    //       console.log(networkId);
 
-          if (await sameNetwork()) {
-            window.location.href = "/dash";
-          } else {
-            // window.alert('Error de red,Selecciona la red de BSC para seguir.')
-            setShowModal({
-              ...initialBc,
-              show: true,
-              success: false,
-              message: " Cambia de red porfavor",
-            });
-            //se sale del bucle hasta que la red the metamask y la llave network en localstorage son identicas
+    //       if (await sameNetwork()) {
+    //         window.location.href = "/dash";
+    //       } else {
+    //         // window.alert('Error de red,Selecciona la red de BSC para seguir.')
+    //         setShowModal({
+    //           ...initialBc,
+    //           show: true,
+    //           success: false,
+    //           message: " Cambia de red porfavor",
+    //         });
+    //         //se sale del bucle hasta que la red the metamask y la llave network en localstorage son identicas
 
-            while (!(await sameNetwork())) {
-              //espera 200 milisegundo para volver a llamar addNetwork evita que no se muestre el modal de metamask
-              wait(200);
-              await addNetwork(
-                parseInt(localStorage.getItem("network"))
-              ).catch();
-            }
-            window.location.href = "/dash";
-          }
-        } else {
-          setShowModal({
-            ...initialBc,
-            show: true,
-            success: false,
-            message:
-              "Para ingresar al panel de tu cuenta primero tienes que estar logeado",
-          });
-          setTimeout(function() {
-            window.location.href = "/login";
-          }, 3000);
-        }
-      });
-    } catch (error) {
-      // window.alertt(error)
-      console.log("e");
-    }
+    //         while (!(await sameNetwork())) {
+    //           //espera 200 milisegundo para volver a llamar addNetwork evita que no se muestre el modal de metamask
+    //           wait(200);
+    //           await addNetwork(
+    //             parseInt(localStorage.getItem("network"))
+    //           ).catch();
+    //         }
+    //         window.location.href = "/dash";
+    //       }
+    //     } else {
+    //       setShowModal({
+    //         ...initialBc,
+    //         show: true,
+    //         success: false,
+    //         message:
+    //           "Para ingresar al panel de tu cuenta primero tienes que estar logeado",
+    //       });
+    //       setTimeout(function() {
+    //         window.location.href = "/login";
+    //       }, 3000);
+    //     }
+    //   });
+    // } catch (error) {
+    //   // window.alertt(error)
+    //   console.log("e");
+    // }
   }
 
   useEffect(async () => {
-    try {
-      window.onbeforeunload = null;
-      window.ethereum._metamask.isUnlocked().then(function(value) {
-        if (value) {
-          console.log("en loginlanding Abierto");
+  //   try {
+  //     window.onbeforeunload = null;
+  //     window.ethereum._metamask.isUnlocked().then(function(value) {
+  //       if (value) {
+  //         console.log("en loginlanding Abierto");
 
-          setbuttontxt("Mi cuenta");
-          console.log(buttontxt);
-        } else {
-          console.log("Cerrado");
-        }
-      });
-    } catch (error) {
-      console.log("e" + error);
-    }
+            setbuttontxt("Mi cuenta");
+  //         console.log(buttontxt);
+  //       } else {
+  //         console.log("Cerrado");
+  //       }
+  //     });
+  //   } catch (error) {
+  //     console.log("e" + error);
+  //   }
   }, []);
 
   const [navbarOpen, setNavbarOpen] = React.useState(false);
@@ -208,7 +213,7 @@ export default function Navbar(props) {
 
             <li
               onClick={see}
-              className="flex inline-block text-xs bg-gray-100   px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none lg:mr-1 lg:mb-0 ml-3 mb-3"
+              className="flex pointer inline-block text-xs bg-gray-100   px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none lg:mr-1 lg:mb-0 ml-3 mb-3"
             >
               <img style={{ height: 25 }} src={logo} />
               <a className=" text-sm bg-gray-100 pt-1 pl-4 font-bold uppercase">

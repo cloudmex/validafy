@@ -7,12 +7,13 @@ export default ({ children })=>{
     const [user,setUser] = useState(null);
     const [isAuthenticated,setIsAuthenticated] = useState(false);
     const [isLoaded,setIsLoaded] = useState(false);
+    const [Modalw,setModalw] = useState(true);
 
     
 
     return (
         <div>
-             <AuthContext.Provider value={{user,setUser,isAuthenticated,setIsAuthenticated}}>
+             <AuthContext.Provider value={{user,setUser,isAuthenticated,setIsAuthenticated,Modalw,setModalw}}>
                 { children }
             </AuthContext.Provider>
         </div>

@@ -16,6 +16,16 @@ body {
     transition: all 0.2s;
   }
 
+  .pointer{
+    cursor: pointer;
+  }
+  .pointer:hover{
+    transform: scale(1.01);
+  }
+  .pointer:active{
+    transform: scale(1);
+  }
+
   .row{
     display: flex;
     flex-wrap: nowrap;

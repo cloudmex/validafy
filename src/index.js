@@ -13,7 +13,7 @@ import {
 (async () => {
   console.log("llego");
   try {
-      await init();
+      // await init();
   } catch (error) {
     console.error(error);
   }

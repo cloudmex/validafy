@@ -7,7 +7,7 @@ import Dropdown from "./Dropdown.js";
 // import Web3 from "web3";
 import ValidafySM from "../contracts/Valid.json";
 // import {  isDeployed } from "../utils/interaction_blockchain";
-import {  Contract, getAccounts, getChainId, isDeployed } from "../utils/trustwallet";
+import {  Contract, getAccounts, getChainId, init, isDeployed } from "../utils/trustwallet";
 
 export default function Sidebar() {
   const [collapseShow, setCollapseShow] = React.useState("hidden");
@@ -21,6 +21,7 @@ export default function Sidebar() {
        //instantiate the contract object
    
       try {
+        if(await init()){
         console.log("is");
       console.log(await isDeployed());
       //get the useraccounts
@@ -32,7 +33,7 @@ export default function Sidebar() {
       let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
 
       // window.web3 = new Web3(window.ethereum);
-       contract = new Contract(
+       contract =  Contract(
         ValidafySM.abi,
         tokenNetworkData.address);
 
@@ -42,6 +43,7 @@ export default function Sidebar() {
               ? true
               : false,
         });
+      }
       } catch (error) {
         console.error(error)
       }

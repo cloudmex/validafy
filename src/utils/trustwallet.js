@@ -1,7 +1,7 @@
 import Web3 from "web3";
-import React, {useState} from "react";
+import React, {useContext, useEffect} from "react";
 import WalletConnectProvider from "@walletconnect/web3-provider";
-import Web3Modal, { local } from "web3modal";
+import {AuthContext} from '../Context/AuthContext';
 import ValidafySM from "../contracts/Valid.json";
 const ipfsClient = require("ipfs-http-client");
 const pinataSDK = require("@pinata/sdk");
@@ -62,25 +62,25 @@ export const init = async() => {
     //  Enable session (triggers QR Code modal)
     
     try {
-      if (window.web3) {
-        //   window.web3 = new Web3(window.ethereum);
-        // const provider = new WalletConnectProvider(nets[56]);
-        // await provider.enable();
-        // window.web3 = new Web3(provider);
+      // if (window.web3) {
+        // while(!getNameWallet()){
 
-        // window.web3 = web3;
-        // console.log(await window.web3.eth.getAccounts());
+        // }
+          switch(getNameWallet()){
+            case "Metamask":  await initMetamask(); break;
+            case "TrustWallet": await  initTrustWallet(); break;
+            default: return false;
+          }
+          // console.log("esta en el init");
           if (!localStorage.getItem("network")) localStorage.setItem("network", 56);
           return true;
-        } else {
-          return false;
-        }
       } catch (error) {
         console.error(error);
-        return true;
+        return false;
       }
-      // return isStarted;
+      
 }
+
 
 export const initIpfs = () =>{
   window.ipfs = ipfsClient({
@@ -92,10 +92,14 @@ export const initIpfs = () =>{
 }
 
 export const initMetamask = async() => {
-  if(!window.web3.eth){
+  
+  if(!(await isLog())){
     window.web3 = new Web3(window.ethereum);
-    await requestAccounts();
+    // await requestAccounts();
+    await window.web3.eth.requestAccounts();
     initIpfs();
+    setNameWallet("Metamask");
+    // window.location.href = "/dash";
     return true;
   }else{
     return false;
@@ -103,16 +107,26 @@ export const initMetamask = async() => {
 }
 
 export const initTrustWallet = async() => {
-  if(!window.web3.eth){
+  if(!(await isLog())){
     const provider = new WalletConnectProvider(nets[56]);
         await provider.enable();
         window.web3 = new Web3(provider);
         initIpfs();
+        setNameWallet("TrustWallet");
+        // window.location.href = "/dash";
     return true;
   }else{
     return false;
   }  
 } 
+
+export const setNameWallet = (name) =>{ 
+  window.localStorage.setItem("NameWallet", name);
+}
+
+export const getNameWallet = () =>{ 
+   return window.localStorage.getItem("NameWallet");
+}
 
 export  async function addNetwork(id) {
     try {
@@ -152,7 +166,7 @@ export const wait= (miliseconds) => {
         }
       }
     } catch (error) {
-      ReloadPage();
+      // ReloadPage();
       console.error(error);
     }
   }
@@ -164,7 +178,7 @@ export const wait= (miliseconds) => {
         "tx/"
       );
     } catch (error) {
-      ReloadPage();
+      // ReloadPage();
       return console.error(error);
     }
   }
@@ -173,7 +187,7 @@ export const wait= (miliseconds) => {
     try {
       return nets[parseInt(localStorage.getItem("network"))].chainName;
     } catch (error) {
-      ReloadPage();
+      // ReloadPage();
       console.error(error);
     }
   
@@ -191,7 +205,7 @@ export const wait= (miliseconds) => {
         return nets.includes(ActualnetworkId.toString());
       } catch (error) {
         console.error(error);
-        ReloadPage();
+        // ReloadPage();
         return false;
       }
   }
@@ -199,82 +213,70 @@ export const wait= (miliseconds) => {
 
 
   export const getChainId = async() =>{
-    if(!!window.web3.eth){
       return await window.web3.eth.getChainId();
-    }else{
-      ReloadPage();
-      return false;
-    }
   }
 
-  export const getComition = (a,b) =>{
-    if(!!window.web3.eth){
-      return window.web3.utils.toWei(a,b);
-    }else{
-      ReloadPage();
-      return false;
-    }
-
+  export const getComition = async(a,b) =>{
+    return await window.web3.utils.toWei(a,b)
   }
 
   export const getAccounts = async() =>{
-    if(!!window.web3.eth){
       return await window.web3.eth.getAccounts();
-    }else{
-      ReloadPage();
-      return false;
-    }
   }
 
   export const requestAccounts = async() =>{
-    if(!!window.web3.eth){
       return await window.web3.eth.requestAccounts();
-    }else{
-      ReloadPage();
-      return false;
-    }
   }
 
   export const Contract = (v1,v2) =>{
-    if(!!window.web3.eth){
       return new window.web3.eth.Contract(v1,v2);
-    }else{
-      ReloadPage();
-      return false;
-    }
   }
   
   export const getBalance = async(v1) =>{
-    if(!!window.web3.eth){
       return await window.web3.eth.getBalance(v1);
-    }else{
-      ReloadPage();
+  }
+
+  export const isLog = async() =>{
+    try{
+      return (await window.web3.eth.getAccounts()).length > 0;
+    }catch(err){
       return false;
     }
   }
 
   const ReloadPage = () => {
-    window.location.href = "/";
+    // window.location.href = "/";
   }
 
-const fnn = async()=>{
 
-  console.log(await initMetamask());
-  
 
-}
-
-fnn();
 
 export const WalletModal = () => {
+const {Modalw,setModalw} =useContext(AuthContext);
+// const [state, setstate] = useState("display-out");
 
-// const [state, setstate] = useState();
+useEffect(() => {
+  init().then((v) => {
 
+
+    // if(getNameWallet()){
+    //   setModalw(true);
+    // }else{
+      setModalw(v);
+    // }
+  });
+}, []);
+
+const close = () => {
+  setModalw(true);
+  
+}
 
   return(
-    <div className="wallet-modal display-out">
+    <div className={`wallet-modal ${Modalw ? "display-out" : ""}`}>
       <div className="info">
-          <div className="item">
+          
+          <div className="item" onClick={(c)=> {initMetamask().then(v => window.location.href = "/dash"); close();}}>
               <div className="img">
                 <img src="metamask-logo-png-transparent.png"/>
               </div>
@@ -282,7 +284,7 @@ export const WalletModal = () => {
                 <p>Metamask</p>
               </div>
           </div>
-          <div className="item">
+          <div className="item" onClick={(c)=> {initTrustWallet().then(v => window.location.href = "/dash"); close();}}>
               <div className="img">
                 <img src="trustwallet.png"/>
               </div>
@@ -290,7 +292,7 @@ export const WalletModal = () => {
                 <p>Trust Wallet</p>
               </div>
           </div>
-          <div className="close" onClick="">
+          <div className="close" onClick={e => close()}>
             <img src="x.png"/>
           </div>
       </div>

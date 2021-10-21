@@ -56,13 +56,13 @@ export default function Profile() {
       //     window.location.href = "/";
       //   }
       // });
-
-      if (window.web3) {
+      if (await init()) {
         
         // window.web3 = new Web3(window.ethereum);
-
+        
         //get the useraccounts
         let useraccounts = await getAccounts();
+        console.log(useraccounts);
         //get the actual networkid or chainid
         let ActualnetworkId = await getChainId();
        
@@ -84,7 +84,7 @@ export default function Profile() {
         
         //instantiate the contract object
         
-        let contract = new Contract(
+        let contract =  Contract(
           ValidafySM.abi,
           tokenNetworkData.address
           );
@@ -92,6 +92,7 @@ export default function Profile() {
           let tokensarr = await contract.methods
           .documentsOF(useraccounts[0])
           .call();
+          console.log("sientro");
           //get the owner of the contract
           setProfile({
             address: useraccounts,
