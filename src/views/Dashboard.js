@@ -1,30 +1,37 @@
 import React, { useState, useEffect, Fragment, useRef } from "react";
-import Web3 from "web3";
+// import Web3 from "web3";
 import ValidafySM from "../contracts/Valid.json";
+// import {
+//   init,
+//   addNetwork,
+//   wait,
+//   sameNetwork,
+// } from "../utils/interaction_blockchain";
 import {
-  init,
   addNetwork,
   wait,
   sameNetwork,
-} from "../utils/interaction_blockchain";
-import { Dialog, Transition } from "@headlessui/react";
+  getExplorerUrl,
+  Contract,
+  getChainId,
+  getAccounts,
+  init
+} from "../utils/trustwallet";
+// import { Dialog, Transition } from "@headlessui/react";
 import { acceptedFormats } from "../utils/constraints";
 import Sidebar from "../components/Sidebar.js";
-import { getExplorerUrl } from "../utils/interaction_blockchain";
+// import { getExplorerUrl } from "../utils/interaction_blockchain";
+// import { getExplorerUrl } from "../utils/constraints";
 
-const ipfsClient = require("ipfs-http-client");
-const ipfs = ipfsClient({
-  host: "ipfs.infura.io",
-  port: 5001,
-  protocol: "https",
-});
+// const ipfsClient = require("ipfs-http-client");
+// const ipfs = ipfsClient({
+//   host: "ipfs.infura.io",
+//   port: 5001,
+//   protocol: "https",
+// });
 
 //Using the Pinata SDK with dokxo apikeys
-const pinataSDK = require("@pinata/sdk");
-const pinata = pinataSDK(
-  "8e2b2fe58bbbc6c45be1",
-  "440d5cf3f57689b93028a75c6d71a4ef82c83ba00926ae61674859564fa357a8"
-);
+
 
 export default function Dashboard() {
   
@@ -60,47 +67,47 @@ export default function Dashboard() {
 
   const mycomision = window.localStorage;
   const myfile = window.localStorage;
-  function useStickyState(defaultValue, key) {
-    const [value, setValue] = React.useState(() => {
-      const stickyValue = window.localStorage.getItem(key);
-      return stickyValue !== null ? JSON.parse(stickyValue) : defaultValue;
-    });
-    React.useEffect(() => {
-      window.localStorage.setItem(key, JSON.stringify(value));
-    }, [key, value]);
-    return [value, setValue];
-  }
+  // function useStickyState(defaultValue, key) {
+  //   const [value, setValue] = React.useState(() => {
+  //     const stickyValue = window.localStorage.getItem(key);
+  //     return stickyValue !== null ? JSON.parse(stickyValue) : defaultValue;
+  //   });
+  //   React.useEffect(() => {
+  //     window.localStorage.setItem(key, JSON.stringify(value));
+  //   }, [key, value]);
+  //   return [value, setValue];
+  // }
 
-  async function componentWillMount() {
-    await this.loadWeb3();
-    await this.loadBlockchainData();
-  }
-  async function loadWeb3() {
-    if (window.ethereum) {
-      window.web3 = new Web3(window.ethereum);
-      await window.ethereum.enable();
-    } else if (window.web3) {
-      window.web3 = new Web3(window.web3.currentProvider);
-    } else {
-      window.alert(
-        "Non-Ethereum browser detected. You should consider trying MetaMask!"
-      );
-    }
-  }
-  async function loadBlockchainData() {
-    const web3 = window.web3;
-    // Load account
-    const accounts = await web3.eth.getAccounts();
-    setInitialBc({ account: accounts[0] });
-    //console.log(initialBc.account);
-    const networkId = await web3.eth.net.getId();
+  // async function componentWillMount() {
+  //   await this.loadWeb3();
+  //   await this.loadBlockchainData();
+  // }
+  // async function loadWeb3() {
+  //   if (window.ethereum) {
+  //     window.web3 = new Web3(window.ethereum);
+  //     await window.ethereum.enable();
+  //   } else if (window.web3) {
+  //     window.web3 = new Web3(window.web3.currentProvider);
+  //   } else {
+  //     window.alert(
+  //       "Non-Ethereum browser detected. You should consider trying MetaMask!"
+  //     );
+  //   }
+  // }
+  // async function loadBlockchainData() {
+  //   const web3 = window.web3;
+  //   // Load account
+  //   const accounts = await web3.eth.getAccounts();
+  //   setInitialBc({ account: accounts[0] });
+  //   //console.log(initialBc.account);
+  //   const networkId = await web3.eth.net.getId();
 
-    if (networkId) {
-      //console.log(initialBc.contract);
-    } else {
-      window.alert("Smart contract not deployed to detected network.");
-    }
-  }
+  //   if (networkId) {
+  //     //console.log(initialBc.contract);
+  //   } else {
+  //     window.alert("Smart contract not deployed to detected network.");
+  //   }
+  // }
 
   const hideComponent = (e) => {
     return setInitialBc({ showHidebutton: e });
@@ -117,9 +124,9 @@ export default function Dashboard() {
   const hideFile = (e) => {
     return setInitialBc({ showHideFile: e });
   };
-  const hideProgresss = (e) => {
-    return setInitialBc({ showHideProgress: e });
-  };
+  // const hideProgresss = (e) => {
+  //   return setInitialBc({ showHideProgress: e });
+  // };
 
   const resetForm = () => {
     setInitialBc({
@@ -138,28 +145,30 @@ export default function Dashboard() {
 
   useEffect(() => {
     (async () => {
-      try {
-        if (!init()) {
-          setInitialBc({
-            show: true,
-            success: false,
-            message:
-              "No cuentas con metamask,te estamos redireccionando al sitio oficial para que procedas con la descarga",
-          });
-          setTimeout(() => {
-            window.location.replace("https://metamask.io/download");
-          }, 5000);
-        }
-      } catch (error) {
-        console.error(error);
-      }
+      // console.log("llego");
+      // try {
+      //   if (!await init()) {
+      //     setInitialBc({
+      //       show: true,
+      //       success: false,
+      //       message:
+      //         "No cuentas con metamask,te estamos redireccionando al sitio oficial para que procedas con la descarga",
+      //     });
+      //     setTimeout(() => {
+      //       window.location.replace("https://metamask.io/download");
+      //     }, 5000);
+      //   }
+      // } catch (error) {
+      //   console.error(error);
+      // }
+      // awaitStarted();
 
       //Testing if Validafy is conected to Pinata.
-      pinata
+      window.pinata
         .testAuthentication()
         .then((result) => {
           //handle successful authentication here
-          console.log(result);
+          console.log("el resultado ",result);
         })
         .catch((err) => {
           //handle error here
@@ -167,29 +176,25 @@ export default function Dashboard() {
         });
       /////
       //console.log("mycomi"+mycomision.getItem("payed"))
-      try {
-        window.ethereum._metamask.isUnlocked().then(function(value) {
-          if (value) {
-            console.log("Abierto");
-          } else {
-            console.log("Cerrado");
-            window.location.href = "/";
-          }
-        });
-      } catch (error) {
-        console.log("e" + error);
-      }
-      if (window.ethereum) {
-        window.web3 = new Web3(window.ethereum);
+      // try {
+      //   window.ethereum._metamask.isUnlocked().then(function(value) {
+      //     if (value) {
+      //       console.log("Abierto");
+      //     } else {
+      //       console.log("Cerrado");
+      //       window.location.href = "/";
+      //     }
+      //   });
+      // } catch (error) {
+      //   console.log("e" + error);
+      // }
+      if (await init()) {
+        // window.web3 = new Web3(window.ethereum);
 
         //get the useraccounts
-        let useraccounts = await window.ethereum.request({
-          method: "eth_requestAccounts",
-        });
+        let useraccounts = await getAccounts();
         //get the actual networkid or chainid
-        let ActualnetworkId = await window.ethereum.request({
-          method: "net_version",
-        });
+        let ActualnetworkId = await getChainId();// localStorage.getItem("network");
 
         // sm address
         let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
@@ -205,7 +210,7 @@ export default function Dashboard() {
           return;
         }
         //instantiate the contract object
-        let contract = new window.web3.eth.Contract(
+        let contract =   Contract(
           ValidafySM.abi,
           tokenNetworkData.address
         );
@@ -223,33 +228,33 @@ export default function Dashboard() {
   }, []);
 
   const Validar = async (event) => {
+    // console.log("el evento ->> ",event.target.files)
+    const file = event.target.files[0];
     event.preventDefault();
 
     ///browser detection
     unhideCharge(true);
-    if (window.ethereum) {
-      window.web3 = new Web3(window.ethereum);
+    if (await init()) {
+      // window.web3 = new Web3(window.ethereum);
 
       try {
         //tratamos de cargar el documento que el usuario eligio
-        const file = event.target.files[0];
-        console.log(file);
+        console.log("el archivo ",file);
         if (file === undefined) {
           window.location.reload();
         }
-
-        if (!event.target.files) {
-          throw "no agrego ningun archivo";
-        }
-
+        
+        // if (!event.target.files) {
+        //   throw "no agrego ningun archivo";
+        // }
+        
         //cambiar red
-
-        const web3 = window.web3;
-        const networkId = await web3.eth.net.getId();
-
+        
+        // const web3 = window.web3;
+        // const networkId = await window.web3.eth.net.getChainId();
         if (!(await sameNetwork())) {
           // window.alert('Error de red,Selecciona la red de BSC para seguir.')
-
+          
           setInitialBc({
             ...initialBc,
             show: true,
@@ -257,12 +262,13 @@ export default function Dashboard() {
             message: "Selecciona la red e intentalo de nuevo",
             disabled: true,
           });
-
+          
           //se sale del bucle hasta que la red the metamask y la llave network en localstorage son identicas
-
+          
           while (!(await sameNetwork())) {
             //espera 200 milisegundo para volver a llamar addNetwork evita que no se muestre el modal de metamask
             wait(200);
+            // console.log("se qudo en el siclo");
             await addNetwork(parseInt(localStorage.getItem("network"))).catch();
           }
           setInitialBc({
@@ -271,14 +277,13 @@ export default function Dashboard() {
             showHideCharge: true,
           });
         }
+        console.log("hasta aqui")
         //get the actual networkid or chainid
-        let ActualnetworkId = await window.ethereum.request({
-          method: "net_version",
-        });
+        let ActualnetworkId = await getChainId();
         // sm address
         let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
         //instantiate the contract object
-        let contract = new window.web3.eth.Contract(
+        let contract =  Contract(
           ValidafySM.abi,
           tokenNetworkData.address
         );
@@ -288,7 +293,7 @@ export default function Dashboard() {
         reader.readAsArrayBuffer(file);
         reader.onloadend = () => {
           //obtener el hash de ipfs ,una vez que cargo el archivo
-          ipfs
+          window.ipfs
             .add(Buffer(reader.result), { onlyHash: true })
             .then(async (result) => {
               //comprobar si el hash se encuetra dentro de algun tokenuri
@@ -310,7 +315,7 @@ export default function Dashboard() {
             });
         };
       } catch (err) {
-        //   window.alert(err.message || err);
+          window.alert(err.message || err);
         return;
       }
     } else {
@@ -321,22 +326,26 @@ export default function Dashboard() {
   };
 
   const ValidarCaptura = async (event) => {
+    const file = event.target.files[0];
     event.preventDefault();
     unhideCharge(true);
     ///browser detection
-    if (window.ethereum) {
-      window.web3 = new Web3(window.ethereum);
+    if (await init()) {
+      // window.web3 = new Web3(window.ethereum);
 
       try {
         //tratamos de cargar el documento que el usuario eligio
-        const file = event.target.files[0];
 
-        if (!event.target.files) {
-          throw "no agrego ningun archivo";
+        if (file === undefined) {
+          window.location.reload();
         }
+        
+        // if (!event.target.files) {
+        //   throw "no agrego ningun archivo";
+        // }
         //cambiar red
-        const web3 = window.web3;
-        const networkId = await web3.eth.net.getId();
+        // const web3 = window.web3;
+        // const networkId = await window.web3.eth.net.getId();
         if (!(await sameNetwork())) {
           setInitialBc({
             ...initialBc,
@@ -358,13 +367,11 @@ export default function Dashboard() {
           }
         }
         //get the actual networkid or chainid
-        let ActualnetworkId = await window.ethereum.request({
-          method: "net_version",
-        });
+        let ActualnetworkId = await getChainId();
         // sm address
         let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
         //instantiate the contract object
-        let contract = new window.web3.eth.Contract(
+        let contract = new Contract(
           ValidafySM.abi,
           tokenNetworkData.address
         );
@@ -374,7 +381,7 @@ export default function Dashboard() {
         reader.readAsArrayBuffer(file);
         reader.onloadend = () => { 
           //obtener el hash de ipfs ,una vez que cargo el archivo
-          ipfs
+          window.ipfs
             .add(Buffer(reader.result), { onlyHash: true })
             .then(async (result) => {
               //comprobar si el hash se encuetra dentro de algun tokenuri
@@ -407,10 +414,10 @@ export default function Dashboard() {
               //si no se encuentra el hash dentro de algun tokenuri los estampamos
 
               //comision
-              const comision = window.web3.utils.toWei("0.003", "ether");
+              const comision = window.web3.utils.toWei("0.00001", "ether");
 
               //guardar el archivo a ipfs
-              ipfs.add(Buffer(reader.result)).then((result) => {
+              window.ipfs.add(Buffer(reader.result)).then( async(result) => {
                 //Pinata Options
                 const options = {
                   pinataMetadata: {
@@ -419,14 +426,12 @@ export default function Dashboard() {
                   },
                 };
 
-                
-
                 //Adds a hash to Pinata's pin queue to be pinned asynchronously
-                pinata
+               await window.pinata
                   .pinByHash(result[0].hash, options)
                   .then((result) => {
                     //handle results here
-                    console.log(result.ipfsHash);
+                    console.log("el hash--->",result.ipfsHash);
 
                     //Mint the Pinata Hash at the blockchain
                     sm.contr.methods
@@ -442,22 +447,24 @@ export default function Dashboard() {
                       .once("receipt", (receipt) => {
                         console.log("resultado--> ",receipt);
 
-                     
-                        const metadata = {
-                          name: file.name,
-                          keyvalues: {
-                            tokenid: receipt.events.Transfer.returnValues.tokenId,
-                            owner: receipt.events.Transfer.returnValues.to,
-                            txHash: receipt.transactionHash,
-                            explorer:getExplorerUrl()
-                          }
-                      };
-               
-                   console.log("metadata--->  ",metadata);
-                    pinata.hashMetadata(result.ipfsHash, metadata).then((result) => {
-                      //handle results here
-                      console.log(result + " asqui");
+                   const metadata  = {
+                      name: file.name,
+                      keyvalues: {
+                        tokenid: receipt.events.Transfer.returnValues.tokenId,
+                        owner: receipt.events.Transfer.returnValues.to,
+                        txHash: receipt.transactionHash,
+                        explorer:getExplorerUrl()
+                      }
+                    };  
 
+                    window.pinata.hashMetadata(result.ipfsHash, metadata).then((result) => {
+                      //handle results here
+                      console.log("este es el resultado",result);
+                    }).catch((err) => {
+                        //handle error here
+                        console.log(err);
+                    });
+                     
                       setShowModal({
                         ...initialBc,
                         show: true,
@@ -465,13 +472,10 @@ export default function Dashboard() {
                         message:
                           "!Exito!. Se ha minado,el nuevo token esta en su cartera",
                       });
+                      window.location.href = "/dash";
 
-                  //     //quitar la imagen de carga
-                      setInitialBc({ ...initialBc, showHideCharge: false });
-                  }).catch((err) => {
-                      //handle error here
-                      console.log(err);
-                  });
+                  //  console.log("metadata--->  ",metadata);
+                  
  
                       })
                       .catch((err) => {
@@ -485,7 +489,7 @@ export default function Dashboard() {
                         });
                         setInitialBc({ ...initialBc, showHideCharge: false });
                       });
-                    //
+                    
                   })
                   .catch((err) => {
                     //handle error here
@@ -511,94 +515,95 @@ export default function Dashboard() {
 
       window.open("https://metamask.io/download", "_blank");
     }
+    console.log("ya salio");
   };
 
-  const onSubmit = (e) => {
-    //window.alert("Usted esta pagando el costo de minar un nuevo token(metodo de minado)");
+  // const onSubmit = (e) => {
+  //   //window.alert("Usted esta pagando el costo de minar un nuevo token(metodo de minado)");
 
-    e.preventDefault();
-    //console.log("buffer1", initialBc.buffer);
-    //console.log("buffer2", buffer.buffer);
-    unhideCharge(true);
+  //   e.preventDefault();
+  //   //console.log("buffer1", initialBc.buffer);
+  //   //console.log("buffer2", buffer.buffer);
+  //   unhideCharge(true);
 
-    try {
-      //Se avanza el estado del estampado
-      setprogress(50);
-      setestadoProgress("Paso 4 de 6: pagando Estampado");
+  //   try {
+  //     //Se avanza el estado del estampado
+  //     setprogress(50);
+  //     setestadoProgress("Paso 4 de 6: pagando Estampado");
 
-      unhideCharge(true);
+  //     unhideCharge(true);
 
-      ipfs
-        .add(buffer.buffer)
-        .then((result) => {
-          //Se avanza el estado del estampado
-          setprogress(80);
-          setestadoProgress("Paso 5 de 6: Estampando documento");
+  //     ipfs
+  //       .add(buffer.buffer)
+  //       .then((result) => {
+  //         //Se avanza el estado del estampado
+  //         setprogress(80);
+  //         setestadoProgress("Paso 5 de 6: Estampando documento");
 
-          unhideCharge(true);
+  //         unhideCharge(true);
 
-          sm.contr.methods
-            .createItem(sm.useraccount, result[0].path)
-            .send({ from: sm.useraccount })
-            .once("receipt", (receipt) => {
-              //Se avanza el estado del estampado
-              setprogress(100);
-              setestadoProgress("Paso 6 de 6: Documento Estampado");
-              mycomision.setItem("payed", 0);
-              //console.log(receipt);
-              //console.log(result);
-              resetForm();
-              // window.alert("Se ha minado,el nuevo token esta en su cartera");
+  //         sm.contr.methods
+  //           .createItem(sm.useraccount, result[0].path)
+  //           .send({ from: sm.useraccount })
+  //           .once("receipt", (receipt) => {
+  //             //Se avanza el estado del estampado
+  //             setprogress(100);
+  //             setestadoProgress("Paso 6 de 6: Documento Estampado");
+  //             mycomision.setItem("payed", 0);
+  //             //console.log(receipt);
+  //             //console.log(result);
+  //             resetForm();
+  //             // window.alert("Se ha minado,el nuevo token esta en su cartera");
 
-              setTimeout(function() {
-                window.location.href = "/perfil";
-              }, 8000);
-              //window.location.href = "/perfil";
-              setShowModal({
-                ...initialBc,
-                show: true,
-                success: true,
-                message:
-                  "!Exito!. Se ha minado,el nuevo token esta en su cartera",
-              });
-              //se hizo correctamente la transaccion
-              if (receipt.status) {
-                setIpfs(result[0].path);
-              }
-            })
-            .catch((error) => {
-              // window.alert("La trasacción ha sido cancelada");
-              setShowModal({
-                ...initialBc,
-                show: true,
-                success: false,
-                message:
-                  "!Error!. El estampado ha sido cancelado \n \n \npresione Estampar para continuar",
-              });
-              hideComponent(true);
-              window.onbeforeunload = function() {
-                return "¡No salir de esta ventana,se perderá la trasaccion!";
-              };
-              console.log("Se cancelo transanccion paso 5:" + error);
-            });
-        })
-        .catch((err) => {
-          setShowModal({
-            ...initialBc,
-            show: true,
-            success: false,
-            message: "!Error!. El estampado ha sido cancelado",
-          });
-          window.alert("La trasacción ha sido cancelada");
-          window.location.reload();
-          console.log("err", err);
-        });
-    } catch (error) {
-      window.alert("La trasacción ha sido cancelada");
-      window.location.reload();
-      console.log(error);
-    }
-  };
+  //             setTimeout(function() {
+  //               window.location.href = "/perfil";
+  //             }, 8000);
+  //             //window.location.href = "/perfil";
+  //             setShowModal({
+  //               ...initialBc,
+  //               show: true,
+  //               success: true,
+  //               message:
+  //                 "!Exito!. Se ha minado,el nuevo token esta en su cartera",
+  //             });
+  //             //se hizo correctamente la transaccion
+  //             if (receipt.status) {
+  //               setIpfs(result[0].path);
+  //             }
+  //           })
+  //           .catch((error) => {
+  //             // window.alert("La trasacción ha sido cancelada");
+  //             setShowModal({
+  //               ...initialBc,
+  //               show: true,
+  //               success: false,
+  //               message:
+  //                 "!Error!. El estampado ha sido cancelado \n \n \npresione Estampar para continuar",
+  //             });
+  //             hideComponent(true);
+  //             window.onbeforeunload = function() {
+  //               return "¡No salir de esta ventana,se perderá la trasaccion!";
+  //             };
+  //             console.log("Se cancelo transanccion paso 5:" + error);
+  //           });
+  //       })
+  //       .catch((err) => {
+  //         setShowModal({
+  //           ...initialBc,
+  //           show: true,
+  //           success: false,
+  //           message: "!Error!. El estampado ha sido cancelado",
+  //         });
+  //         window.alert("La trasacción ha sido cancelada");
+  //         window.location.reload();
+  //         console.log("err", err);
+  //       });
+  //   } catch (error) {
+  //     window.alert("La trasacción ha sido cancelada");
+  //     window.location.reload();
+  //     console.log(error);
+  //   }
+  // };
 
   const { showHidebutton } = initialBc;
   const { showHideCharge } = initialBc;

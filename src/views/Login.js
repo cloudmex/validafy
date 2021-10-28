@@ -4,18 +4,13 @@ import Web3 from "web3";
 import Navbar from "../components/Navbar_login_template";
 import FooterSmall from "../components/FooterSmall_login_template";
 import logo from "../assets/img/metamask.png";
-import { addNetwork, isDeployed, wait } from "../utils/interaction_blockchain";
+// import { addNetwork, isDeployed, wait } from "../utils/interaction_blockchain";
 export default function Login() {
   const [account, setAccount] = useState("");
 
   async function loadWeb3() {
     try {
-      if (window.ethereum) {
-        window.web3 = new Web3(window.ethereum);
-        if (await window.ethereum.enable()) {
-          loadBlockchainData();
-        }
-      } else if (window.web3) {
+      if (window.web3) {
         window.web3 = new Web3(window.web3.currentProvider);
       } else {
         window.alert(
@@ -28,36 +23,36 @@ export default function Login() {
       window.location.reload();
     }
   }
-  async function loadBlockchainData() {
-    try {
-      const web3 = window.web3;
-      // Load account
-      const accounts = await web3.eth.getAccounts();
-      setAccount({ account: accounts[0] });
-      console.log(account);
-      const networkId = await web3.eth.net.getId();
+  // async function loadBlockchainData() {
+  //   try {
+  //     const web3 = window.web3;
+  //     // Load account
+  //     const accounts = await web3.eth.getAccounts();
+  //     setAccount({ account: accounts[0] });
+  //     console.log(account);
+  //     const networkId = await web3.eth.net.getId();
 
-      if (account != null) {
-        console.log(account);
+  //     if (account != null) {
+  //       console.log(account);
 
-        //se sale del bucle hasta que agregue la red
-        let data = false;
-        while (data != null) {
-          wait(200);
-          data = await addNetwork(
-            parseInt(localStorage.getItem("network"))
-          ).catch((err) => {
-            return err;
-          });
-        }
-        window.location.href = "/dash";
-      } else {
-        window.alert("Error de red,Selecciona la red de BSC para seguir.");
-      }
-    } catch (error) {
-      //console.error(error)
-    }
-  }
+  //       //se sale del bucle hasta que agregue la red
+  //       let data = false;
+  //       while (data != null) {
+  //         wait(200);
+  //         data = await addNetwork(
+  //           parseInt(localStorage.getItem("network"))
+  //         ).catch((err) => {
+  //           return err;
+  //         });
+  //       }
+  //       window.location.href = "/dash";
+  //     } else {
+  //       window.alert("Error de red,Selecciona la red de BSC para seguir.");
+  //     }
+  //   } catch (error) {
+  //     //console.error(error)
+  //   }
+  // }
 
   useEffect(() => {
     window.history.pushState(null, document.title, window.location.href);
@@ -65,16 +60,16 @@ export default function Login() {
       window.history.pushState(null, document.title, window.location.href);
     });
 
-    window.ethereum._metamask.isUnlocked().then(function(value) {
-      if (value) {
-        console.log("Abierto");
-        window.location.href = "/dash";
-      } else {
-        console.log("Cerrado");
-      }
-    });
+    // window.ethereum._metamask.isUnlocked().then(function(value) {
+      // if (value) {
+      //   console.log("Abierto");
+      //   window.location.href = "/dash";
+      // } else {
+      //   console.log("Cerrado");
+      // }
+    // });
 
-    console.log(window.ethereum);
+    // console.log(window.ethereum);
   });
 
   return (

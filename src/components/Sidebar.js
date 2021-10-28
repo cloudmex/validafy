@@ -1,12 +1,13 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import validlogo from "../assets/img/validafy.png";
-import NotificationDropdown from "./NotificationDropdown.js";
+// import NotificationDropdown from "./NotificationDropdown.js";
 import Dropdown from "./Dropdown.js";
-import UserDropdown from "./UserDropdown.js";
-import Web3 from "web3";
+// import UserDropdown from "./UserDropdown.js";
+// import Web3 from "web3";
 import ValidafySM from "../contracts/Valid.json";
-import { addNetwork, isDeployed } from "../utils/interaction_blockchain";
+// import {  isDeployed } from "../utils/interaction_blockchain";
+import {  Contract, getAccounts, getChainId, init, isDeployed } from "../utils/trustwallet";
 
 export default function Sidebar() {
   const [collapseShow, setCollapseShow] = React.useState("hidden");
@@ -20,22 +21,19 @@ export default function Sidebar() {
        //instantiate the contract object
    
       try {
+        if(await init()){
         console.log("is");
       console.log(await isDeployed());
       //get the useraccounts
-      let useraccounts = await window.ethereum.request({
-        method: "eth_requestAccounts",
-      });
+      let useraccounts = await getAccounts();
       //get the actual networkid or chainid
-       ActualnetworkId = await window.ethereum.request({
-        method: "net_version",
-      });
-      setRedtext (ActualnetworkId === "97" ? "BSC -Testnet" : "BSC -Mainnet")
+       ActualnetworkId = await getChainId();
+      setRedtext (ActualnetworkId === 97 ? "BSC -Testnet" : "BSC -Mainnet")
       // sm address
       let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
 
-      window.web3 = new Web3(window.ethereum);
-       contract = new window.web3.eth.Contract(
+      // window.web3 = new Web3(window.ethereum);
+       contract =  Contract(
         ValidafySM.abi,
         tokenNetworkData.address);
 
@@ -45,6 +43,7 @@ export default function Sidebar() {
               ? true
               : false,
         });
+      }
       } catch (error) {
         console.error(error)
       }

@@ -16,6 +16,16 @@ body {
     transition: all 0.2s;
   }
 
+  .pointer{
+    cursor: pointer;
+  }
+  .pointer:hover{
+    transform: scale(1.01);
+  }
+  .pointer:active{
+    transform: scale(1);
+  }
+
   .row{
     display: flex;
     flex-wrap: nowrap;
@@ -72,3 +82,108 @@ body {
   .tx-center{
     text-align: center;
   }
+
+/* WalletModal */
+
+.wallet-modal{
+  position: fixed;
+  top: 0;
+  background: rgba(0,0,0,0.5);
+  width: 100%;
+  height: 100%;
+  display:  flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wallet-modal > .info{
+  /* width: 30%;
+  height: 30%; */
+  background: white;
+  border-radius: 10px;
+  padding: 10px;
+  position: relative;
+  max-height: 80%;
+  /* overflow-y: scroll; */
+}
+
+.wallet-modal > .info > .item {
+  height: 75px;
+  width: 300px;
+  /* background: red; */
+  border: 1px solid #a1a19a;
+  border-radius: 3px;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 5px;
+  align-items: center;
+  justify-content: space-around;
+  margin-bottom: 5px;
+  cursor: pointer;
+}
+
+.wallet-modal > .info > .item:hover {
+  transform: scale(1.01);
+}
+
+.wallet-modal > .info > .item:active {
+  transform: scale(1);
+}
+
+.wallet-modal > .info > .item:nth-last-child(2) {
+  margin-bottom: 0;
+  /* background: red; */
+}
+
+.wallet-modal > .info > .item > .img {
+  /* background: blue; */
+  width: 20%;
+}
+.wallet-modal > .info > .item > .img > img{
+  /* height:  10%; */
+}
+
+.wallet-modal > .info > .item > .text {
+  /* background: blue; */
+  width: 75%;
+}
+
+.wallet-modal > .info > .item > .text > p{
+  font-size: 20pt;
+  text-align: center;
+  font-weight: bolder;
+  color: #20201f;
+}
+
+.wallet-modal > .info > .close {
+  position: absolute;
+  top: -25px;
+  right: -25px;
+  background: white;
+  height: 25px;
+  width: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50px;
+  cursor: pointer;
+}
+
+.wallet-modal > .info > .close > img {
+  width: 50%;
+  height: 50%;
+}
+
+
+.wallet-modal > .info > .close:hover {
+  transform: scale(1.10);
+}
+
+.wallet-modal > .info > .close:active {
+  transform: scale(1);
+}
+
+.display-out{
+  display: none;
+}
+

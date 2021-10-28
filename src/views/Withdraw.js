@@ -6,15 +6,16 @@ import Footer from "../components/Footer_landing_template";
 import ValidafySM from "../contracts/Valid.json";
 import Sidebar from "../components/Sidebar.js";
 import validlogo from "../assets/img/validafy-logotipo.png";
+import {Contract, getAccounts, getBalance, init} from "../utils/trustwallet"
+
 
 export default function Profile() {
   const [withdraw, setwithdraw] = useState({ showHideCharge: false });
   const [Modal, setShowModal] = React.useState({ show: false });
 
   const Retirar = async () => {
-    let useraccounts = await window.ethereum.request({
-      method: "eth_requestAccounts",
-    });
+    if(await init()){
+    let useraccounts = await getAccounts();
     console.log(
       useraccounts[0] ==
         (await withdraw.contr.methods.ownerbalance.call().call())
@@ -28,17 +29,17 @@ export default function Profile() {
       .once("receipt", (receipt) => {
         console.log(receipt);
       });
+    }
   };
 
   useEffect(() => {
     (async () => {
-      window.web3 = new Web3(window.ethereum);
+      // window.web3 = new Web3(window.ethereum);
       //get the actual networkid or chainid
-      let ActualnetworkId = await window.ethereum.request({
-        method: "net_version",
-      });
+      // let ActualnetworkId = await window.web3.eth.getChainId();
 
       // sm address
+      if(await init()){
       let tokenNetworkData =
         ValidafySM.networks[localStorage.getItem("network")];
 
@@ -55,22 +56,20 @@ export default function Profile() {
 
       //instantiate the contract object
 
-      let contract = new window.web3.eth.Contract(
+      let contract = new Contract(
         ValidafySM.abi,
         tokenNetworkData.address
       );
 
       //get the balance of the sm
-      let smBalance = await window.ethereum.request({
-        method: "eth_getBalance",
-        params: [tokenNetworkData.address],
-      });
+      
+      let smBalance = await getBalance();
 
       setwithdraw({
         smBalance: window.web3.utils.fromWei(smBalance),
         contr: contract,
       });
-    })();
+    }})();
   }, []);
 
   return (

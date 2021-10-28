@@ -1,12 +1,19 @@
 import React from "react";
 import { createPopper } from "@popperjs/core";
+// import {
+//   addNetwork,
+//   isDeployed,
+//   getNetworkName,
+//   sameNetwork,
+//   wait,
+// } from "../utils/interaction_blockchain";
 import {
   addNetwork,
   isDeployed,
   getNetworkName,
   sameNetwork,
   wait,
-} from "../utils/interaction_blockchain";
+} from "../utils/trustwallet";
 
 const Dropdown = ({ color }) => {
   // dropdown props
@@ -25,12 +32,12 @@ const Dropdown = ({ color }) => {
   async function changeNet(id) {
     //se sale del bucle hasta que la red the metamask y la llave network en localstorage son identicas
     localStorage.setItem("network", id);
-    while (!(await sameNetwork())) {
+    // while (!(await sameNetwork())) {
       //espera 200 milisegundo para volver a llamar addNetwork evita que no se muestre el modal de metamask
-      wait(200);
-      await addNetwork(id).catch();
-    }
-    window.location.reload();
+      // wait(200);
+      await addNetwork(id);
+    // }
+    // window.location.reload();
   }
   // bg colors
   let bgColor;

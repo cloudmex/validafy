@@ -5,15 +5,26 @@ import Footer from "../components/Footer_landing_template";
 import {
   init,
   addNetwork,
-  isDeployed,
   wait,
   sameNetwork,
   getExplorerUrl,
-} from "../utils/interaction_blockchain";
+  Contract,
+  getChainId
+} from "../utils/trustwallet";
+// import {connector} from "../utils/als";
+// import {
+//   // init,
+//   // addNetwork,
+//   isDeployed,
+//   // wait,
+//   // sameNetwork,
+//   getExplorerUrl,
+// } from "../utils/interaction_blockchain";
 
 import { acceptedFormats } from "../utils/constraints";
 
 export default function Landing() {
+  
   /**
    * @type estado que guarda los datos mas relevantes de el componente
    */
@@ -31,29 +42,32 @@ export default function Landing() {
    * @param {*} event tiene toda la informacion del input asociado
    * @returns  no regresa nada
    */
-  useEffect(() => {
-    //incializamos la app, si no tiene metamask lo mandamos a la pagina de descarga
-    if (!init()) {
-      setInitialBc({
-        show: true,
-        success: false,
-        message:
-          "No cuentas con metamask,te estamos redireccionando al sitio oficial para que procedas con la descarga",
-      });
-      setTimeout(() => {
-        window.location.replace("https://metamask.io/download");
-      }, 5000);
-    }
-  }, []);
+  
+  // useEffect(async() => {
+  //   //incializamos la app, si no tiene metamask lo mandamos a la pagina de descarga
+  //   if (!await init()) {
+      
+  //     setInitialBc({
+  //       show: true,
+  //       success: false,
+  //       message:
+  //         "No cuentas con metamask,te estamos redireccionando al sitio oficial para que procedas con la descarga",
+  //     });
+  //     setTimeout(() => {
+  //       window.location.replace("https://metamask.io/download");
+  //     }, 5000);
+  //   }
+  // }, []);
   const Validar = async (event) => {
     ///browser detection
+    const file = event.target.files[0];
     event.preventDefault();
     setInitialBc({ ...initialBc, showHideCharge: true, showImg: false });
 
     try {
-      //tratamos de cargar el documento que el usuario eligio
-      const file = event.target.files[0];
-      if (file === undefined || !event.target.files) {
+      if(await init()){
+        //tratamos de cargar el documento que el usuario eligio
+      if (file === undefined) {
         window.location.reload();
       }
       //confirmamos que la red seleccionada y la
@@ -85,7 +99,7 @@ export default function Landing() {
       let tokenNetworkData =
         ValidafySM.networks[localStorage.getItem("network")];
       //instantiate the contract object
-      let contract = new window.web3.eth.Contract(
+      let contract = new Contract(
         ValidafySM.abi,
         tokenNetworkData.address
       );
@@ -122,6 +136,7 @@ export default function Landing() {
             });
           });
       };
+      }
     } catch (err) {
       window.alert(err.message || err);
       return;
@@ -129,11 +144,12 @@ export default function Landing() {
   };
 
   async function see() {
-    const web3 = window.web3;
-    const networkId = await web3.eth.net.getId();
+    if(await init()){
+    const networkId = await getChainId();
+    console.log(networkId);
     try {
-      window.ethereum._metamask.isUnlocked().then(async function(value) {
-        if (value) {
+      
+        // if (value) {
           console.log(networkId);
 
           if (await sameNetwork()) {
@@ -177,20 +193,21 @@ export default function Landing() {
               window.location.href = "/dash";
             }, 3000);
           }
-        } else {
-          setInitialBc({
-            ...initialBc,
-            show: true,
-            success: false,
-            message: "!Advertencia !.\nPrimero logeate",
-          });
-          window.location.href = "/login";
-        }
-      });
+        // } else {
+        //   setInitialBc({
+        //     ...initialBc,
+        //     show: true,
+        //     success: false,
+        //     message: "!Advertencia !.\nPrimero logeate",
+        //   });
+        //   window.location.href = "/login";
+        // }
+      
     } catch (error) {
       // window.alertt(error)
       console.log("e");
     }
+  }
   }
 
   const isValidado = () =>{
@@ -336,6 +353,7 @@ export default function Landing() {
                         }
                         onClick={(e) => {
                           e.preventDefault();
+                          // Validar(e);
                         }}
                         data-toggle="tab"
                         href="#link1"

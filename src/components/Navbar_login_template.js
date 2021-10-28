@@ -6,59 +6,59 @@ import Web3 from 'web3';
 export default function Navbar(props) {
   const [initialBc,setInitialBc]=useState({Hash: '',contract: null,buffer:null,web3: null,account: null});
   const [account,setAccount]=useState("");
-  async function componentWillMount() {
-    await this.loadWeb3()
-    await this.loadBlockchainData()
-  }
-  async function loadWeb3() {
-    try {
-      if (window.ethereum) {
-        window.web3 = new Web3(window.ethereum)
-        await window.ethereum.enable()
-      }
-      else if (window.web3) {
-        window.web3 = new Web3(window.web3.currentProvider)
-      }
-      else {
+  // async function componentWillMount() {
+  //   await this.loadWeb3()
+  //   await this.loadBlockchainData()
+  // }
+  // async function loadWeb3() {
+  //   try {
+  //     if (window.ethereum) {
+  //       window.web3 = new Web3(window.ethereum)
+  //       await window.ethereum.enable()
+  //     }
+  //     else if (window.web3) {
+  //       window.web3 = new Web3(window.web3.currentProvider)
+  //     }
+  //     else {
         
-        window.alert('No se ha detectado un navegador compatible con ethereum,prueba instalando la extension de MetaMask!')
-        window.location.href ="https://metamask.io/download"
+  //       window.alert('No se ha detectado un navegador compatible con ethereum,prueba instalando la extension de MetaMask!')
+  //       window.location.href ="https://metamask.io/download"
         
-      }
-    } catch (error) {
-      console.error(error)
-    }
+  //     }
+  //   } catch (error) {
+  //     console.error(error)
+  //   }
     
-  }
-  async function loadBlockchainData() {
-    try {
+  // }
+  // async function loadBlockchainData() {
+  //   try {
       
-    const web3 = window.web3
-    // Load account
-    const accounts = await web3.eth.getAccounts()
+  //   const web3 = window.web3
+  //   // Load account
+  //   const accounts = await web3.eth.getAccounts()
     
-    setInitialBc({initialBc,account:accounts[0] })
-    setAccount({account:accounts[0]})
-    console.log(account)
-    const networkId = await web3.eth.net.getId()
+  //   setInitialBc({initialBc,account:accounts[0] })
+  //   setAccount({account:accounts[0]})
+  //   console.log(account)
+  //   const networkId = await web3.eth.net.getId()
     
-    if( networkId) {
+  //   if( networkId) {
        
-      console.log(initialBc)
-      window.location.href ="/dash"
-    } else {
-      window.alert('Error de red,Selecciona la red de BSC para seguir.')
-    }
+  //     console.log(initialBc)
+  //     window.location.href ="/dash"
+  //   } else {
+  //     window.alert('Error de red,Selecciona la red de BSC para seguir.')
+  //   }
 
       
-    } catch (error) {
-      console.error(error)
-    }
+  //   } catch (error) {
+  //     console.error(error)
+  //   }
 
-  }
-  async function see() {
-    window.location.href="/login"
-    }
+  // }
+  // async function see() {
+  //   window.location.href="/login"
+  //   }
     
   const [navbarOpen, setNavbarOpen] = React.useState(false);
   return (

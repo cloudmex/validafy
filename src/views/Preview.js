@@ -4,11 +4,11 @@ import React, { useState, useEffect } from "react";
  import "../assets/css/pdfstyle.css";
  import { FillButton } from 'tailwind-react-ui'
  //Using the Pinata SDK with dokxo apikeys
-const pinataSDK = require("@pinata/sdk");
-const pinata = pinataSDK(
-  "8e2b2fe58bbbc6c45be1",
-  "440d5cf3f57689b93028a75c6d71a4ef82c83ba00926ae61674859564fa357a8"
-);
+// const pinataSDK = require("@pinata/sdk");
+// const pinata = pinataSDK(
+//   "8e2b2fe58bbbc6c45be1",
+//   "440d5cf3f57689b93028a75c6d71a4ef82c83ba00926ae61674859564fa357a8"
+// );
 
 
 
@@ -42,7 +42,7 @@ export default function Preview (props) {
         }
         console.log(props.match.params.id)
         //Testing if Validafy is conected to Pinata.
-        pinata
+       window.pinata
           .testAuthentication()
           .then((result) => {
             //handle successful authentication here
@@ -73,9 +73,9 @@ export default function Preview (props) {
                 pageOffset: 0,
                 
             };
-         await   pinata.pinList(filters).then((result) => {
+         await   window.pinata.pinList(filters).then((result) => {
                 //handle results here
-                console.log(result);
+                console.log("euu",result);
                 console.log(result.rows[0].metadata.keyvalues.tokenid);
   
                 setIpfsHash(props.match.params.id);
