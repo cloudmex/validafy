@@ -286,10 +286,10 @@ const close = () => {
           </div>
           <div className="item" onClick={(c)=> {initTrustWallet().then(v => window.location.href = "/dash"); close();}}>
               <div className="img">
-                <img src="trustwallet.png"/>
+                <img src="walletconnet.png"/>
               </div>
               <div className="text">
-                <p>Trust Wallet</p>
+                <p>WalletConnect</p>
               </div>
           </div>
           <div className="close" onClick={e => close()}>

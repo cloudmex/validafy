@@ -7,7 +7,7 @@ import Sidebar from "../components/Sidebar.js";
 import validlogo from "../assets/img/validafy-logotipo.png";
 
 // import { init,getExplorerUrl } from "../utils/interaction_blockchain";
-import { init,getExplorerUrl, getAccounts,getChainId, Contract } from "../utils/trustwallet";
+import { init,getExplorerUrl, getAccounts,getChainId, Contract, wait } from "../utils/trustwallet";
 
 
 
@@ -199,6 +199,7 @@ export default function Profile() {
                   // formBlock:0,
                   // toBlock: "latest",
                 });
+                // wait(1000);
             }
 
 

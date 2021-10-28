@@ -14,6 +14,8 @@ import {
   isDeployed,
   wait,
   sameNetwork,
+  isLog,
+  init,
 } from "../utils/trustwallet";
 export default function Navbar(props) {
   const [initialBc, setInitialBc] = useState({
@@ -24,15 +26,19 @@ export default function Navbar(props) {
     account: null,
   });
   const [account, setAccount] = useState("");
-  const [buttontxt, setbuttontxt] = useState("Ingresar");
+  const [buttontxt, setbuttontxt] = useState("");
   const [Modal, setShowModal] = React.useState({ show: false });
   
   const {Modalw,setModalw} =useContext(AuthContext);
 
 
   async function see() {
-    setModalw(false);
-    console.log(Modalw)
+    if(await init()){
+      setModalw(true);
+      window.location.href = "/dash";
+    }else{
+      setModalw(false);
+    }
     // const web3 = window.web3;
     // const networkId = await web3.eth.net.getId();
     // try {
@@ -86,8 +92,12 @@ export default function Navbar(props) {
   //     window.ethereum._metamask.isUnlocked().then(function(value) {
   //       if (value) {
   //         console.log("en loginlanding Abierto");
-
-            setbuttontxt("Mi cuenta");
+    
+      if(!await init()){
+          setbuttontxt("Ingrésa con tu wallet");
+      }else{
+          setbuttontxt("Mi cuenta");
+      }
   //         console.log(buttontxt);
   //       } else {
   //         console.log("Cerrado");
@@ -215,8 +225,8 @@ export default function Navbar(props) {
               onClick={see}
               className="flex pointer inline-block text-xs bg-gray-100   px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none lg:mr-1 lg:mb-0 ml-3 mb-3"
             >
-              <img style={{ height: 25 }} src={logo} />
-              <a className=" text-sm bg-gray-100 pt-1 pl-4 font-bold uppercase">
+              {/* <img style={{ height: 25 }} src={logo} /> */}
+              <a className=" text-sm bg-gray-100 pt-1  font-bold uppercase">
                 {buttontxt}
               </a>
             </li>

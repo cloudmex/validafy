@@ -426,8 +426,6 @@ export default function Dashboard() {
                   },
                 };
 
-                
-
                 //Adds a hash to Pinata's pin queue to be pinned asynchronously
                await window.pinata
                   .pinByHash(result[0].hash, options)
@@ -449,22 +447,24 @@ export default function Dashboard() {
                       .once("receipt", (receipt) => {
                         console.log("resultado--> ",receipt);
 
-                     
-                        const metadata = {
-                          name: file.name,
-                          keyvalues: {
-                            tokenid: receipt.events.Transfer.returnValues.tokenId,
-                            owner: receipt.events.Transfer.returnValues.to,
-                            txHash: receipt.transactionHash,
-                            explorer:getExplorerUrl()
-                          }
-                      };
-               
-                   console.log("metadata--->  ",metadata);
+                   const metadata  = {
+                      name: file.name,
+                      keyvalues: {
+                        tokenid: receipt.events.Transfer.returnValues.tokenId,
+                        owner: receipt.events.Transfer.returnValues.to,
+                        txHash: receipt.transactionHash,
+                        explorer:getExplorerUrl()
+                      }
+                    };  
+
                     window.pinata.hashMetadata(result.ipfsHash, metadata).then((result) => {
                       //handle results here
-                      console.log(result + " asqui");
-
+                      console.log(result);
+                    }).catch((err) => {
+                        //handle error here
+                        console.log(err);
+                    });
+                     
                       setShowModal({
                         ...initialBc,
                         show: true,
@@ -472,13 +472,10 @@ export default function Dashboard() {
                         message:
                           "!Exito!. Se ha minado,el nuevo token esta en su cartera",
                       });
+                      window.location.href = "/dash";
 
-                  //     //quitar la imagen de carga
-                      setInitialBc({ ...initialBc, showHideCharge: false });
-                  }).catch((err) => {
-                      //handle error here
-                      console.log(err);
-                  });
+                  //  console.log("metadata--->  ",metadata);
+                  
  
                       })
                       .catch((err) => {
@@ -492,7 +489,7 @@ export default function Dashboard() {
                         });
                         setInitialBc({ ...initialBc, showHideCharge: false });
                       });
-                    //
+                    
                   })
                   .catch((err) => {
                     //handle error here

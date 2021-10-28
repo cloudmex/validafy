@@ -4,6 +4,7 @@
   "description": "An Ethereum Marketplace",
   "author": "gregory@dappuniversity.com",
   "dependencies": {
+    "@fleekhq/fleek-storage-js": "^1.0.20",
     "@fortawesome/fontawesome-free": "^5.15.3",
     "@headlessui/react": "^1.2.0",
     "@openzeppelin/contracts": "^4.0.0",

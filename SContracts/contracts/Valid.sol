@@ -31,8 +31,8 @@ contract Valid is ERC721 {
         metadata[_tokenIds.current()] = Metadata(
             tokenURI, //hash
             block.timestamp, // time
-            ownerbalance, // owner
-            blockhash(0), 
+            msg.sender, // owner // redesplegar para coregir la propiedad del token
+            // blockhash(0), 
             fileName, 
             explorerUrl, 
             block.number
