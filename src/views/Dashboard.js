@@ -459,7 +459,7 @@ export default function Dashboard() {
 
                     window.pinata.hashMetadata(result.ipfsHash, metadata).then((result) => {
                       //handle results here
-                      console.log(result);
+                      console.log("este es el resultado",result);
                     }).catch((err) => {
                         //handle error here
                         console.log(err);
