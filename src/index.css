@@ -187,3 +187,22 @@ body {
   display: none;
 }
 
+.barra{
+  border: 2px solid #41cf41;
+  border-radius: 50px;
+  position: absolute;
+  margin: 20px;
+  height: 20px;
+  width: 200px;
+}
+.carga{
+  background:  #41cf41;
+  border-radius: 50px;
+  height: 100%;
+  /* width: %; */
+  transition: width 1s;
+}
+
+/* .carga:hover{
+  /* width: 70%; */
+/* } */

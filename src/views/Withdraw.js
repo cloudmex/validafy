@@ -63,8 +63,8 @@ export default function Profile() {
 
       //get the balance of the sm
       
-      let smBalance = await getBalance();
-
+      let smBalance = await getBalance(tokenNetworkData.address);
+      
       setwithdraw({
         smBalance: window.web3.utils.fromWei(smBalance),
         contr: contract,

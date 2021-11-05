@@ -422,90 +422,110 @@ export default function Dashboard() {
                 // const options =  
 
                 //Adds a hash to Pinata's pin queue to be pinned asynchronously
-              //  await window.pinata
-              //     .pinByHash(result[0].hash, options)
-              //     .then((result) => {
-              //       //handle results here
-              //       console.log("el hash--->",result.ipfsHash, "  Result hash: ",resultIpfs[0].hash);
+                 const _to = ValidafySM.networks[parseInt(await getChainId())].address;   
+                 const _from = (await getAccounts())[0];
+                 const _data = await sm.contr.methods.createItem(
+                          resultIpfs[0].hash, 
+                          file.name,
+                          getExplorerUrl()
+                          ).encodeABI();
 
-                    //Mint the Pinata Hash at the blockchain
-
-                  
-                  // esta funcion tiene problemas para ejecutar
-                  // alguno eventos de walletconnet
-                  await sm.contr.methods
-                      .createItem(
-                        resultIpfs[0].hash, 
-                        file.name,
-                        getExplorerUrl()
-                        )
-                      .send({
-                        from: sm.useraccount,
-                        value: comision,
-                      })
-                      // este evento no se dispara con WalletConnet
-                      .on('receipt', async function(receipt){
-                        console.log("resultado--> ",receipt);
-  
-
-                          const  options  =  { 
-                            pinataMetadata : { 
-                              name: file.name, 
-                              keyvalues : { 
-                                tokenid: receipt.events.Transfer.returnValues.tokenId,
-                                owner: receipt.events.Transfer.returnValues.to,
-                                txHash: receipt.transactionHash,
+                
+              // esta funcion tiene problemas para ejecutar
+              // alguno eventos con walletconnet  
+              const a = await window.web3.eth.sendTransaction({
+                      from: _from,
+                      to: _to,
+                      value: comision,
+                      data: _data 
+                  })
+                  // este evento no se dispara para Walletconnet
+                  .on("receipt", async function (v) {
+                    console.log("receipt ",v);
+                    const  options  =  { 
+                      pinataMetadata : { 
+                        name: file.name, 
+                        keyvalues : { 
+                          tokenid: v.events.Transfer.returnValues.tokenId,
+                                owner: v.events.Transfer.returnValues.to,
+                                txHash: v.transactionHash,
                                 explorer:getExplorerUrl()
-                              } 
-                          }
-                          } ;
+                        } 
+                    }
+                    } ;
 
-                          await window.pinata
-                          .pinByHash(resultIpfs[0].hash, options)
-                          .then((result) => {
-                            console.log("el hash--->",result.ipfsHash, "  Result hash: ",resultIpfs[0].hash);
-                            console.log("el resultado de pinata: ",result);
-                          }).catch((err)=> console.log("error en pinata: ",err));
-                            //handle results here
-                          
-                            setShowModal({
-                              ...initialBc,
-                              show: true,
-                              success: true,
-                              message:
-                                "!Exito!. Se ha minado,el nuevo token esta en su cartera",
-                            });
-                            window.location.href = "/dash";
+                    await window.pinata
+                    .pinByHash(resultIpfs[0].hash, options)
+                    .then((result) => {
+                      console.log("el hash--->",result.ipfsHash, "  Result hash: ",resultIpfs[0].hash);
+                      console.log("el resultado de pinata: ",result);
+                    }).catch((err)=> console.log("error en pinata: ",err));
+                      //handle results here
+                     
+                      setShowModal({
+                        ...initialBc,
+                        show: true,
+                        success: true,
+                        message:
+                          "!Exito!. Se ha minado,el nuevo token esta en su cartera",
+                      });
+                      // window.location.href = "/dash";
+                })
+                // este evento se dispara para Metamask y WalletConnet
+                .on("transactionHash", function (v) {
+                    console.log("transactionHash",v);
+                })
+                // este evento no se diapara para walletconnet
+                .on("confirmation", function (v) {
+                    console.log("Confirmed ",v);
+                })
+                // este evento no se dispara para walletconnet ni para metamask
+                .on("error", async function (v) {
+                    console.log("Error ",v);
+                });;
+
+                  console.log("a: ", a);
+                    
+                  //  await sm.contr.methods
+                  //     .createItem(
+                  //       resultIpfs[0].hash, 
+                  //       file.name,
+                  //       getExplorerUrl()
+                  //       )
+                  //     .send({
+                  //       from: sm.useraccount,
+                  //       value: comision,
+                  //     })
+                  //     .then(async (receipt) => {
+                  //       console.log("resultado--> ",receipt);
+
+                  // //  const metadata  = {
+                  // //     name: file.name,
+                  // //     keyvalues: {
+                  //       // tokenid: receipt.events.Transfer.returnValues.tokenId,
+                  //       // owner: receipt.events.Transfer.returnValues.to,
+                  //       // txHash: receipt.transactionHash,
+                  //       // explorer:getExplorerUrl()
+                  // //     }
+                  // //   };  
+
+                    
 
                   // //  console.log("metadata--->  ",metadata);
                   
  
-                      })
-                      // este evento se dispara para Metamask y WalletConnet
-                      .on('transactionHash', function(hash){
-                        console.log(
-                          "el hash: ", hash
-                        );
-                      })
-                      // este evento no se dispara con WalletConnet
-                      .on('confirmation', function(confirmationNumber, receipt){
-                        console.log(
-                          "el confirmationNumber: ", confirmationNumber,
-                          " el receipt: ", receipt
-                        );
-                      })
-                      // este evento no se dispara para walletconnet y Metamask
-                      .catch((err) => {
-                        console.log(err);
+                      // })
+                      // .catch((err) => {
+                      //   console.log(err);
 
-                        setShowModal({
-                          ...initialBc,
-                          show: true,
-                          success: false,
-                          message: err.stack,
-                        });
-                        setInitialBc({ ...initialBc, showHideCharge: false });
-                      });
+                      //   setShowModal({
+                      //     ...initialBc,
+                      //     show: true,
+                      //     success: false,
+                      //     message: err.stack,
+                      //   });
+                      //   setInitialBc({ ...initialBc, showHideCharge: false });
+                      // });
                     
                   // })
                   // .catch((err) => {

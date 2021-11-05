@@ -9,15 +9,9 @@ import {
   init,
   WalletModal
 } from "./utils/trustwallet";
+import {Loading} from './components/Loading'
 // import WalletModal from './components/WalletModal'
-(async () => {
-  console.log("llego");
-  try {
-      // await init();
-  } catch (error) {
-    console.error(error);
-  }
-})();
+
 
 // console.log("una vez");
 // awaitStarted();
@@ -26,6 +20,7 @@ ReactDOM.render(
   <AuthProvider>
     <App />
     <WalletModal/>
+    
   </AuthProvider>,
   document.getElementById("root")
 );

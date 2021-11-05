@@ -1,0 +1,9 @@
+Para hacer las pruevas se intento usar diferentes cartera: Trustwallet, Metamash (movil) y Bridge
+
+Se detectaron problemas en las eventos que se lanzan en una transaccion en Dashboard.js
+los eventos para las transacciones son: "receipt", "transactionHash", "confirmation", "error".
+Walletconnet precenta problemas lanzar algunos de estos eventos que son: "receipt" y "confirmation"
+
+Se creo un documeto nuevo (ahora llamaso Dashboard copy.js) donde se intenta hacer un metodo alternativo para hacer la transaccion, 
+Pero el porblema persiste, y los resultados no son diferentes a los obtenidos anteriormente.
+
