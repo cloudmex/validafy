@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
  
 
  import "../assets/css/pdfstyle.css";
- import { FillButton } from 'tailwind-react-ui'
+ import { FillButton } from 'tailwind-react-ui';
+ import ValidafySM from "../contracts/Valid.json";
+ import { init,getExplorerUrl, getAccounts,getChainId, Contract, wait } from "../utils/trustwallet";
  //Using the Pinata SDK with dokxo apikeys
 // const pinataSDK = require("@pinata/sdk");
 // const pinata = pinataSDK(
@@ -20,6 +22,7 @@ export default function Preview (props) {
   const [Owner, setOwner] = useState("");
   const [filename, setfilename] = useState("nombre");
   const [tokenid, settokenid] = useState("");
+  const [Loading, setLoading] = useState("Cargando");
   const [explorer, setexplorer] = useState("");
 
   const myhash = window.localStorage;
@@ -34,7 +37,7 @@ export default function Preview (props) {
   };
   useEffect(async() => {
     (async () => {
-
+    
     
       try {
         if(typeof window.orientation!=="undefined"){
@@ -42,7 +45,7 @@ export default function Preview (props) {
         }
         console.log(props.match.params.id)
         //Testing if Validafy is conected to Pinata.
-       window.pinata
+       await window.pinata
           .testAuthentication()
           .then((result) => {
             //handle successful authentication here
@@ -54,8 +57,6 @@ export default function Preview (props) {
           });
         /////
   
-  
-  
       // this
       /*
       result.rows[0].date_pinned
@@ -63,8 +64,8 @@ export default function Preview (props) {
       result.rows[0].metadata.keyvalues.owner
       result.rows[0].metadata.keyvalues.tokenid
       result.rows[0].metadata.keyvalues.txHash
-  
       */
+      
       reset();
             const filters = {
               hashContains:props.match.params.id,
@@ -75,17 +76,22 @@ export default function Preview (props) {
             };
          await   window.pinata.pinList(filters).then((result) => {
                 //handle results here
-                console.log("euu",result);
-                console.log(result.rows[0].metadata.keyvalues.tokenid);
-  
-                setIpfsHash(props.match.params.id);
-                setTxHash(result.rows[0].metadata.keyvalues.txHash);
-                setDateCreated(result.rows[0].date_pinned);
-                setOwner(result.rows[0].metadata.keyvalues.owner);
-                setfilename(result.rows[0].metadata.name);
-                settokenid(result.rows[0].metadata.keyvalues.tokenid);
-                setexplorer(result.rows[0].metadata.keyvalues.explorer);
-               
+                if(!!result.rows.length){
+                  console.log("euu",result);
+                  console.log(result.rows[0].metadata.keyvalues.tokenid);
+                  console.log(props.match.params.id);
+    
+                  setIpfsHash(props.match.params.id);
+                  setTxHash(result.rows[0].metadata.keyvalues.txHash);
+                  setDateCreated(result.rows[0].date_pinned);
+                  setOwner(result.rows[0].metadata.keyvalues.owner);
+                  setfilename(result.rows[0].metadata.name);
+                  settokenid(result.rows[0].metadata.keyvalues.tokenid);
+                  setexplorer(result.rows[0].metadata.keyvalues.explorer);
+                  setLoading("");
+                }else{
+                  setLoading("Tu documento no esta disponible en este momento");
+                }
             }).catch((err) => {
                 //handle error here
                 console.log(err, "este es el rror");
@@ -183,18 +189,29 @@ export default function Preview (props) {
     <div className="bg-white shadow-lg border-gray-100 max-h-80	 border sm:rounded-3xl p-8 flex space-x-8">
       
       <div className=" overflow-visible w-full">
-      <div style={{position: 'relative',width: '100%',height: '100%'}}>
-            <object data={`https://gateway.pinata.cloud/ipfs/${props.match.params.id}`}
-            type="application/pdf"
-            width="100%"
-            height="100%"
-            >
-              Dispositivo no compatible
-              <br/>
-              <a href={`https://gateway.pinata.cloud/ipfs/${props.match.params.id}`}
-              id="enlace"
-              download="descarga.pdf" className="a-link" >click aqui para descargar</a>
-            </object>
+      <div style={Loading == "Cargando" ? {position: 'relative',display: "flex", justifyContent: "center", alignItems: "center" ,width: '100%',height: '100%'} : {position: 'relative',width: '100%',height: '100%'}}>
+          
+              {
+                !!Loading ?
+                (Loading == "Cargando" ? 
+                  <img src={ "https://media.giphy.com/media/l3q2SWX1EW3LdD7H2/giphy.gif"} alt="loading..."/>: 
+                  Loading ) :
+                (
+                  <object data={`https://gateway.pinata.cloud/ipfs/${props.match.params.id}`}
+                    type="application/pdf"
+                    width="100%"
+                    height="100%"
+                    >
+                      Dispositivo no compatible
+                      <br/>
+                      <a href={`https://gateway.pinata.cloud/ipfs/${props.match.params.id}`}
+                      id="enlace"
+                      download="descarga.pdf" className="a-link" >click aqui para descargar</a>
+                  </object>
+                )     
+              }
+          
+            
 
           </div>   
           

@@ -93,11 +93,13 @@ export default function Navbar(props) {
   //       if (value) {
   //         console.log("en loginlanding Abierto");
     
-      if(!await init()){
-          setbuttontxt("Ingrésa con tu wallet");
+      if(await init()){
+        setbuttontxt("Mi cuenta");
       }else{
-          setbuttontxt("Mi cuenta");
+
+      setbuttontxt("Ingrésa con tu wallet");
       }
+      
   //         console.log(buttontxt);
   //       } else {
   //         console.log("Cerrado");
