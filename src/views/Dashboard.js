@@ -17,6 +17,8 @@ import {
   getAccounts,
   init
 } from "../utils/trustwallet";
+
+import { Reader, uploadFile } from '../utils/Fleek'
 // import { Dialog, Transition } from "@headlessui/react";
 import { acceptedFormats } from "../utils/constraints";
 import Sidebar from "../components/Sidebar.js";
@@ -227,22 +229,48 @@ export default function Dashboard() {
     })();
   }, []);
 
-  const Validar = async (event) => {
+
+  const Validar = (e) => {
+    e.preventDefault();
+    const{reader, file} = Reader(e);
+    unhideCharge(true);
+    reader.onloadend = () =>window.ipfs
+              .add(Buffer(reader.result), { onlyHash: true })
+              .then(async (result) => {
+                if (await init()) {
+                  // const c = await getFileByHash(result[0].hash);
+                  const ActualnetworkId = await getChainId();
+                  const tokenNetworkData = ValidafySM.networks[ActualnetworkId];
+                  const contract =  Contract(
+                      ValidafySM.abi,
+                      tokenNetworkData.address
+                    );
+                  const ishashed = await contract.methods
+                    .IsHashed(result[0].hash)
+                    .call();
+                    let estado = "Documento no estampado";
+                      if (ishashed) estado = "Documento Valido";
+                      setShowModal({
+                        ...initialBc,
+                        show: true,
+                        success: ishashed,
+                        message: estado,
+                      });
+
+                      setInitialBc({ ...initialBc, namepdf: file.name, showImg: true });
+                    }
+              }).catch(err=>{
+                
+              });
+
+
+
     // console.log("el evento ->> ",event.target.files)
-    const file = event.target.files[0];
-    event.preventDefault();
+    
 
     ///browser detection
-    unhideCharge(true);
-    if (await init()) {
-      // window.web3 = new Web3(window.ethereum);
-
-      try {
-        //tratamos de cargar el documento que el usuario eligio
-        console.log("el archivo ",file);
-        if (file === undefined) {
-          window.location.reload();
-        }
+    
+    
         
         // if (!event.target.files) {
         //   throw "no agrego ningun archivo";
@@ -252,251 +280,127 @@ export default function Dashboard() {
         
         // const web3 = window.web3;
         // const networkId = await window.web3.eth.net.getChainId();
-        if (!(await sameNetwork())) {
-          // window.alert('Error de red,Selecciona la red de BSC para seguir.')
-          
-          setInitialBc({
-            ...initialBc,
-            show: true,
-            success: false,
-            message: "Selecciona la red e intentalo de nuevo",
-            disabled: true,
-          });
-          
-          //se sale del bucle hasta que la red the metamask y la llave network en localstorage son identicas
-          
-          while (!(await sameNetwork())) {
-            //espera 200 milisegundo para volver a llamar addNetwork evita que no se muestre el modal de metamask
-            wait(200);
-            // console.log("se qudo en el siclo");
-            await addNetwork(parseInt(localStorage.getItem("network"))).catch();
-          }
-          setInitialBc({
-            ...initialBc,
-            show: false,
-            showHideCharge: true,
-          });
-        }
-        console.log("hasta aqui")
-        //get the actual networkid or chainid
-        let ActualnetworkId = await getChainId();
-        // sm address
-        let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
-        //instantiate the contract object
-        let contract =  Contract(
-          ValidafySM.abi,
-          tokenNetworkData.address
-        );
+       
+        
+       
 
         //nos permite cargar el archivo
-        const reader = new window.FileReader();
-        reader.readAsArrayBuffer(file);
-        reader.onloadend = () => {
-          //obtener el hash de ipfs ,una vez que cargo el archivo
-          window.ipfs
-            .add(Buffer(reader.result), { onlyHash: true })
-            .then(async (result) => {
-              //comprobar si el hash se encuetra dentro de algun tokenuri
-              let ishashed = await contract.methods
-                .IsHashed(result[0].hash)
-                .call();
-              // console.log(result[0].hash);
-              setdocHash(result[0].hash);
-              let estado = "Documento no estampado";
-              if (ishashed) estado = "Documento Valido";
-              setShowModal({
-                ...initialBc,
-                show: true,
-                success: ishashed,
-                message: estado,
-              });
-
-              setInitialBc({ ...initialBc, namepdf: file.name, showImg: true });
-            });
-        };
-      } catch (err) {
-          window.alert(err.message || err);
-        return;
-      }
-    } else {
+        
+        
       //no tiene metamask lo mandamos a la pagina oficial de descarga
 
-      window.open("https://metamask.io/download", "_blank");
-    }
+      // window.open("https://metamask.io/download", "_blank");
+    
   };
 
-  const ValidarCaptura = async (event) => {
-    const file = event.target.files[0];
-    event.preventDefault();
+  const ValidarCaptura = (e) => {
+    e.preventDefault();
     unhideCharge(true);
-    ///browser detection
-    if (await init()) {
-      // window.web3 = new Web3(window.ethereum);
-
-      try {
-        //tratamos de cargar el documento que el usuario eligio
-
-        if (file === undefined) {
-          window.location.reload();
-        }
-        
-        // if (!event.target.files) {
-        //   throw "no agrego ningun archivo";
-        // }
-        //cambiar red
-        // const web3 = window.web3;
-        // const networkId = await window.web3.eth.net.getId();
-        if (!(await sameNetwork())) {
-          setInitialBc({
-            ...initialBc,
-            show: true,
-            success: false,
-            message: "Selecciona la red e intentalo de nuevo",
-            disabled: true,
-          });
-
-          //se sale del bucle hasta que agregue la red
-          let data = false;
-          while (data != null) {
-            wait(200);
-            data = await addNetwork(
-              parseInt(localStorage.getItem("network"))
-            ).catch((err) => {
-              return err;
-            });
-          }
-        }
-        //get the actual networkid or chainid
-        let ActualnetworkId = await getChainId();
-        // sm address
-        let tokenNetworkData = ValidafySM.networks[ActualnetworkId];
-        //instantiate the contract object
-        let contract = new Contract(
-          ValidafySM.abi,
-          tokenNetworkData.address
-        );
-
-        //nos permite cargar el archivo
-        const reader = new window.FileReader();
-        reader.readAsArrayBuffer(file);
-        reader.onloadend = () => { 
-          //obtener el hash de ipfs ,una vez que cargo el archivo
-          window.ipfs
-            .add(Buffer(reader.result), { onlyHash: true })
-            .then(async (resultIpfs) => {
-              //comprobar si el hash se encuetra dentro de algun tokenuri
-              let ishashed = await contract.methods
-                .IsHashed(resultIpfs[0].hash)
-                .call();
-              //console.log(resultIpfs[0].hash);
-              if (ishashed) {
-                setShowModal({
-                  ...initialBc,
-                  show: true,
-                  success: false,
-                  message: "!Error!.\nEl documento ya ha sido estampado",
-                });
-                setInitialBc({
-                  ...initialBc,
-                  namepdf: file.name,
-                  showImg: true,
-                });
-                // window.alert("El documento ya ha sido estampado");
-                unhideCharge(false);
-                hideFile(true);
-                //window.location.reload();
-                setTimeout(function() {
-                  window.location.reload(1);
-                }, 5000);
-                return;
-              }
-
-              //si no se encuentra el hash dentro de algun tokenuri los estampamos
-
-              //comision
-              const comision = window.web3.utils.toWei("0.00001", "ether");
-
-              //guardar el archivo a ipfs
-              window.ipfs.add(Buffer(reader.result)).then( async(result) => {
-                //Pinata Options
-                // const options =  
-
-                //Adds a hash to Pinata's pin queue to be pinned asynchronously
-              //  await window.pinata
-              //     .pinByHash(result[0].hash, options)
-              //     .then((result) => {
-              //       //handle results here
-              //       console.log("el hash--->",result.ipfsHash, "  Result hash: ",resultIpfs[0].hash);
-
-                    //Mint the Pinata Hash at the blockchain
-
-                  
-                  // esta funcion tiene problemas para ejecutar
-                  // alguno eventos de walletconnet
-                  await sm.contr.methods
-                      .createItem(
-                        resultIpfs[0].hash, 
-                        file.name,
-                        getExplorerUrl()
-                        )
-                      .send({
-                        from: sm.useraccount,
-                        value: comision,
-                      })
-                      // este evento no se dispara con WalletConnet
-                      .on('receipt', async function(receipt){
-                        console.log("resultado--> ",receipt);
+    const{reader, file} = Reader(e);
+    reader.onloadend = () =>window.ipfs
+              .add(Buffer(reader.result), { onlyHash: true })
+              .then(async (result) => {
+                if (await init()) {
+                  // const c = await getFileByHash(result[0].hash);
+                  const ActualnetworkId = await getChainId();
+                  const useraccounts = await getAccounts();
+                  const comision = window.web3.utils.toWei("0.00001", "ether");
+                  const tokenNetworkData = ValidafySM.networks[ActualnetworkId];
+                  const contract =  Contract(
+                      ValidafySM.abi,
+                      tokenNetworkData.address
+                    );
+                  const ishashed = await contract.methods
+                    .IsHashed(result[0].hash)
+                    .call();
+                    if(!ishashed){
+                      await contract.methods
+                        .createItem(
+                          result[0].hash, 
+                          file.name,
+                          getExplorerUrl()
+                          )
+                        .send({
+                          from: useraccounts[0],
+                          value: comision,
+                        })
+                        // este evento no se dispara con WalletConnet
+                        .on('receipt', async function(receipt){
+                          console.log("resultado--> ",receipt);
+    
   
+                            // const  options  =  { 
+                            //   pinataMetadata : { 
+                            //     name: file.name, 
+                            //     keyvalues : { 
+                            //       tokenid: receipt.events.Transfer.returnValues.tokenId,
+                            //       owner: receipt.events.Transfer.returnValues.to,
+                            //       txHash: receipt.transactionHash,
+                            //       explorer:getExplorerUrl()
+                            //     } 
+                            // }
+                            // } ;
+  
+                              await uploadFile(file.name,Buffer(reader.result))
+                              .then(async({hashV0,hash,key})=>{
+                                console.log("el hash--->",hash);
+                                // console.log("el resultado de pinata: ",result);
+                                // setState(true);
+                                setShowModal({
+                                  ...initialBc,
+                                  show: true,
+                                  success: true,
+                                  message: "Se a minado un nuevo token en tu cartera",
+                                });
+                              }).catch((err)=>{
+                                console.log(err);
 
-                          const  options  =  { 
-                            pinataMetadata : { 
-                              name: file.name, 
-                              keyvalues : { 
-                                tokenid: receipt.events.Transfer.returnValues.tokenId,
-                                owner: receipt.events.Transfer.returnValues.to,
-                                txHash: receipt.transactionHash,
-                                explorer:getExplorerUrl()
-                              } 
-                          }
-                          } ;
+                                setShowModal({
+                                  ...initialBc,
+                                  show: true,
+                                  success: false,
+                                  message: err.stack,
+                                });
+                                setInitialBc({ ...initialBc, showHideCharge: false });
+                                // setState(false);
+                              });
+                        }).catch(err =>{
+                          // setState(false);
+                          console.log(err);
 
-                          await window.pinata
-                          .pinByHash(resultIpfs[0].hash, options)
-                          .then((result) => {
-                            console.log("el hash--->",result.ipfsHash, "  Result hash: ",resultIpfs[0].hash);
-                            console.log("el resultado de pinata: ",result);
-                          }).catch((err)=> console.log("error en pinata: ",err));
-                            //handle results here
-                          
-                            setShowModal({
-                              ...initialBc,
-                              show: true,
-                              success: true,
-                              message:
-                                "!Exito!. Se ha minado,el nuevo token esta en su cartera",
-                            });
-                            window.location.href = "/dash";
-
-                  // //  console.log("metadata--->  ",metadata);
+                          setShowModal({
+                            ...initialBc,
+                            show: true,
+                            success: false,
+                            message: err.stack,
+                          });
+                          setInitialBc({ ...initialBc, showHideCharge: false });
+                        });
+                    }else{
+                        setShowModal({
+                          ...initialBc,
+                          show: true,
+                          success: false,
+                          message: "!Error!.\nEl documento ya ha sido estampado",
+                        });
+                        setInitialBc({
+                          ...initialBc,
+                          namepdf: file.name,
+                          showImg: true,
+                        });
+                        // window.alert("El documento ya ha sido estampado");
+                        unhideCharge(false);
+                        hideFile(true);
+                        //window.location.reload();
+                        setTimeout(function() {
+                          window.location.reload(1);
+                        }, 5000);
+                        return;
+                    }
+                }
                   
- 
-                      })
-                      // este evento se dispara para Metamask y WalletConnet
-                      .on('transactionHash', function(hash){
-                        console.log(
-                          "el hash: ", hash
-                        );
-                      })
-                      // este evento no se dispara con WalletConnet
-                      .on('confirmation', function(confirmationNumber, receipt){
-                        console.log(
-                          "el confirmationNumber: ", confirmationNumber,
-                          " el receipt: ", receipt
-                        );
-                      })
-                      // este evento no se dispara para walletconnet y Metamask
-                      .catch((err) => {
-                        console.log(err);
+              }).catch(err =>{
+                console.log(err);
 
                         setShowModal({
                           ...initialBc,
@@ -505,34 +409,20 @@ export default function Dashboard() {
                           message: err.stack,
                         });
                         setInitialBc({ ...initialBc, showHideCharge: false });
-                      });
-                    
-                  // })
-                  // .catch((err) => {
-                  //   //handle error here
-                  //   console.log(err);
-                  // });
               });
-            });
-        };
-      } catch (err) {
-        console.log(err);
-        setShowModal({
-          ...initialBc,
-          show: true,
-          success: false,
-          message: "!Hubo un error!.  ",
-        });
-        setInitialBc({ ...initialBc, showHideCharge: false });
-        // window.alert(err.message || err);
-        return;
-      }
-    } else {
+  
+
+    
+    ///browser detection
+    
+      // window.web3 = new Web3(window.ethereum);
+
+    
       //no tiene metamask lo mandamos a la pagina oficial de descarga
 
-      window.open("https://metamask.io/download", "_blank");
-    }
-    console.log("ya salio");
+      // window.open("https://metamask.io/download", "_blank");
+    
+    
   };
 
   // const onSubmit = (e) => {
@@ -912,6 +802,7 @@ export default function Dashboard() {
                         type="button"
                         onClick={() => {
                           setShowModal({ ...Modal, show: false });
+                          window.location.reload();
                         }}
                       >
                         continuar

@@ -10,6 +10,7 @@ import {
   WalletModal
 } from "./utils/trustwallet";
 import {Loading} from './components/Loading'
+import {ModalFleek} from './utils/Fleek'
 // import WalletModal from './components/WalletModal'
 
 
@@ -20,7 +21,7 @@ ReactDOM.render(
   <AuthProvider>
     <App />
     <WalletModal/>
-    
+    {/* <ModalFleek/> */}
   </AuthProvider>,
   document.getElementById("root")
 );
